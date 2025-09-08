@@ -48,17 +48,17 @@ router.post('/register', async (req, res) => {
         //Validar formatos
         const usernameRegex = /^[a-zA-Z0-9_.-]+$/;
         if(!usernameRegex.test(trimmedUsername)){
-            return sendError(res, 400, "Username solo puede contener letras, números, puntos, guiones y guiones bajos.");
+            return sendError(res, 422, "Username solo puede contener letras, números, puntos, guiones y guiones bajos.");
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(trimmedEmail)) {
-            return sendError(res, 400, "Email no tiene formato válido.");
+            return sendError(res, 422, "Email no tiene formato válido.");
         }
 
         const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
         if (!nameRegex.test(trimmedFirstname) || !nameRegex.test(trimmedLastname)) {
-            return sendError(res, 400, "Nombre y apellido solo pueden contener letras y espacios.");
+            return sendError(res, 422, "Nombre y apellido solo pueden contener letras y espacios.");
         }
 
         const [existingUsers] = await pool.query<GetUserType[]>(registerQueries.registerUserQuery, [trimmedUsername, trimmedEmail])
@@ -66,9 +66,9 @@ router.post('/register', async (req, res) => {
         if(existingUsers.length > 0){
             const existing = existingUsers[0];
             if(existing.username === trimmedUsername){
-                return sendError(res, 400, "El usuario ya esta en uso.")
+                return sendError(res, 409, "El usuario ya esta en uso.")
             }else if(existing.email === trimmedEmail){
-                return sendError(res, 400, "El correo electrónico ya esta registrado.")
+                return sendError(res, 409, "El correo electrónico ya esta registrado.")
             }
         }
 
