@@ -14,10 +14,16 @@ router.post('/login', async (req, res) => {
     try{
         const {email, user_password, username} = req.body;
 
-        if((!email && !username) || !user_password){
-            return sendError(res, 400, "Complete todos los campos porfavor.");
+        if (!email && !username && !user_password) {
+            return sendError(res, 400, "Por favor complete todos los campos.");
+        } 
+        if (!email && !username) {
+            return sendError(res, 400, "Por favor ingrese su correo electrónico o usuario.");
+        } 
+        if (!user_password) {
+            return sendError(res, 400, "Por favor ingrese su contraseña.");
         }
-
+        
         let query: string;
         let param: string;
         //Elegir porque tipo de dato el usuario desea ingresar
