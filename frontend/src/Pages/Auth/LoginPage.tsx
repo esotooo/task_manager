@@ -38,6 +38,7 @@ export default function LoginPage() {
                 </p>
             </div>
 
+            {/** FORMULARIO DE LOGIN */}
             <LoginForm/>
 
         </section>
