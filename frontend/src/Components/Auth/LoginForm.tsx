@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useAuth } from '../../Hooks/useAuth'
 import { currentYear } from "../../Utils/helpers";
 import type { LoginType } from "../../Types/authTypes";
+import { useNavigate } from "react-router-dom";
 
 
 export default function LoginForm() {
@@ -11,6 +12,8 @@ export default function LoginForm() {
         loginInput: '',
         password: ''
     })
+    const navigate = useNavigate()
+ 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target
@@ -20,8 +23,9 @@ export default function LoginForm() {
         }))
     }
 
-    const handleClick = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        
+    const navigateTo = (path: string) => (e: React.MouseEvent) => {
+        e.preventDefault()
+        navigate(path)
     }
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,7 +48,9 @@ export default function LoginForm() {
                 <div className="mt-20">
                     <h2 className="font-semibold text-2xl">¡Bienvenido de nuevo!</h2>
                     <p className="text-xs text-gray-500">¿No tienes una cuenta? 
-                        <span className="font-bold cursor-pointer text-black underline"><button>Crea una cuenta ahora.</button> </span>
+                        <span className="font-bold cursor-pointer text-black underline" onClick={navigateTo('/register')}>
+                            Crea una cuenta ahora.
+                        </span>
                     </p>
                     <p className="text-xs text-gray-500">¡ES GRATIS! y toma menos de un minuto. </p>
                 </div>
@@ -87,7 +93,9 @@ export default function LoginForm() {
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Olvidaste tu contraseña? 
-                    <span className="text-black font-bold cursor-pointer underline"> Haz click aquí.</span>
+                    <span className="text-black font-bold cursor-pointer underline" onClick={navigateTo('/change-password')}> 
+                        Haz click aquí.
+                    </span>
                 </p>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import {createContext, useReducer, useState, type ReactNode, useEffect} from 'react'
+import {createContext, useReducer, useState, type ReactNode} from 'react'
 import {AuthReducer, type AuthActions, initialAuthState, type AuthState}from '../Reducers/auth-reducer.ts'
 import { api } from '../Utils/axiosInstance.ts'
 import {useNavigate } from "react-router-dom"
@@ -41,12 +41,6 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
             handleError(error)
         }
     }
-
-    useEffect(() => {
-        if(!token){
-            navigate('/login', {replace: true})
-        }
-    }, [token, navigate])
 
 
     return(
