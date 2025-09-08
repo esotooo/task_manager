@@ -6,3 +6,6 @@ export interface LoginType extends RowDataPacket{
     lastname: string,
 }
 
+export interface GetUserType extends RowDataPacket{
+    username: string
+}
