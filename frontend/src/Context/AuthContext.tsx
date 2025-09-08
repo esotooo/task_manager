@@ -1,5 +1,5 @@
 import {createContext, useReducer, useState, type ReactNode, useEffect} from 'react'
-import {AuthReducer, AuthActions, initialAuthState, AuthState}from '../Reducers/auth-reducer.ts'
+import {AuthReducer, type AuthActions, initialAuthState, type AuthState}from '../Reducers/auth-reducer.ts'
 import { api } from '../Utils/axiosInstance.ts'
 import {useNavigate } from "react-router-dom"
 import type { LoginType } from '../Types/authTypes.ts'
@@ -10,14 +10,14 @@ type AuthContextProps = {
     dispatch: React.Dispatch<AuthActions>,
     login: (body: LoginType) => Promise<void>,
     token: string,
-    setToken: (token: string | undefined) => void
+    setToken: (token: string) => void
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
     const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
-    const [token, setToken] = useState<user | null>()
+    const [token, setToken] = useState('')
 
     const navigate = useNavigate();
 

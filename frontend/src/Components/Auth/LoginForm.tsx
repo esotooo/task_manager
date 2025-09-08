@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useAuth } from '../../Hooks/useAuth'
 import { currentYear } from "../../Utils/helpers";
+import type { LoginType } from "../../Types/authTypes";
 
 
 export default function LoginForm() {
@@ -23,11 +24,7 @@ export default function LoginForm() {
         e.preventDefault()
         const {loginInput, password} = form
 
-        if(!loginInput || !password){
-            return state.message
-        } 
-
-        const body:any = {user_password: password}
+        const body:LoginType = {user_password: password}
         if(form.loginInput.includes('@')){
             body.email = loginInput
         }else{

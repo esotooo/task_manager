@@ -26,6 +26,7 @@ router.post('/login', async (req, res) => {
         
         let query: string;
         let param: string;
+
         //Elegir porque tipo de dato el usuario desea ingresar
         if(email){
             query = usersQueries.loginByEmailQuery;
@@ -38,7 +39,7 @@ router.post('/login', async (req, res) => {
 
         const [rows] = await pool.query<LoginType[]>(query, [param]);
         if(rows.length === 0){
-            return sendError(res, 401, "Correo y/o contraseña incorrectos. Porfavor intente de nuevo.");
+            return sendError(res, 401, "Correo y/o contraseña incorrectos. Por favor intente de nuevo.");
         }
 
         const user = rows[0]
@@ -46,7 +47,7 @@ router.post('/login', async (req, res) => {
         //Verificar que la contraseña coincida
         const isMatch = await bcrypt.compare(user_password, user.user_password)
         if(!isMatch){
-            return sendError(res, 401, "Correo y/o contraseña incorrectos. Porfavor intente de nuevo.");
+            return sendError(res, 401, "Correo y/o contraseña incorrectos. Por favor intente de nuevo.");
         }
 
         //Generar token para usar opciones dentro de la aplicación
