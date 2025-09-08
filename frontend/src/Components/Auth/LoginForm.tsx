@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 
-
 export default function LoginForm() {
 
     const {state, login} = useAuth()
@@ -86,7 +85,7 @@ export default function LoginForm() {
                             onChange={handleChange}
                             className="flex-grow outline-none bg-transparent pr-2"
                         />
-                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2 pr-2">
+                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2 pr-2 hover:opacity-80">
                             {passwordVisible ? <LuEye /> : <LuEyeClosed />}
                         </div>
                     </div>
