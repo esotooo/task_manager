@@ -1,66 +1,45 @@
-import { useState } from "react"
-import { useAuth } from "../Hooks/useAuth"
-import {useNavigate } from "react-router-dom"
+import LoginForm from "../Components/Auth/LoginForm";
+import { SiTask } from "react-icons/si";
+import { currentYear } from "../Utils/helpers";
 
 
 export default function LoginPage() {
 
-    const {state, login} = useAuth()
-    const [loginInput, setLoginInput] = useState('')
-    const [password, setPassword] = useState('')
-
-
-    const getLoginInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setLoginInput(e.target.value)
-    }
-
-    const getPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value)
-    }   
-    
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const body:any = {user_password: password}
-        if(loginInput.includes('@')){
-            body.email = loginInput
-        }else{
-            body.username = loginInput
-        }
-        await login(body)
-    }
-
-
-
     return (
-        <div>
-            <form onSubmit={handleLogin}>
-                <div>
-                    <input 
-                        type="text" 
-                        id="email_username" 
-                        placeholder="Ingrese su usuario o correo electrónico" 
-                        value={loginInput}
-                        onChange={getLoginInput}
-                        className=""
-                    />
+        <section 
+        className="bg-[#1A1A1A] w-screen h-screen grid grid-cols-1 lg:grid-cols-[2fr_1fr]"
+        >
+            <div className="order-1 mt-0 lg:mt-24 lg:px-40 flex flex-col justify-center lg:justify-between px-4 ">
+            
+                {/** DISEÑO PARA COMPUTADORA */}
+                <div className="hidden lg:block">
+                    <SiTask className="text-white lg:text-9xl text-6xl"/>
+                    <div className="mt-20 max-w-full">
+                        <h1 className="text-4xl md:text-6xl text-white font-bold">Bienvenido a</h1>
+                        <h1 className="text-5xl md:text-8xl text-white whitespace-nowrap">
+                        Task <span className="font-extrabold -ml-2">Flow!</span>
+                        </h1>
+                    </div>
                 </div>
 
-                <div>
-                    <input 
-                        type="password"
-                        id="text"
-                        placeholder="Ingrese su contraseña"
-                        value={password}
-                        onChange={getPassword}
-                        className=""
-                    />
+                {/** ENCABEZADO PARA TELEFONO Y TABLET */}
+                <div className="lg:hidden flex flex-col sm:flex-row  justify-center items-center gap-4 px-2">
+                    <SiTask className="text-white text-5xl sm:text-6xl"/>
+                    <div>
+                        <h1 className="text-4xl sm:text-6xl text-white">
+                        Task <span className="-ml-2 sm:-ml-3 font-extrabold">Flow!</span>
+                        </h1>
+                    </div>
                 </div>
 
-                <button>
-                    Iniciar Sesión
-                </button>
-            </form>
-            {state.message && <p>{state.message}</p>}
-        </div>
+                {/** FOOTER SOLO PARA PC */}
+                <p className="text-sm text-white mb-5 text-center hidden lg:block">
+                    {`© ${currentYear} TaskFlow. Todos los derechos reservados.`}
+                </p>
+            </div>
+
+            <LoginForm/>
+
+        </section>
     )
 }
