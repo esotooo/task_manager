@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
         }, "Sesión iniciada exitosamente.", token)
 
 
-    }catch(error){
+    }catch{
         return sendError(res, 500, 'Error en el servidor.')
     }
 })
