@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Router } from 'express';
 import { sendError, sendSucess } from '../../utils/responseHandler';
-import { usersQueries } from '../../SQL/usersQueries';
+import { usersQueries } from '../../SQL/Auth/usersQueries';
 import { LoginType } from '../../types/usersTypes';
 import dotenv from 'dotenv'
 
