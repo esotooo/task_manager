@@ -99,10 +99,10 @@ export default function LoginForm() {
                     </div>
 
 
-                <button className="mt-5 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
-                    Iniciar Sesión
-                </button>
-            </form>
+                    <button className="mt-5 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
+                        Iniciar Sesión
+                    </button>
+                </form>
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Olvidaste tu contraseña?{' '}
