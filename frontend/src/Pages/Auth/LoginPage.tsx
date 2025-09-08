@@ -1,6 +1,6 @@
-import LoginForm from "../Components/Auth/LoginForm";
+import LoginForm from "../../Components/Auth/LoginForm";
 import { SiTask } from "react-icons/si";
-import { currentYear } from "../Utils/helpers";
+import { currentYear } from "../../Utils/helpers";
 
 
 export default function LoginPage() {

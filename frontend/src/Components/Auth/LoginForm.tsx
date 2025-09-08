@@ -20,6 +20,10 @@ export default function LoginForm() {
         }))
     }
 
+    const handleClick = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        
+    }
+
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const {loginInput, password} = form
@@ -40,7 +44,7 @@ export default function LoginForm() {
                 <div className="mt-20">
                     <h2 className="font-semibold text-2xl">¡Bienvenido de nuevo!</h2>
                     <p className="text-xs text-gray-500">¿No tienes una cuenta? 
-                        <span className="font-bold cursor-pointer text-black underline"> Crea una cuenta ahora.</span>
+                        <span className="font-bold cursor-pointer text-black underline"><button>Crea una cuenta ahora.</button> </span>
                     </p>
                     <p className="text-xs text-gray-500">¡ES GRATIS! y toma menos de un minuto. </p>
                 </div>
