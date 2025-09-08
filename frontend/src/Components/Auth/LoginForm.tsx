@@ -44,7 +44,7 @@ export default function LoginForm() {
         await login(body)
     }
 
-    const togglePasswordVisibility = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const togglePasswordVisibility = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault()
         setPasswordVisible(prev => !prev)
     }
@@ -86,9 +86,9 @@ export default function LoginForm() {
                             onChange={handleChange}
                             className="flex-grow outline-none bg-transparent"
                         />
-                        <button onClick={togglePasswordVisibility} className="cursor-pointer ml-2">
+                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2">
                             {passwordVisible ? <LuEye /> : <LuEyeClosed />}
-                        </button>
+                        </div>
                     </div>
 
 
