@@ -73,10 +73,10 @@ export default function LoginForm() {
                         value={form.loginInput}
                         onChange={handleChange}
                         className="w-full mb-5 px-1 py-2 text-sm outline-none text-gray-500/80 border-b-3 border-b-gray-300
-                        focus:border-b-black focus:font-bold focus:bg-gray-200/30 focus:text-black"
+                       focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
                     />
 
-                    <div className="flex w-full mb-2 px-1 py-2 text-sm outline-none text-gray-500/80 border-b-3 border-b-gray-300
+                    <div className="flex w-full mb-2 px-1 py-2 text-sm outline-none text-gray-500/80 border-b-3 border-b-gray-300 items-center
                             focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black">
                         <input 
                             type={passwordVisible ? 'text' : 'password'}
@@ -84,9 +84,9 @@ export default function LoginForm() {
                             name="password"
                             value={form.password}
                             onChange={handleChange}
-                            className="flex-grow outline-none bg-transparent"
+                            className="flex-grow outline-none bg-transparent pr-2"
                         />
-                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2">
+                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2 pr-2">
                             {passwordVisible ? <LuEye /> : <LuEyeClosed />}
                         </div>
                     </div>
