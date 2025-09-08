@@ -1,8 +1,10 @@
+import RegisterUserForm from "../../Components/Auth/RegisterUserForm";
 
 export default function registerUser() {
-  return (
-    <div>
-      
-    </div>
-  )
+
+    return (
+        <div>
+            <RegisterUserForm />
+        </div>
+    )
 }

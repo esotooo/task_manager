@@ -1,8 +1,8 @@
 import {createContext, useReducer, useState, type ReactNode} from 'react'
 import {AuthReducer, type AuthActions, initialAuthState, type AuthState}from '../Reducers/auth-reducer.ts'
 import { api } from '../Utils/axiosInstance.ts'
-import {useNavigate } from "react-router-dom"
-import type { LoginType } from '../Types/authTypes.ts'
+import {useNavigate, type Register } from "react-router-dom"
+import type { LoginType, RegisterType } from '../Types/authTypes.ts'
 
 
 type AuthContextProps = {
@@ -10,7 +10,8 @@ type AuthContextProps = {
     dispatch: React.Dispatch<AuthActions>,
     login: (body: LoginType) => Promise<void>,
     token: string,
-    setToken: (token: string) => void
+    setToken: (token: string) => void,
+    registerNewUser: (body: RegisterType) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
@@ -28,10 +29,10 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         }, 3000);
     }
 
-    const login = async (body: LoginType) => {
+    const login = async (user: LoginType) => {
         try{
-            const res = await api.post('/api/users/login', body)
-            if(res.status === 200){
+            const res = await api.post('/api/users/login', user)
+            if(res.status === 201){
                 dispatch({type: 'login', payload: {login: res.data.data}});
                 navigate('/main', {replace: true, state: {login: res.data.data}}); 
                 setToken(res.data.token)           
@@ -42,10 +43,23 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         }
     }
 
+    const registerNewUser = async (newUser: RegisterType) => {
+        try{
+            const res = await api.post('/api/users/register', newUser)
+            if(res.status === 200){
+                dispatch({type: 'register', payload: {register: res.data.data}});
+                dispatch({type: 'show-message', payload: {message: res.data.message}})
+                navigate('/login', {replace: true})
+            }
+        }catch(error){
+            handleError(error)
+        }
+    }
+
 
     return(
         <AuthContext.Provider 
-            value={{state, dispatch, login, setToken, token}}    
+            value={{state, dispatch, login, setToken, token, registerNewUser}}    
         >
             {children}
         </AuthContext.Provider>
