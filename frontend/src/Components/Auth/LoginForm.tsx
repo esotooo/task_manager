@@ -2,19 +2,17 @@ import { useState } from "react"
 import { useAuth } from '../../Hooks/useAuth'
 import { currentYear } from "../../Utils/helpers";
 import type { LoginType } from "../../Types/authTypes";
-import { useNavigate } from "react-router-dom";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 
 export default function LoginForm() {
 
-    const {state, login} = useAuth()
+    const {state, login, navigateTo} = useAuth()
     const [form, setForm] = useState({
         loginInput: '',
         password: ''
     })
     const [passwordVisible, setPasswordVisible] = useState(false)
-    const navigate = useNavigate()
  
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,11 +21,6 @@ export default function LoginForm() {
             ...prev, 
             [name]: value
         }))
-    }
-
-    const navigateTo = (path: string) => (e: React.MouseEvent) => {
-        e.preventDefault()
-        navigate(path)
     }
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {

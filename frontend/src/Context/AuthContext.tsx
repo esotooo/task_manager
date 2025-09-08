@@ -1,7 +1,7 @@
 import {createContext, useReducer, useState, type ReactNode} from 'react'
 import {AuthReducer, type AuthActions, initialAuthState, type AuthState}from '../Reducers/auth-reducer.ts'
 import { api } from '../Utils/axiosInstance.ts'
-import {useNavigate, type Register } from "react-router-dom"
+import {useNavigate } from "react-router-dom"
 import type { LoginType, RegisterType } from '../Types/authTypes.ts'
 
 
@@ -11,7 +11,8 @@ type AuthContextProps = {
     login: (body: LoginType) => Promise<void>,
     token: string,
     setToken: (token: string) => void,
-    registerNewUser: (body: RegisterType) => Promise<void>
+    registerNewUser: (body: RegisterType) => Promise<void>,
+    navigateTo: (path: string) => (e: React.MouseEvent) => void,
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
@@ -32,7 +33,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     const login = async (user: LoginType) => {
         try{
             const res = await api.post('/api/users/login', user)
-            if(res.status === 201){
+            if(res.status === 200){
                 dispatch({type: 'login', payload: {login: res.data.data}});
                 navigate('/main', {replace: true, state: {login: res.data.data}}); 
                 setToken(res.data.token)           
@@ -46,7 +47,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     const registerNewUser = async (newUser: RegisterType) => {
         try{
             const res = await api.post('/api/users/register', newUser)
-            if(res.status === 200){
+            if(res.status === 201){
                 dispatch({type: 'register', payload: {register: res.data.data}});
                 dispatch({type: 'show-message', payload: {message: res.data.message}})
                 navigate('/login', {replace: true})
@@ -56,10 +57,14 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         }
     }
 
+    const navigateTo = (path: string) => (e: React.MouseEvent) => {
+        e.preventDefault()
+        navigate(path)
+    }
 
     return(
         <AuthContext.Provider 
-            value={{state, dispatch, login, setToken, token, registerNewUser}}    
+            value={{state, dispatch, login, setToken, token, registerNewUser, navigateTo}}    
         >
             {children}
         </AuthContext.Provider>
