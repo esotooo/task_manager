@@ -61,24 +61,30 @@ router.post('/register', async (req, res) => {
             return sendError(res, 400, "Nombre y apellido solo pueden contener letras y espacios.");
         }
 
-        const [existingUsers] = await pool.query( ,[trimmedUsername, trimmedEmail])
+        const [existingUsers] = await pool.query<GetUserType[]>(registerQueries.registerUserQuery, [trimmedUsername, trimmedEmail])
 
-        if(existingUsers.length)
+        if(existingUsers.length > 0){
+            const existing = existingUsers[0];
+            if(existing.username === trimmedUsername){
+                return sendError(res, 400, "El usuario ya esta en uso.")
+            }else if(existing.email === trimmedEmail){
+                return sendError(res, 400, "El correo electrónico ya esta registrado.")
+            }
+        }
 
         //Ingresar contraseña ya hasheada la base de datos
         const hashedPassword = await hashPassword(user_password);
         const [register] = await pool.query<ResultSetHeader>(registerQueries.registerUserQuery, [
-            trimmedFirstname, trimmedLastname, trimmedUsername, trimmedEmail, trimmedPassword
+            trimmedFirstname, trimmedLastname, trimmedUsername, trimmedEmail, hashedPassword
         ])
 
-
+        //Proceder con el registro
         if(register.affectedRows > 0){
             const newUser = {
                 id_user: register.insertId,
-                firstname: firstname,
-                lastname: lastname, 
-                username: username, 
-                user_password: hashedPassword
+                firstname: trimmedFirstname,
+                lastname: trimmedLastname, 
+                username: trimmedUsername, 
             }
             return sendSucess(res, 201, newUser, "Se ha registro el usuario exitosamente.");
         }
@@ -90,23 +96,3 @@ router.post('/register', async (req, res) => {
     }
 })
 
-
-
-router.get('/register/search-user', async(req, res) => {
-    try{
-        const {username} = req.query 
-
-        const [users] = await pool.query<GetUserType[]>(registerQueries.validateUser, [`%${username}%`]);
-
-        if(users.length > 0 ){
-            return sendSucess(res, 200, users, "Usuarios encontrados.");
-        }else
-        {
-            return sendSucess(res, 200, [], "Usuario disponible.")
-        }
-    }catch{
-        return sendError(res, 500, "Error en el servidor.")
-    }
-})
-
-export default router;

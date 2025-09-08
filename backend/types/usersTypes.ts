@@ -7,5 +7,6 @@ export interface LoginType extends RowDataPacket{
 }
 
 export interface GetUserType extends RowDataPacket{
-    username: string
+    username: string,
+    email: string
 }
