@@ -26,6 +26,7 @@ export default function RegisterUserForm() {
     }
 
     const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault()
         await registerNewUser(form)
         setForm({
             firstname: '',
@@ -43,7 +44,7 @@ export default function RegisterUserForm() {
     
 
     return (
-        <div className="border border-gray-200 mt-10 px-5 py-5 w-full max-w-lg mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
+        <div className="sm:border sm:border-gray-200 sm:mt-10 mt-5 sm:px-5 sm:py-5 w-full mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
         <h2 className="font-bold text-[20px] mb-4">Registrarse</h2>
             <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
             
