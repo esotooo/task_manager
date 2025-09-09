@@ -8,7 +8,7 @@ type apiResponse = {
     token?: any | null
 }
 
-export function sendSucess(res: Response, statusCode: number, data: any, message = "Sucess", token?: any){
+export function sendSucess(res: Response, statusCode: number, data?: any, message = "Sucess", token?: any){
     const response : apiResponse = {
         success: true,
         data,

@@ -1,9 +1,12 @@
 const registerUserQuery = `INSERT INTO users(firstname, lastname, username, email, user_password) 
     VALUES(?, ?, ?, ?, ?)`;
 
-const validateUser = `SELECT username,email FROM users WHERE username LIKE ? OR email LIKE ? LIMIT 50; `
+const validateUsername = `SELECT username FROM users WHERE username = ? `
+
+const validateEmail = `SELECT email FROM users WHERE email = ? `
 
 export const registerQueries = {
     registerUserQuery : registerUserQuery,
-    validateUser: validateUser
+    validateUsername: validateUsername,
+    validateEmail: validateEmail
 }
