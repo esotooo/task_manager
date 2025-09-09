@@ -1,72 +1,33 @@
-import React, { useState } from "react"
-import { useAuth } from "../../Hooks/useAuth"
-import type { RegisterType } from "../../Types/authTypes"
+import { useAuth } from "../../Hooks/useAuth";
+import { useUserRegisterForm } from "../../Hooks/useRegisterForm"
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 
 export default function RegisterUserForm() {
+    const {navigateTo} = useAuth()
 
-    const {state, registerNewUser, navigateTo} = useAuth()
-    const [form, setForm] = useState<RegisterType>({
-        firstname: '',
-        lastname: '',
-        username: '',
-        email: '',
-        user_password: ''
-    })
-    const [passwordVisible, setPasswordVisible] = useState(false)
-    const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(false)
-    const [confirmPassword, setConfirmPassword] = useState('')
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target
-        setForm(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
-
-    const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(e.target.value)
-    }
-
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
-
-        if(form.user_password !== confirmPassword){
-            alert ('Las contraseñas no coinciden')
-            return
-        }
-
-        await registerNewUser(form)
-        setForm({
-            firstname: '',
-            lastname: '',
-            username: '',
-            email: '',
-            user_password: '' 
-        })
-        setConfirmPassword('')
-    }
-
-    const createToggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) => 
-        (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-            e.preventDefault()
-            setter(prev => !prev)
-        }
-
-    const togglePasswordVisibility = createToggleVisibility(setPasswordVisible)
-    const toggleConfirmPasswordVisiblity = createToggleVisibility(setconfirmPasswordVisible)
+    const { 
+        state,
+        form, 
+        passwordVisible, 
+        confirmPasswordVisible,
+        confirmPassword,
+        handleRegister, 
+        handleChange, 
+        toggleConfirmPasswordVisiblity, 
+        togglePasswordVisibility,
+        handleConfirmPassword,
+        getFieldsError
+    } = useUserRegisterForm()
 
     return (
         <div className="sm:border sm:border-gray-200 sm:mt-10 mt-5 sm:px-5 sm:py-5 w-full mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
         <h2 className="font-bold text-[20px] mb-4">Registrarse</h2>
             <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
             
-            <form onClick={handleRegister} className="space-y-4 w-full">
+            <form onSubmit={handleRegister} className="space-y-4 w-full">
 
-                <div className="">
+                <div>
                     <input 
                         type="text" 
                         placeholder="Nombre"
@@ -78,7 +39,7 @@ export default function RegisterUserForm() {
                     />
                 </div>
 
-                <div className="">
+                <div>
                     <input 
                         type="text" 
                         placeholder="Apellido"
@@ -90,12 +51,24 @@ export default function RegisterUserForm() {
                     /> 
                 </div>
 
-                <div className="">
+                <div>
                     <input 
                         type="text" 
                         placeholder="Usuario"
                         name="username"
                         value={form.username}
+                        onChange={handleChange}
+                        className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
+                        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
+                    />
+                </div>
+
+                <div>
+                    <input 
+                        type="email" 
+                        placeholder="Correo electrónico"
+                        name="email"
+                        value={form.email}
                         onChange={handleChange}
                         className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
                         focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
@@ -130,6 +103,7 @@ export default function RegisterUserForm() {
                     <input 
                         type={confirmPasswordVisible ? 'text' : 'password'}
                         placeholder="Verificar contraseña"
+                        name="confirm_password"
                         value={confirmPassword}
                         onChange={handleConfirmPassword}
                         className="flex-grow outline-none bg-transparent pr-2"
@@ -142,6 +116,10 @@ export default function RegisterUserForm() {
                     </div>
                 </div>
 
+                {state.message &&
+                    <p>{state.message}</p>
+                }
+
                 <button className="bg-black text-white mt-5 font-bold w-full py-2.5 rounded-lg cursor-pointer hover:bg-black/80">
                     Registrar Ahora
                 </button>
@@ -149,7 +127,7 @@ export default function RegisterUserForm() {
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Ya tienes una cuenta?{' '}
-                    <button className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/login')}> 
+                    <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/login')}> 
                         Inicia sesión.
                     </button> 
                 </p>
