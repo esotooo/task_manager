@@ -1,7 +1,6 @@
 import { useAuth } from "../../Hooks/useAuth";
-import { useUserRegisterForm } from "../../Hooks/useRegisterForm"
-import { LuEye, LuEyeClosed } from "react-icons/lu";
-
+import { useRegisterForm } from "../../Hooks/useRegisterForm"
+import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
 export default function RegisterUserForm() {
     const {navigateTo} = useAuth()
@@ -18,7 +17,7 @@ export default function RegisterUserForm() {
         togglePasswordVisibility,
         handleConfirmPassword,
         getFieldsError
-    } = useUserRegisterForm()
+    } = useRegisterForm()
 
     return (
         <div className="sm:border sm:border-gray-200 sm:mt-10 mt-5 sm:px-5 sm:py-5 w-full mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
@@ -27,94 +26,58 @@ export default function RegisterUserForm() {
             
             <form onSubmit={handleRegister} className="space-y-4 w-full">
 
-                <div>
-                    <input 
-                        type="text" 
-                        placeholder="Nombre"
-                        name="firstname"
-                        value={form.firstname}
-                        onChange={handleChange}
-                        className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
-                        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
-                    />
-                </div>
+                <FormInput
+                    placeholder='Nombre'
+                    name='firstname'
+                    value={form.firstname}
+                    onChange={handleChange}
+                    error={getFieldsError('firstname')}
+                />
 
-                <div>
-                    <input 
-                        type="text" 
-                        placeholder="Apellido"
-                        name="lastname"
-                        value={form.lastname}
-                        onChange={handleChange}
-                        className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
-                        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
-                    /> 
-                </div>
+                <FormInput 
+                    placeholder='Apellido'
+                    name="lastname"
+                    value={form.lastname}
+                    onChange={handleChange}
+                    error={getFieldsError('lastname')}    
+                />
 
-                <div>
-                    <input 
-                        type="text" 
-                        placeholder="Usuario"
-                        name="username"
-                        value={form.username}
-                        onChange={handleChange}
-                        className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
-                        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
-                    />
-                </div>
+                <FormInput
+                    placeholder="Usuario"
+                    name="username"
+                    value={form.username}
+                    onChange={handleChange}
+                    error={getFieldsError('username')}
+                />
 
-                <div>
-                    <input 
-                        type="email" 
-                        placeholder="Correo electrónico"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        className="w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
-                        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
-                    />
-                </div>
+                <FormInput 
+                    type="email"
+                    placeholder="Correo electrónico"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    error={getFieldsError('email')}
+                />
 
+                <PasswordInput
+                    placeholder="Contraseña"
+                    name="user_password"
+                    value={form.user_password}
+                    onChange={handleChange}
+                    visible={passwordVisible}
+                    onToggleVisibility={togglePasswordVisibility}
+                    error={getFieldsError('user_password')}
+                />
 
-                <div 
-                className="flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center
-                    focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
-                >
-                    <input 
-                        type={passwordVisible ? 'text' : 'password'}
-                        placeholder="Contraseña"
-                        name="user_password"
-                        value={form.user_password}
-                        onChange={handleChange}
-                        className="flex-grow outline-none bg-transparent pr-2"
-                    />
-                    <div 
-                        onClick={togglePasswordVisibility} 
-                        className="cursor-pointer ml-2 pr-2 hover:opacity-80"
-                    >
-                        {passwordVisible ? <LuEye /> : <LuEyeClosed />}
-                    </div>
-                </div>
-
-                <div 
-                    className="flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center 
-                    focus-within:border-b-black focus-within:font-bold  focus-within:bg-gray-200/30 focus-within:text-black"
-                >
-                    <input 
-                        type={confirmPasswordVisible ? 'text' : 'password'}
-                        placeholder="Verificar contraseña"
-                        name="confirm_password"
-                        value={confirmPassword}
-                        onChange={handleConfirmPassword}
-                        className="flex-grow outline-none bg-transparent pr-2"
-                    />
-                    <div 
-                        onClick={toggleConfirmPasswordVisiblity} 
-                        className="cursor-pointer ml-2 pr-2 hover:opacity-80"
-                    >
-                        {confirmPasswordVisible ? <LuEye /> : <LuEyeClosed />}
-                    </div>
-                </div>
+                <PasswordInput
+                    placeholder="Verificar Contraseña"
+                    name="confirm_password"
+                    value={confirmPassword}
+                    onChange={handleConfirmPassword}
+                    visible={confirmPasswordVisible}
+                    onToggleVisibility={toggleConfirmPasswordVisiblity}
+                    error={getFieldsError('confirm_password')}
+                />
 
                 {state.message &&
                     <p>{state.message}</p>
@@ -127,7 +90,7 @@ export default function RegisterUserForm() {
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Ya tienes una cuenta?{' '}
-                    <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/login')}> 
+                    <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={() => navigateTo('/login')}> 
                         Inicia sesión.
                     </button> 
                 </p>
