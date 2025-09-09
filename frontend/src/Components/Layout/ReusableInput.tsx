@@ -1,0 +1,58 @@
+import { LuEye, LuEyeClosed } from "react-icons/lu";
+import type { FormInputProps, PasswordInputProps } from "../../Types/inputTypes";
+
+export const FormInput : React.FC<FormInputProps> = ({
+    type = 'text',
+    placeholder,
+    name,
+    value,
+    onChange,
+    error,
+    className=''
+}) => (
+    <div>
+        <input 
+            type={type} 
+            placeholder={placeholder}
+            name={name}
+            value={value}
+            onChange={onChange}
+            className={`w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
+            focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black
+            ${error ? 'border-b-rose-400' : ''} ${className}`}
+        />
+        {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+    </div>
+)
+
+export const PasswordInput : React.FC<PasswordInputProps> = ({
+    placeholder,
+    name, 
+    value, 
+    onChange, 
+    error,
+    visible,
+    onToggleVisibility,
+}) => (
+    <div>
+        <div className={`flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center
+            focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black
+            ${error ? 'border-b-red-500' : ''}`}>
+            <input 
+                type={visible ? 'text' : 'password'}
+                placeholder={placeholder}
+                name={name}
+                value={value}
+                onChange={onChange}
+                className="flex-grow outline-none bg-transparent pr-2"
+            />
+            <div 
+                onClick={onToggleVisibility} 
+                className="cursor-pointer ml-2 pr-2 hover:opacity-80"
+            >
+                {visible ? <LuEye /> : <LuEyeClosed />}
+            </div>
+        </div>
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+</div>
+)
