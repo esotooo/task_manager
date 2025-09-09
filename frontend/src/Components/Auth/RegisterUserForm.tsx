@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { useAuth } from "../../Hooks/useAuth"
 import type { RegisterType } from "../../Types/authTypes"
 import { LuEye, LuEyeClosed } from "react-icons/lu";
@@ -15,6 +15,8 @@ export default function RegisterUserForm() {
         user_password: ''
     })
     const [passwordVisible, setPasswordVisible] = useState(false)
+    const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(false)
+    const [confirmPassword, setConfirmPassword] = useState('')
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,8 +27,18 @@ export default function RegisterUserForm() {
         }))
     }
 
+    const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPassword(e.target.value)
+    }
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if(form.user_password !== confirmPassword){
+            alert ('Las contraseñas no coinciden')
+            return
+        }
+
         await registerNewUser(form)
         setForm({
             firstname: '',
@@ -35,13 +47,17 @@ export default function RegisterUserForm() {
             email: '',
             user_password: '' 
         })
+        setConfirmPassword('')
     }
 
-    const togglePasswordVisibility = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.preventDefault()
-        setPasswordVisible(prev => !prev)
-    }
-    
+    const createToggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) => 
+        (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            e.preventDefault()
+            setter(prev => !prev)
+        }
+
+    const togglePasswordVisibility = createToggleVisibility(setPasswordVisible)
+    const toggleConfirmPasswordVisiblity = createToggleVisibility(setconfirmPasswordVisible)
 
     return (
         <div className="sm:border sm:border-gray-200 sm:mt-10 mt-5 sm:px-5 sm:py-5 w-full mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
@@ -112,19 +128,21 @@ export default function RegisterUserForm() {
                     focus-within:border-b-black focus-within:font-bold  focus-within:bg-gray-200/30 focus-within:text-black"
                 >
                     <input 
-                        type={passwordVisible ? 'text' : 'password'}
+                        type={confirmPasswordVisible ? 'text' : 'password'}
                         placeholder="Verificar contraseña"
-                        name="verify_password"
+                        value={confirmPassword}
+                        onChange={handleConfirmPassword}
                         className="flex-grow outline-none bg-transparent pr-2"
                     />
                     <div 
-                        onClick={togglePasswordVisibility} 
+                        onClick={toggleConfirmPasswordVisiblity} 
                         className="cursor-pointer ml-2 pr-2 hover:opacity-80"
                     >
-                        {passwordVisible ? <LuEye /> : <LuEyeClosed />}
+                        {confirmPasswordVisible ? <LuEye /> : <LuEyeClosed />}
                     </div>
                 </div>
-                <button className="bg-black text-white font-bold w-full py-2.5 rounded-lg cursor-pointer hover:bg-black/80">
+
+                <button className="bg-black text-white mt-5 font-bold w-full py-2.5 rounded-lg cursor-pointer hover:bg-black/80">
                     Registrar Ahora
                 </button>
             </form>
