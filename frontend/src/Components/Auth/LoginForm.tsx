@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useAuth } from '../../Hooks/useAuth'
 import { currentYear } from "../../Utils/helpers";
 import type { LoginType } from "../../Types/authTypes";
-import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
 
 export default function LoginForm() {
@@ -56,33 +56,23 @@ export default function LoginForm() {
                     <p className="text-xs text-gray-500">¡ES GRATIS! y toma menos de un minuto. </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="mt-7">
+                <form onSubmit={handleLogin} className="mt-7 space-y-5">
 
-                    <input 
-                        type="text" 
-                        placeholder="Usuario o Correo Electrónico" 
+                    <FormInput 
+                        placeholder="Usuario o Correo Electrónico"
                         name="loginInput"
                         value={form.loginInput}
                         onChange={handleChange}
-                        className="w-full mb-5 px-1 py-2 text-sm outline-none text-gray-500/80 border-b-3 border-b-gray-300
-                       focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black"
                     />
 
-                    <div className="flex w-full mb-2 px-1 py-2 text-sm outline-none text-gray-500/80 border-b-3 border-b-gray-300 items-center
-                            focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black">
-                        <input 
-                            type={passwordVisible ? 'text' : 'password'}
-                            placeholder="Contraseña"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange}
-                            className="flex-grow outline-none bg-transparent pr-2"
-                        />
-                        <div onClick={togglePasswordVisibility} className="cursor-pointer ml-2 pr-2 hover:opacity-80">
-                            {passwordVisible ? <LuEye /> : <LuEyeClosed />}
-                        </div>
-                    </div>
-
+                    <PasswordInput 
+                        placeholder="Contraseña"
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        visible={passwordVisible}
+                        onToggleVisibility={togglePasswordVisibility}
+                    />
 
                     <div className="h-5">
                         {state.message && 
@@ -91,7 +81,7 @@ export default function LoginForm() {
                     </div>
 
 
-                    <button className="mt-5 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
+                    <button type='submit' className="mt-5 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
                         Iniciar Sesión
                     </button>
                 </form>

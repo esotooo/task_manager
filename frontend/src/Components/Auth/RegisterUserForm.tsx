@@ -90,7 +90,7 @@ export default function RegisterUserForm() {
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Ya tienes una cuenta?{' '}
-                    <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={() => navigateTo('/login')}> 
+                    <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/login')}> 
                         Inicia sesión.
                     </button> 
                 </p>
