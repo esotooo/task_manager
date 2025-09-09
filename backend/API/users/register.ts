@@ -35,14 +35,14 @@ router.post('/register', async (req, res) => {
         const trimmedEmail = email.trim();
         const trimmedPassword = user_password.trim();
 
-        if(trimmedFirstname.length < 5 || trimmedFirstname.length > 50){
+        if(trimmedFirstname.length < 2 || trimmedFirstname.length > 50){
             return sendError(res, 400, "El nombre debe tener entre 5 y 50 caracteres.");
-        }else if(trimmedLastname.length < 5 || trimmedLastname.length > 50){
+        }else if(trimmedLastname.length < 2 || trimmedLastname.length > 50){
             return sendError(res, 400, "El apellido debe tener entre 5 y 50 caracteres.");
         }else if(trimmedUsername.length < 3 || trimmedUsername.length > 30){
             return sendError(res, 400, "El usuario debe tener entre 3 y 30 caracteres.");
         }else if(trimmedPassword.length < 8 || trimmedPassword.length > 128){
-            return sendError(res, 400, "La contraseña debe tener entre 6 y 128 caracteres.");
+            return sendError(res, 400, "La contraseña debe tener entre 8 y 128 caracteres.");
         }
 
         //Validar formatos
@@ -61,7 +61,7 @@ router.post('/register', async (req, res) => {
             return sendError(res, 422, "Nombre y apellido solo pueden contener letras y espacios.");
         }
 
-        const [existingUsers] = await pool.query<GetUserType[]>(registerQueries.registerUserQuery, [trimmedUsername, trimmedEmail])
+        const [existingUsers] = await pool.query<GetUserType[]>(registerQueries.validateUser, [trimmedUsername, trimmedEmail])
 
         if(existingUsers.length > 0){
             const existing = existingUsers[0];
@@ -73,7 +73,7 @@ router.post('/register', async (req, res) => {
         }
 
         //Ingresar contraseña ya hasheada la base de datos
-        const hashedPassword = await hashPassword(user_password);
+        const hashedPassword = await hashPassword(trimmedPassword);
         const [register] = await pool.query<ResultSetHeader>(registerQueries.registerUserQuery, [
             trimmedFirstname, trimmedLastname, trimmedUsername, trimmedEmail, hashedPassword
         ])
@@ -91,8 +91,9 @@ router.post('/register', async (req, res) => {
         else{
             return sendError(res, 400, "No se puedo registrar correctamente. Porfavor intente de nuevo.");
         }
-    }catch{
-        return sendError(res, 500, "Error en el servidor.");
+    }catch(error){
+        return sendError(res, 500, "Error en el servidor.", error);
     }
 })
 
+export default router;
