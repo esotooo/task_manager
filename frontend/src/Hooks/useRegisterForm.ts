@@ -1,7 +1,7 @@
 import { useAuth } from "./useAuth"
 import { useState } from "react"
 
-export const useUserRegisterForm = () => {
+export const useRegisterForm = () => {
     const {state, registerNewUser} = useAuth()
 
     const [form, setForm] = useState({
