@@ -5,6 +5,7 @@ import {useNavigate } from "react-router-dom"
 import type { LoginType, RegisterType } from '../Types/authTypes.ts'
 
 
+
 type AuthContextProps = {
     state: AuthState,
     dispatch: React.Dispatch<AuthActions>,
@@ -13,6 +14,9 @@ type AuthContextProps = {
     setToken: (token: string) => void,
     registerNewUser: (body: RegisterType) => Promise<boolean>,
     navigateTo: (path: string) => (e: React.MouseEvent) => void,
+    fieldMessage: string,
+    showError: boolean,
+    showConfirm: boolean,
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
@@ -20,14 +24,26 @@ export const AuthContext = createContext<AuthContextProps | undefined>(undefined
 export const AuthProvider = ({children}: {children: ReactNode}) => {
     const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
     const [token, setToken] = useState('')
+    const [fieldMessage, setFieldMessage] = useState('')
+    const [showConfirm, setShowConfirm] = useState(false)
+    const [showError, setShowError] = useState(false)
 
     const navigate = useNavigate();
 
     const handleError = (error:any) => {
-        dispatch({type: 'show-message', payload: {message: error.response.data.message}});
+        dispatch({type: 'show-message', payload: {message: error.response.data.message || 'Error en el servidor.'}});
         setTimeout(() => {
             dispatch({type: 'close-message', payload: {message: ''}})
         }, 3000);
+    }
+
+    const registerErrors = (msg : string) => {
+        dispatch({type: 'show-message', payload: {message: msg}})
+        setShowError(true)
+        setTimeout(() => {
+            dispatch({ type: 'close-message', payload: { message: '' } })
+            setShowError(false)
+        }, 5000);
     }
 
     const login = async (user: LoginType) => {
@@ -47,24 +63,42 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     const registerNewUser = async (newUser: RegisterType) => {
         try {
             const res = await api.post('/api/users/register', newUser);
+        
             if (res.status === 201) {
-                setTimeout(() => navigate('/login', { replace: true }), 3000);
-                return true;
+                setShowConfirm(true)
+                dispatch({ type: 'show-message', payload: { message: 'Usuario registrado exitosamente.' } })
+        
+                setTimeout(() => {
+                    navigate('/login', { replace: true })
+                    dispatch({ type: 'close-message', payload: { message: '' } })
+                    setShowConfirm(false)
+                }, 5000)
+
+                return true
             }
-            return false;
+        
+            return false
+
         } catch (error: any) {
-            // Guardamos errores por campo en el estado
-            if (error.response?.data?.fields) {
-                dispatch({ type: 'show-field-error', payload: { error: error.response.data.fields } });
+            if(error.response){
+                if(error.response?.data?.fields){
+                    setFieldMessage(error.response.data.fields)
+                    setTimeout(() => {
+                        setFieldMessage('')
+                    }, 5000);
+                } else if(error.response?.data?.message){
+                    registerErrors(error.response.data.message)
+                }
+            }else{
+                const msg = 'Error en el servidor.'
+                registerErrors(msg)
             }
-            // Guardamos mensaje global si lo hay
-            if (error.response?.data?.message) {
-                dispatch({ type: 'show-message', payload: { message: error.response.data.message } });
+
+            return false
+
             }
-            return false;
-        }
-    };
-    
+      }
+      
 
     const navigateTo = (path: string) => (e: React.MouseEvent) => {
         e.preventDefault()
@@ -73,7 +107,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     return(
         <AuthContext.Provider 
-            value={{state, dispatch, login, setToken, token, registerNewUser, navigateTo}}    
+            value={{state, dispatch, login, setToken, token, registerNewUser, navigateTo, fieldMessage, showConfirm, showError}}    
         >
             {children}
         </AuthContext.Provider>
