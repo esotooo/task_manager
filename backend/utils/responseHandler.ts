@@ -3,9 +3,10 @@ import { Response } from "express";
 type apiResponse = {
     success: boolean,
     data?: any, 
-    message: string, 
+    message?: string, 
     error?: any,
-    token?: any | null
+    token?: any | null,
+    field?: string
 }
 
 export function sendSucess(res: Response, statusCode: number, data?: any, message = "Sucess", token?: any){
@@ -18,11 +19,12 @@ export function sendSucess(res: Response, statusCode: number, data?: any, messag
     return res.status(statusCode).json(response);
 }
 
-export function sendError(res: Response, statusCode: number, message: string, error: any = null){    
+export function sendError(res: Response, statusCode: number, message: string, error: any = null, field?: string){    
     const response : apiResponse = {
         success: false, 
         message, 
-        error
+        error,
+        field
     }
     return res.status(statusCode).json(response)
 }
