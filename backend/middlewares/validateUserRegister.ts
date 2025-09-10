@@ -1,4 +1,4 @@
-import {body, validationResult} from 'express-validator';
+import {body, validationResult,ValidationError} from 'express-validator';
 import { sendError } from '../utils/responseHandler';
 import pool from '../database/connection';
 import { registerQueries } from '../SQL/Auth/registerQueries';
@@ -10,8 +10,10 @@ export const validateUserRegister = [
         .trim()
         .notEmpty()
         .withMessage('El nombre es obligatorio.')
+        .bail()
         .isLength({min: 2, max: 50})
         .withMessage('El nombre debe tener entre 2 y 50 caracteres.')
+        .bail()
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage('El nombre solo puede contener letras y espacios.'),
 
@@ -19,8 +21,10 @@ export const validateUserRegister = [
         .trim()
         .notEmpty()
         .withMessage('El apellido es obligatorio.')
+        .bail()
         .isLength({min: 2, max: 50})
         .withMessage('El apellido debe tener entre 2 y 50 caracteres.')
+        .bail()
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage('El apellido solo puede contener letras y espacios.'),
 
@@ -28,10 +32,13 @@ export const validateUserRegister = [
         .trim()
         .notEmpty()
         .withMessage('El usuario es obligatorio.')
+        .bail()
         .isLength({min: 3, max: 30})
         .withMessage('El usuario debe tener entre 3 y 30 caracteres.')
+        .bail()
         .matches(/^[a-zA-Z0-9_.-]+$/)
         .withMessage('El usuario solo puede contener letras, números, puntos, guiones y guiones bajos.')
+        .bail()
         .custom( async(username) => {
             const [users] = await pool.query<GetUsernameType[]>(registerQueries.validateUsername, [username])
             if(users.length > 0){
@@ -44,8 +51,10 @@ export const validateUserRegister = [
         .trim()
         .notEmpty()
         .withMessage('El correo electrónico es obligatorio.')
+        .bail()
         .isEmail()
         .withMessage('El email no tiene un formato válido.')
+        .bail()
         .custom( async(email) => {
             const [users] = await pool.query<GetEmailType[]>(registerQueries.validateEmail, [email])
             if(users.length > 0 ){
@@ -57,14 +66,17 @@ export const validateUserRegister = [
     body('user_password')
         .notEmpty()
         .withMessage('La contraseña es obligatoria.')
+        .bail()
         .isLength({min: 8, max: 128})
         .withMessage('La contraseña debe tener entre 8 y 128 caracteres.')
+        .bail()
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('La contraseña debe contener al menos: 1 minúscula, 1 mayúscula y 1 número.'),
+        .withMessage('La contraseña ingresada no es válida.'),
 
     body('confirm_password')
         .notEmpty()
         .withMessage('Confirmación de contraseña requerida.')
+        .bail()
         .custom((value, { req }) => {
             if (value !== req.body.user_password) {
                 throw new Error('Las contraseñas no coinciden.');
@@ -73,23 +85,24 @@ export const validateUserRegister = [
         })
 ];
 
-export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    
-    if(!errors.isEmpty()){
-        const firstError = errors.array()[0];
+export const handleValidationErrorsByField = (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
 
-        let statusCode = 400; 
+  if (!errors.isEmpty()) {
+    const errorsByField: Record<string, string> = {};
 
-        if (firstError.msg.includes('ya está') || 
-            firstError.msg.includes('ya esta') ||
-            firstError.msg.includes('registrado') ||
-            firstError.msg.includes('en uso')) {
-            statusCode = 409; 
-        }
+    // Solo guardamos los errores por campo, no los concatenamos
+    errors.array().forEach((error) => {
+      const field = (error as any).param || (error as any).path || "general";
+      errorsByField[field] = error.msg;
+    });
 
-        return sendError(res, statusCode, firstError.msg)
-    }
+    // Retornamos solo los errores por campo
+    return res.status(400).json({
+      success: false,
+      fields: errorsByField, // para que el frontend los muestre en cada input
+    });
+  }
 
-    next();
-}
+  next();
+};
