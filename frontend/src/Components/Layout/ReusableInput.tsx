@@ -33,11 +33,13 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
     error,
     visible,
     onToggleVisibility,
+    onBlur,
+    onFocus,
 }) => (
     <div>
         <div className={`flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center
             focus-within:border-b-black focus-within:font-bold focus-within:bg-gray-200/30 focus-within:text-black
-            ${error ? 'border-b-red-500' : ''}`}>
+            ${error ? 'border-b-rose-400' : ''}`}>
             <input 
                 type={visible ? 'text' : 'password'}
                 placeholder={placeholder}
@@ -45,6 +47,8 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
                 value={value}
                 onChange={onChange}
                 className="flex-grow outline-none bg-transparent pr-2"
+                onBlur={onBlur}
+                onFocus={onFocus}
             />
             <div 
                 onClick={onToggleVisibility} 
@@ -53,6 +57,6 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
                 {visible ? <LuEye /> : <LuEyeClosed />}
             </div>
         </div>
-        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+        {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
 </div>
 )
