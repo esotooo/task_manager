@@ -4,11 +4,11 @@ import { ResultSetHeader } from 'mysql2';
 import { hashPassword } from '../../utils/hashPassword';
 import { sendError, sendSucess } from '../../utils/responseHandler';
 import { registerQueries } from '../../SQL/Auth/registerQueries';
-import { handleValidationErrors, validateUserRegister } from '../../middlewares/validateUserRegister';
+import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
 
 const router = Router()
 
-router.post('/register', validateUserRegister, handleValidationErrors, async (req: Request, res: Response) => {
+router.post('/register', validateUserRegister, handleValidationErrorsByField, async (req: Request, res: Response) => {
     try{
         const {firstname, lastname, username, email, user_password} = req.body;
 
@@ -32,7 +32,7 @@ router.post('/register', validateUserRegister, handleValidationErrors, async (re
             return sendError(res, 400, "No se puedo registrar correctamente. Porfavor intente de nuevo.");
         }
     }catch(error){
-        return sendError(res, 500, "Error en el servidor.", error);
+        return sendError(res, 500, "Error en el servidor.");
     }
 })
 
