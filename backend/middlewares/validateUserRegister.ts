@@ -70,7 +70,7 @@ export const validateUserRegister = [
         .isLength({min: 8, max: 128})
         .withMessage('La contraseña debe tener entre 8 y 128 caracteres.')
         .bail()
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/)
         .withMessage('La contraseña ingresada no es válida.'),
 
     body('confirm_password')
