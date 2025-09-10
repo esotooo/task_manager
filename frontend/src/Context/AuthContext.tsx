@@ -11,7 +11,7 @@ type AuthContextProps = {
     login: (body: LoginType) => Promise<void>,
     token: string,
     setToken: (token: string) => void,
-    registerNewUser: (body: RegisterType) => Promise<void>,
+    registerNewUser: (body: RegisterType) => Promise<boolean>,
     navigateTo: (path: string) => (e: React.MouseEvent) => void,
 }
 
@@ -45,17 +45,26 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     }
 
     const registerNewUser = async (newUser: RegisterType) => {
-        try{
-            const res = await api.post('/api/users/register', newUser)
-            if(res.status === 201){
-                dispatch({type: 'register', payload: {register: res.data.data}});
-                dispatch({type: 'show-message', payload: {message: res.data.message}})
-                navigate('/login', {replace: true})
+        try {
+            const res = await api.post('/api/users/register', newUser);
+            if (res.status === 201) {
+                setTimeout(() => navigate('/login', { replace: true }), 3000);
+                return true;
             }
-        }catch(error){
-            handleError(error)
+            return false;
+        } catch (error: any) {
+            // Guardamos errores por campo en el estado
+            if (error.response?.data?.fields) {
+                dispatch({ type: 'show-field-error', payload: { error: error.response.data.fields } });
+            }
+            // Guardamos mensaje global si lo hay
+            if (error.response?.data?.message) {
+                dispatch({ type: 'show-message', payload: { message: error.response.data.message } });
+            }
+            return false;
         }
-    }
+    };
+    
 
     const navigateTo = (path: string) => (e: React.MouseEvent) => {
         e.preventDefault()
