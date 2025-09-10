@@ -4,21 +4,17 @@ export type AuthActions =
     {type: 'show-message', payload: {message: string}} |
     {type: 'close-message', payload: {message: string}} |
     {type: 'login', payload: {login: LoginType}} | 
-    {type: 'logout'} |
-    {type: 'show-field-error', payload: {error: string}} |
-    {type: 'close-field-error', payload: {error: string}}
+    {type: 'logout'} 
 
 
 export type AuthState = {
     message: string,
     login: LoginType | null,
-    fields: string
 }  
 
 export const initialAuthState : AuthState = {
     message: '',
     login: null,
-    fields: ''
 }
 
 export const AuthReducer = (
@@ -47,16 +43,7 @@ export const AuthReducer = (
                 ...state,
                 login: null
             }
-        case 'show-field-error':
-            return{
-                ...state,
-                fields: action.payload.error
-            }
-        case 'close-field-error':
-            return{
-                ...state,
-                fields: ''
-            }
+
         default:
             return state
     }
