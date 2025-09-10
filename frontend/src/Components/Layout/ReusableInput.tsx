@@ -21,7 +21,11 @@ export const FormInput : React.FC<FormInputProps> = ({
             focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black
             ${error ? 'border-b-rose-400' : ''} ${className}`}
         />
-        {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+        <div className={`overflow-hidden ease-in-out transition-all transform duration-300
+            ${error ? 'opacity-100 h-5' : 'opacity-0 h-0'}`}
+        >           
+            {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+        </div>
     </div>
 )
 
@@ -57,6 +61,10 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
                 {visible ? <LuEye /> : <LuEyeClosed />}
             </div>
         </div>
-        {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+        <div className={`overflow-hidden ease-in-out transition-all transform duration-300
+            ${error ? 'opacity-100 h-5' : 'opacity-0 h-0'}`}
+        >
+            {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+        </div>
 </div>
 )
