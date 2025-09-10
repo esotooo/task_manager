@@ -1,6 +1,10 @@
 import { useAuth } from "./useAuth"
 import { useState } from "react"
 
+type FieldsErrors = {
+    [key: string]: string;
+  };
+
 export const useRegisterForm = () => {
     const {state, registerNewUser} = useAuth()
 
@@ -9,12 +13,13 @@ export const useRegisterForm = () => {
         lastname: '',
         username: '',
         email: '',
-        user_password: ''
+        user_password: '',
+        confirm_password: ''
     })
 
     const [passwordVisible, setPasswordVisible] = useState(false)
     const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(false)
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [requirements, setRequirements] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target
@@ -24,9 +29,6 @@ export const useRegisterForm = () => {
         }))
     }
 
-    const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(e.target.value)
-    }
 
     const createToggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) => 
         (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -37,39 +39,53 @@ export const useRegisterForm = () => {
     const togglePasswordVisibility = createToggleVisibility(setPasswordVisible)
     const toggleConfirmPasswordVisiblity = createToggleVisibility(setconfirmPasswordVisible)
 
-    const getFieldsError = (fieldname : string) => {
-        if(!state.message || !Array.isArray(state.message)) return null
+    
 
-        const fieldError = state.message.find(error => (
-            error.path === fieldname ||
-            error.param == fieldname ||
-            error.field === fieldname
-        ))
-
-        return fieldError.msg || fieldError.message || null
-    } 
-
+    const getFieldsError = (fieldname: string) => {
+        if (!state.fields) return null;
+      
+        // casteamos primero a unknown, luego a FieldsErrors
+        const fields = state.fields as unknown as FieldsErrors;
+      
+        return fields[fieldname] || null;
+      };
+    
     const clearForm = () => {
         setForm({
             firstname: '',
             lastname: '',
             username: '',
             email: '',
-            user_password: '' 
+            user_password: '',
+            confirm_password: ''
         })
-        setConfirmPassword('')
     }
+
+    const passwordRequirements = [
+        {test: /.{8,}/, label: 'Mínimo 8 caracteres.'},
+        {test: /[A-Z]/, label: 'Al menos una mayúscula.'},
+        {test: /[a-z]/, label: 'Al menos una minúscula.'},
+        {test: /\d/, label: 'Al menos un número.'},
+        { test: /[^A-Za-z0-9]/, label: "Al menos un carácter especial" }
+    ]
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        if(form.user_password !== confirmPassword){
-            alert('Las contraseñas no coinciden')
-            return
-        }
+        const success = await registerNewUser(form)
 
-        await registerNewUser(form)
-        clearForm()
+
+        if(success){
+            clearForm()
+        }
+    }
+
+    const showRequirements = () => {
+        setRequirements(true)
+    }
+
+    const hideRequirements = () => {
+        setRequirements(false)
     }
 
     return{
@@ -77,17 +93,19 @@ export const useRegisterForm = () => {
         form,
         passwordVisible,
         confirmPasswordVisible,
-        confirmPassword,
         state,
+        passwordRequirements,
+        requirements,
 
         //Handlers
         handleChange,
-        handleConfirmPassword,
         handleRegister,
         toggleConfirmPasswordVisiblity,
         togglePasswordVisibility,
+        showRequirements,
+        hideRequirements,
 
         //Utils
-        getFieldsError
+        getFieldsError,
     }   
 }
