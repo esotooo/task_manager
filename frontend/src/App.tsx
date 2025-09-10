@@ -1,6 +1,6 @@
 import {Routes, Route, Navigate} from 'react-router-dom'
 import LoginPage from './Pages/Auth/LoginPage'
-import MainPage from './Pages/MainPage'
+import MainPage from './Pages/Main/MainPage'
 import ChangePassword from './Pages/Auth/changePassword'
 import RegisterUser from './Pages/Auth/registerUser'
 import { ProtectedMain } from './Components/Private/ProtectedMain'
