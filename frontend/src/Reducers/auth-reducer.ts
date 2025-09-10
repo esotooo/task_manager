@@ -1,23 +1,24 @@
-import type { LoginType, RegisterType } from "../Types/authTypes";
+import type { LoginType } from "../Types/authTypes";
 
 export type AuthActions = 
     {type: 'show-message', payload: {message: string}} |
     {type: 'close-message', payload: {message: string}} |
     {type: 'login', payload: {login: LoginType}} | 
-    {type: 'logout'} | 
-    {type: 'register', payload: {register: RegisterType}}
+    {type: 'logout'} |
+    {type: 'show-field-error', payload: {error: string}} |
+    {type: 'close-field-error', payload: {error: string}}
 
 
 export type AuthState = {
     message: string,
     login: LoginType | null,
-    register: RegisterType | null
+    fields: string
 }  
 
 export const initialAuthState : AuthState = {
     message: '',
     login: null,
-    register: null
+    fields: ''
 }
 
 export const AuthReducer = (
@@ -46,10 +47,15 @@ export const AuthReducer = (
                 ...state,
                 login: null
             }
-        case 'register':
+        case 'show-field-error':
             return{
                 ...state,
-                register: action.payload.register
+                fields: action.payload.error
+            }
+        case 'close-field-error':
+            return{
+                ...state,
+                fields: ''
             }
         default:
             return state
