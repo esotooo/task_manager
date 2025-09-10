@@ -1,111 +1,111 @@
-import { useAuth } from "./useAuth"
-import { useState } from "react"
+import { useAuth } from "./useAuth";
+import { useState, useEffect, useRef } from "react";
+import lottie from 'lottie-web';
 
-type FieldsErrors = {
-    [key: string]: string;
-  };
+type FieldsErrors = { [key: string]: string };
+
+const passwordRequirements = [
+    { test: /.{8,}/, label: 'Mínimo 8 caracteres.' },
+    { test: /[A-Z]/, label: 'Al menos una mayúscula.' },
+    { test: /[a-z]/, label: 'Al menos una minúscula.' },
+    { test: /\d/, label: 'Al menos un número.' },
+    { test: /[^A-Za-z0-9]/, label: 'Al menos un carácter especial.' }
+]
 
 export const useRegisterForm = () => {
-    const {state, registerNewUser} = useAuth()
+    const { state, registerNewUser, fieldMessage, showConfirm, showError } = useAuth()
 
     const [form, setForm] = useState({
         firstname: '',
-        lastname: '',
-        username: '',
-        email: '',
-        user_password: '',
+        lastname: '', 
+        username: '', 
+        email: '', 
+        user_password: '', 
         confirm_password: ''
     })
 
     const [passwordVisible, setPasswordVisible] = useState(false)
-    const [confirmPasswordVisible, setconfirmPasswordVisible] = useState(false)
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
     const [requirements, setRequirements] = useState(false)
 
+    const container = useRef<HTMLDivElement>(null)
+    const animInstance = useRef<any>(null)
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target
-        setForm(prev => ({
-            ...prev,
-            [name]: value
-        }))
+        const { name, value } = e.target
+        setForm(prev => 
+            ({ ...prev, [name]: value })
+        )
     }
 
+    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) =>
+        (e: React.MouseEvent) => { e.preventDefault(); setter(prev => !prev) }
 
-    const createToggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) => 
-        (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-            e.preventDefault()
-            setter(prev => !prev)
-        }
-
-    const togglePasswordVisibility = createToggleVisibility(setPasswordVisible)
-    const toggleConfirmPasswordVisiblity = createToggleVisibility(setconfirmPasswordVisible)
-
-    
+    const togglePasswordVisibility = toggleVisibility(setPasswordVisible)
+    const toggleConfirmPasswordVisibility = toggleVisibility(setConfirmPasswordVisible)
 
     const getFieldsError = (fieldname: string) => {
-        if (!state.fields) return null;
-      
-        // casteamos primero a unknown, luego a FieldsErrors
-        const fields = state.fields as unknown as FieldsErrors;
-      
-        return fields[fieldname] || null;
-      };
-    
-    const clearForm = () => {
-        setForm({
-            firstname: '',
-            lastname: '',
-            username: '',
-            email: '',
-            user_password: '',
-            confirm_password: ''
-        })
+        if (!fieldMessage) return null
+        const fields = fieldMessage as unknown as FieldsErrors
+        return fields[fieldname] || null
     }
 
-    const passwordRequirements = [
-        {test: /.{8,}/, label: 'Mínimo 8 caracteres.'},
-        {test: /[A-Z]/, label: 'Al menos una mayúscula.'},
-        {test: /[a-z]/, label: 'Al menos una minúscula.'},
-        {test: /\d/, label: 'Al menos un número.'},
-        { test: /[^A-Za-z0-9]/, label: "Al menos un carácter especial" }
-    ]
+    const clearForm = () => setForm({ 
+        firstname: '', 
+        lastname: '',
+        username: '', 
+        email: '', 
+        user_password: '', 
+        confirm_password: '' 
+    })
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
-
         const success = await registerNewUser(form)
+        if (success) clearForm()
+    }
 
-
-        if(success){
-            clearForm()
+    // Lottie animation hook unificado
+    useEffect(() => {
+        if ((showConfirm || showError) && container.current) {
+            animInstance.current = lottie.loadAnimation({
+                container: container.current,
+                renderer: 'svg',
+                loop: false,
+                autoplay: true,
+                path: showConfirm ? '/gif/Success.json' : '/gif/error.json'
+            })
         }
-    }
 
-    const showRequirements = () => {
-        setRequirements(true)
-    }
+        return () => {
+            if (animInstance.current) {
+                animInstance.current.destroy();
+                animInstance.current = null;
+            }
+        };
+    }, [showConfirm, showError])
 
-    const hideRequirements = () => {
-        setRequirements(false)
-    }
-
-    return{
-        //Estados
-        form,
-        passwordVisible,
+    return {
+        // Estados
+        form, 
+        passwordVisible, 
         confirmPasswordVisible,
-        state,
+        state, 
+        requirements, 
+        showError, 
+        showConfirm, 
+        container, 
         passwordRequirements,
-        requirements,
 
-        //Handlers
-        handleChange,
-        handleRegister,
-        toggleConfirmPasswordVisiblity,
-        togglePasswordVisibility,
-        showRequirements,
-        hideRequirements,
+        // Handlers
+        handleChange, 
+        handleRegister, 
+        togglePasswordVisibility, 
+        toggleConfirmPasswordVisibility,
+        showRequirements: () => setRequirements(true),
+        hideRequirements: () => setRequirements(false),
 
-        //Utils
+        // Utils
         getFieldsError,
-    }   
+    }
 }
