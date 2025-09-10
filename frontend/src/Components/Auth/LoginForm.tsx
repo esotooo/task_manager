@@ -1,45 +1,19 @@
-import { useState } from "react"
 import { useAuth } from '../../Hooks/useAuth'
+import { useLoginForm } from '../../Hooks/useLoginForm';
 import { currentYear } from "../../Utils/helpers";
-import type { LoginType } from "../../Types/authTypes";
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
 
 export default function LoginForm() {
 
-    const {state, login, navigateTo} = useAuth()
-    const [form, setForm] = useState({
-        loginInput: '',
-        password: ''
-    })
-    const [passwordVisible, setPasswordVisible] = useState(false)
- 
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target
-        setForm(prev => ({
-            ...prev, 
-            [name]: value
-        }))
-    }
-
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const {loginInput, password} = form
-
-        const body:LoginType = {user_password: password}
-        if(form.loginInput.includes('@')){
-            body.email = loginInput
-        }else{
-            body.username = loginInput
-        }
-        await login(body)
-    }
-
-    const togglePasswordVisibility = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.preventDefault()
-        setPasswordVisible(prev => !prev)
-    }
+    const {state, navigateTo} = useAuth()
+    const {
+        form,
+        passwordVisible,
+        handleChange,
+        handleLogin,
+        togglePasswordVisibility
+    } = useLoginForm()
     
 
   return (
