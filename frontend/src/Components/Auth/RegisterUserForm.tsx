@@ -10,13 +10,15 @@ export default function RegisterUserForm() {
         form, 
         passwordVisible, 
         confirmPasswordVisible,
-        confirmPassword,
+        passwordRequirements,
+        requirements,
         handleRegister, 
         handleChange, 
         toggleConfirmPasswordVisiblity, 
         togglePasswordVisibility,
-        handleConfirmPassword,
-        getFieldsError
+        getFieldsError,
+        showRequirements,
+        hideRequirements
     } = useRegisterForm()
 
     return (
@@ -59,31 +61,55 @@ export default function RegisterUserForm() {
                     error={getFieldsError('email')}
                 />
 
-                <PasswordInput
-                    placeholder="Contraseña"
-                    name="user_password"
-                    value={form.user_password}
-                    onChange={handleChange}
-                    visible={passwordVisible}
-                    onToggleVisibility={togglePasswordVisibility}
-                    error={getFieldsError('user_password')}
-                />
+                <div className='relative'>
+                    <PasswordInput
+                        placeholder="Contraseña"
+                        name="user_password"
+                        value={form.user_password}
+                        onChange={handleChange}
+                        visible={passwordVisible}
+                        onToggleVisibility={togglePasswordVisibility}
+                        error={getFieldsError('user_password')}
+                        onFocus={showRequirements}
+                        onBlur={hideRequirements}
+                    />
+
+                    <div className={`
+                        overflow-hidden w-full bg-gray-100 rounded-lg ease-in-out transition-all duration-300 transform 
+                        ${requirements ? "opacity-100 mt-2 max-h-64 p-3" : "opacity-0 mt-0 max-h-0 p-0"}
+                    `}>
+                        <p className="text-sm font-semibold">Requisitos:</p>
+                        <ul className="space-y-1 text-xs">
+                            {passwordRequirements.map((req, idx) => {
+                                const passed = req.test.test(form.user_password)
+                                return(
+                                    <li
+                                        key={idx}
+                                        className={`flex items-center gap-2 ${passed ? 'text-green-600' : 'text-gray-500'}`}
+                                    >
+                                        <span>{passed ? '✅' : '❌' }</span>
+                                        {req.label}
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                </div>
 
                 <PasswordInput
                     placeholder="Verificar Contraseña"
                     name="confirm_password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPassword}
+                    value={form.confirm_password}
+                    onChange={handleChange}
                     visible={confirmPasswordVisible}
                     onToggleVisibility={toggleConfirmPasswordVisiblity}
                     error={getFieldsError('confirm_password')}
                 />
 
-                {state.message &&
-                    <p>{state.message}</p>
-                }
+                {state.message && 
+                <p>{state.message}</p>}
 
-                <button className="bg-black text-white mt-5 font-bold w-full py-2.5 rounded-lg cursor-pointer hover:bg-black/80">
+                <button className="bg-black text-white font-bold w-full py-2.5 mt-5 rounded-lg cursor-pointer hover:bg-black/80">
                     Registrar Ahora
                 </button>
             </form>
