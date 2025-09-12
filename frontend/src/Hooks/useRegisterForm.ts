@@ -1,6 +1,6 @@
 import { useAuth } from "./useAuth";
 import React, { useState, useEffect, useRef } from "react";
-import lottie from 'lottie-web';
+import  lottie, {AnimationItem} from 'lottie-web';
 
 
 type FieldsErrors = { [key: string]: string };
@@ -30,7 +30,7 @@ export const useRegisterForm = () => {
     const [requirements, setRequirements] = useState(false)
 
     const container = useRef<HTMLDivElement>(null)
-    const animInstance = useRef<any>(null)
+    const animInstance = useRef<AnimationItem | null>(null)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
