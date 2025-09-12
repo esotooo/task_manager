@@ -1,14 +1,15 @@
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import type { FormInputProps, PasswordInputProps } from "../../Types/inputTypes";
 
-export const FormInput : React.FC<FormInputProps> = ({
+export const FormInput: React.FC<FormInputProps> = ({
     type = 'text',
     placeholder,
     name,
     value,
     onChange,
     error,
-    className=''
+    className = '',
+    suggestions,
 }) => (
     <div>
         <input 
@@ -21,12 +22,28 @@ export const FormInput : React.FC<FormInputProps> = ({
             focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black
             ${error ? 'border-b-rose-400' : ''} ${className}`}
         />
-        <div className={`overflow-hidden ease-in-out transition-all transform duration-300
-            ${error ? 'opacity-100 h-5' : 'opacity-0 h-0'}`}
-        >           
-            {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
+        
+        <div className="flex flex-row items-center gap-3 text-xs mt-1">
+            {/* Mensajes de Error */}
+            <div
+                className={`overflow-hidden ease-in-out transition-all transform duration-300
+                    ${error ? "opacity-100 h-auto" : "opacity-0 h-0"}`}
+            >
+                {error && <p className="text-rose-400">{error}</p>}
+            </div>
+
+            {/* Sugerencias */}
+            {suggestions && suggestions.length > 0 && (
+                <div className="flex items-center gap-2">
+                    <p>Sugerencias:</p>
+                    <div className="flex flex-wrap gap-2">
+                        {suggestions}
+                    </div>
+                </div>
+            )}
         </div>
     </div>
+
 )
 
 export const PasswordInput : React.FC<PasswordInputProps> = ({
@@ -39,6 +56,7 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
     onToggleVisibility,
     onBlur,
     onFocus,
+    
 }) => (
     <div>
         <div className={`flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center
