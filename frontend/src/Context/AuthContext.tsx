@@ -2,7 +2,7 @@ import {createContext, useReducer, useState, type ReactNode} from 'react'
 import {AuthReducer, type AuthActions, initialAuthState, type AuthState}from '../Reducers/auth-reducer.ts'
 import { api } from '../Utils/axiosInstance.ts'
 import {useNavigate } from "react-router-dom"
-import type { LoginType, RegisterType } from '../Types/authTypes.ts'
+import type {LoginType, RegisterType } from '../Types/authTypes.ts'
 
 
 
@@ -17,6 +17,9 @@ type AuthContextProps = {
     fieldMessage: string,
     showError: boolean,
     showConfirm: boolean,
+    searchExistingUsernames: (username: string) => Promise<void>,
+    suggestions: string[],
+    setSuggestions: (suggestions: string[]) => void
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
@@ -27,6 +30,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     const [fieldMessage, setFieldMessage] = useState('')
     const [showConfirm, setShowConfirm] = useState(false)
     const [showError, setShowError] = useState(false)
+    const [suggestions, setSuggestions] = useState<string[]>([])
 
     const navigate = useNavigate();
 
@@ -60,6 +64,26 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         }
     }
 
+    const searchExistingUsernames = async(username : string) => {
+        try {
+            const res = await api.get(`/api/users/search-username?username=${username}`)
+            if (res.status === 200) {
+                setSuggestions([])
+            }
+            return true
+        } catch (error: any) {
+            if (error.response) {
+                if (error.response.status === 409) {
+                    setSuggestions(error.response.data.data.suggestions)
+                    return false
+                }
+            } 
+            setSuggestions([])
+            return false
+        }
+    }
+    
+
     const registerNewUser = async (newUser: RegisterType) => {
         try {
             const res = await api.post('/api/users/register', newUser);
@@ -72,6 +96,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
                     navigate('/login', { replace: true })
                     dispatch({ type: 'close-message', payload: { message: '' } })
                     setShowConfirm(false)
+                    setFieldMessage('')
                 }, 5000)
 
                 return true
@@ -83,23 +108,21 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
             if(error.response){
                 if(error.response?.data?.fields){
                     setFieldMessage(error.response.data.fields)
-                    setTimeout(() => {
-                        setFieldMessage('')
-                    }, 5000);
                 } else if(error.response?.data?.message){
                     registerErrors(error.response.data.message)
                 }
             }else{
-                const msg = 'Error en el servidor.'
+                const msg = 'No hay respuesta del servidor.'
                 registerErrors(msg)
             }
 
             return false
 
             }
-      }
-      
+    }
 
+
+      
     const navigateTo = (path: string) => (e: React.MouseEvent) => {
         e.preventDefault()
         navigate(path)
@@ -107,7 +130,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     return(
         <AuthContext.Provider 
-            value={{state, dispatch, login, setToken, token, registerNewUser, navigateTo, fieldMessage, showConfirm, showError}}    
+            value={{state, dispatch, login, setToken, token, registerNewUser, navigateTo, fieldMessage, showConfirm, showError, searchExistingUsernames, suggestions, setSuggestions}}    
         >
             {children}
         </AuthContext.Provider>
