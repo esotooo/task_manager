@@ -5,6 +5,8 @@ import { hashPassword } from '../../utils/hashPassword';
 import { sendError, sendSucess } from '../../utils/responseHandler';
 import { registerQueries } from '../../SQL/Auth/registerQueries';
 import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
+import { GetUsernameType } from '../../types/usersTypes';
+import { generateUsernames } from '../../utils/generateUsernames';
 
 const router = Router()
 
@@ -33,6 +35,28 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
         }
     }catch(error){
         return sendError(res, 500, "Error en el servidor.");
+    }
+})
+
+router.get('/search-username', async(req: Request, res: Response) => {
+    try{
+        const {username}  = req.query as {username : string};
+
+        if(username.length < 3){
+            return sendError(res, 400, "Ingrese más de 3 caracteres.");
+        }
+
+        const [existedUser] = await pool.query<GetUsernameType[]>(registerQueries.searchUsername, [username.trim()]);
+        if(existedUser.length === 0){
+            return sendSucess(res, 200, [], "Usuario disponible.");
+        }else{
+            const taken = new Set(existedUser.map(u => u.username));
+            const suggestions = generateUsernames(username, taken);
+            
+            return sendSucess(res, 409, { taken: existedUser, suggestions }, "Usuario ya existe.");
+        }
+    }catch{
+        return sendError(res, 500, "Error en el servidor.")
     }
 })
 
