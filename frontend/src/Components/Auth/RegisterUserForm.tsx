@@ -12,6 +12,8 @@ export default function RegisterUserForm() {
         confirmPasswordVisible,
         passwordRequirements,
         requirements,
+        suggestions,
+        setForm,
         handleRegister, 
         handleChange, 
         toggleConfirmPasswordVisibility,
@@ -53,7 +55,18 @@ export default function RegisterUserForm() {
                         value={form.username}
                         onChange={handleChange}
                         error={getFieldsError('username')}
+                        suggestions={suggestions.map((suggestion, index) => (
+                            <button 
+                                key={index}
+                                type="button"
+                                onClick={() => setForm({...form, username: suggestion})}
+                                className="text-sm bg-gray-200/80 px-2 rounded-md font-bold"
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
                     />
+
 
                     <FormInput 
                         type="email"
