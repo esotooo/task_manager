@@ -3,10 +3,13 @@ const registerUserQuery = `INSERT INTO users(firstname, lastname, username, emai
 
 const validateUsername = `SELECT username FROM users WHERE username = ? `
 
+const searchUsername = `SELECT username FROM users WHERE username LIKE ?`
+
 const validateEmail = `SELECT email FROM users WHERE email = ? `
 
 export const registerQueries = {
     registerUserQuery : registerUserQuery,
     validateUsername: validateUsername,
-    validateEmail: validateEmail
+    validateEmail: validateEmail,
+    searchUsername: searchUsername
 }
