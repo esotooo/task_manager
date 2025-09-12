@@ -1,5 +1,4 @@
-import {body, validationResult,ValidationError} from 'express-validator';
-import { sendError } from '../utils/responseHandler';
+import {body, validationResult} from 'express-validator';
 import pool from '../database/connection';
 import { registerQueries } from '../SQL/Auth/registerQueries';
 import { GetEmailType, GetUsernameType } from '../types/usersTypes';
@@ -86,23 +85,28 @@ export const validateUserRegister = [
 ];
 
 export const handleValidationErrorsByField = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validationResult(req);
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    const errorsByField: Record<string, string> = {};
+    if (!errors.isEmpty()) {
+        const errorsByField: Record<string, string> = {};
+        
+        errors.array().forEach((error) => {
+        const field = (error as any).param || (error as any).path || "general";
+        errorsByField[field] = error.msg;
+        });
 
-    // Solo guardamos los errores por campo, no los concatenamos
-    errors.array().forEach((error) => {
-      const field = (error as any).param || (error as any).path || "general";
-      errorsByField[field] = error.msg;
-    });
+        const hasConflict = Object.values(errorsByField).some(msg => 
+            msg.includes('ya esta registrado.') || msg.includes('ya esta en uso.')
+        )
 
-    // Retornamos solo los errores por campo
-    return res.status(400).json({
-      success: false,
-      fields: errorsByField, // para que el frontend los muestre en cada input
-    });
-  }
+        const statusCode = hasConflict ? 409 : 400
 
-  next();
+        return(res.status(statusCode).json({
+            success: false,
+            fields: errorsByField
+        }))
+    }
+
+    next();
 };
+
