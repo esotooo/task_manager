@@ -1,6 +1,7 @@
 import { useAuth } from "./useAuth";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import lottie from 'lottie-web';
+
 
 type FieldsErrors = { [key: string]: string };
 
@@ -13,7 +14,7 @@ const passwordRequirements = [
 ]
 
 export const useRegisterForm = () => {
-    const { state, registerNewUser, fieldMessage, showConfirm, showError } = useAuth()
+    const { state, registerNewUser, fieldMessage, showConfirm, showError, searchExistingUsernames, suggestions} = useAuth()
 
     const [form, setForm] = useState({
         firstname: '',
@@ -61,6 +62,7 @@ export const useRegisterForm = () => {
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
+        await searchExistingUsernames(form.username)
         const success = await registerNewUser(form)
         if (success) clearForm()
     }
@@ -84,6 +86,7 @@ export const useRegisterForm = () => {
             }
         };
     }, [showConfirm, showError])
+    
 
     return {
         // Estados
@@ -96,6 +99,7 @@ export const useRegisterForm = () => {
         showConfirm, 
         container, 
         passwordRequirements,
+        suggestions,
 
         // Handlers
         handleChange, 
@@ -104,6 +108,7 @@ export const useRegisterForm = () => {
         toggleConfirmPasswordVisibility,
         showRequirements: () => setRequirements(true),
         hideRequirements: () => setRequirements(false),
+        setForm,
 
         // Utils
         getFieldsError,
