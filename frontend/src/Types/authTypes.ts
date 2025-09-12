@@ -11,3 +11,7 @@ export type RegisterType = {
     email: string, 
     user_password: string
 }
+
+export type ExistingUsernamesType = {
+    username: string[]
+}
