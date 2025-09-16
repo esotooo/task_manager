@@ -6,8 +6,14 @@ import loginAPI from './API/users/login';
 const PORT = 4000;
 const app = express();
 
-app.use(cors())
-app.use(express.json())
+const allowedOrigins = ['http://localhost:5173'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+app.use(express.json());
 
 app.use('/api/users', registerAPI);
 app.use('/api/users', loginAPI);
