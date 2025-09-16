@@ -104,7 +104,7 @@ export const handleValidationErrorsByField = (req: Request, res: Response, next:
         return(res.status(statusCode).json({
             success: false,
             fields: errorsByField
-        }))
+        }));
     }
 
     next();
