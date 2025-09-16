@@ -1,4 +1,3 @@
-import { useAuth } from '../../Hooks/useAuth'
 import { useLoginForm } from '../../Hooks/useLoginForm';
 import { currentYear } from "../../Utils/helpers";
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
@@ -6,13 +5,16 @@ import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
 export default function LoginForm() {
 
-    const {state, navigateTo} = useAuth()
+    
     const {
         form,
         passwordVisible,
+        message,
         handleChange,
         handleLogin,
-        togglePasswordVisibility
+        togglePasswordVisibility,
+        getFieldsError,
+        navigateTo
     } = useLoginForm()
     
 
@@ -23,7 +25,7 @@ export default function LoginForm() {
                 <div className="mt-20">
                     <h2 className="font-semibold text-2xl">¡Bienvenido de nuevo!</h2>
                     <p className="text-xs text-gray-500">¿No tienes una cuenta? {''}
-                           <button className="cursor-pointer text-black underline font-bold" onClick={navigateTo('/register')}> 
+                           <button className="cursor-pointer text-black underline font-bold" onClick={() => navigateTo('/register')}> 
                                 Crea una cuenta ahora.
                             </button> 
                     </p>
@@ -37,20 +39,22 @@ export default function LoginForm() {
                         name="loginInput"
                         value={form.loginInput}
                         onChange={handleChange}
+                        error={getFieldsError('loginInput')}
                     />
 
                     <PasswordInput 
                         placeholder="Contraseña"
-                        name="password"
-                        value={form.password}
+                        name="user_password"
+                        value={form.user_password}
                         onChange={handleChange}
                         visible={passwordVisible}
                         onToggleVisibility={togglePasswordVisibility}
-                    />
+                        error={getFieldsError('user_password')}
+                        />
 
                     <div className="h-5">
-                        {state.message && 
-                            <p className="text-xs text-rose-400 italic">{`* ${state.message}`}</p>
+                        {message && 
+                            <p className="text-xs text-rose-400 italic">{message}</p>
                         }
                     </div>
 
@@ -62,7 +66,7 @@ export default function LoginForm() {
 
             <div className="mt-5">
                 <p className="text-xs text-center text-gray-500">¿Olvidaste tu contraseña?{' '}
-                    <button className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/change-password')}> 
+                    <button className="cursor-pointer underline text-black font-bold" onClick={() => navigateTo('/change-password')}> 
                         Haz click aquí.
                     </button> 
                 </p>
