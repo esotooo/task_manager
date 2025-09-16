@@ -1,10 +1,9 @@
-import { useAuth } from "../../Hooks/useAuth";
 import { useRegisterForm } from "../../Hooks/useRegisterForm"
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 import StateWindows from "../../Components/Auth/StateWindows";
 
+
 export default function RegisterUserForm() {
-    const {navigateTo} = useAuth()
 
     const { 
         form, 
@@ -13,23 +12,33 @@ export default function RegisterUserForm() {
         passwordRequirements,
         requirements,
         suggestions,
+        showConfirm,
+        showError,
+        message,
+        container,
         setForm,
         handleRegister, 
         handleChange, 
         toggleConfirmPasswordVisibility,
         togglePasswordVisibility,
-        getFieldsError,
         showRequirements,
-        hideRequirements
+        hideRequirements,
+        getFieldsError,
+        navigateTo
     } = useRegisterForm()
+
 
     return (
         <div className="sm:border sm:border-gray-200 sm:mt-10 mt-5 sm:px-5 sm:py-5 w-full mx-auto sm:max-w-2xl lg:max-w-3xl rounded-lg">            
             <h2 className="font-bold text-[20px] mb-4">Registrarse</h2>
             <div className="relative">
-                <StateWindows />
-                <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
-
+            <StateWindows
+                showConfirm={showConfirm}
+                showError={showError}
+                message={message}
+                container={container}
+            />       
+         <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
                 
                 <form onSubmit={handleRegister} className="space-y-4 w-full">
 
@@ -66,7 +75,6 @@ export default function RegisterUserForm() {
                             </button>
                         ))}
                     />
-
 
                     <FormInput 
                         type="email"
@@ -130,7 +138,7 @@ export default function RegisterUserForm() {
 
                 <div className="mt-5">
                     <p className="text-xs text-center text-gray-500">¿Ya tienes una cuenta?{' '}
-                        <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={navigateTo('/login')}> 
+                        <button type='submit' className="cursor-pointer underline text-black font-bold" onClick={() => navigateTo('/login')}> 
                             Inicia sesión.
                         </button> 
                     </p>
