@@ -6,38 +6,26 @@ import { sendError, sendSucess } from '../../utils/responseHandler';
 import { usersQueries } from '../../SQL/Auth/usersQueries';
 import { LoginType } from '../../types/usersTypes';
 import dotenv from 'dotenv'
+import { validateLogin, handleLoginErrors } from '../../middlewares/validateLogin';
+import { Request, Response } from 'express';
 
 const router = Router();
 dotenv.config()
 
-router.post('/login', async (req, res) => {
+router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, res: Response) => {
     try{
-        const {email, user_password, username} = req.body;
-
-        if (!email && !username && !user_password) {
-            return sendError(res, 400, "Por favor complete todos los campos.");
-        } 
-        if (!email && !username) {
-            return sendError(res, 400, "Por favor ingrese su correo electrónico o usuario.");
-        } 
-        if (!user_password) {
-            return sendError(res, 400, "Por favor ingrese su contraseña.");
-        }
+        const {loginInput, user_password} = req.body;
         
         let query: string;
-        let param: string;
 
         //Elegir porque tipo de dato el usuario desea ingresar
-        if(email){
+        if(loginInput.includes('@')){
             query = usersQueries.loginByEmailQuery;
-            param = email;
         }else{
             query = usersQueries.loginByUsernameQuery;
-            param = username;
         }
 
-
-        const [rows] = await pool.query<LoginType[]>(query, [param]);
+        const [rows] = await pool.query<LoginType[]>(query, [loginInput]);
         if(rows.length === 0){
             return sendError(res, 401, "Correo y/o contraseña incorrectos. Por favor intente de nuevo.");
         }
@@ -64,7 +52,8 @@ router.post('/login', async (req, res) => {
         }, "Sesión iniciada exitosamente.", token)
 
 
-    }catch{
+    }catch(error){
+        console.error(error)
         return sendError(res, 500, 'Error en el servidor.')
     }
 })
