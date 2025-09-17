@@ -3,7 +3,8 @@ export type FormInputProps = {
     placeholder: string
     name: string
     value: string
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    setError?: (msg: string) => void
     error?: string | null
     className?: string,
     suggestions?: React.ReactElement[]
@@ -14,6 +15,7 @@ export type PasswordInputProps = {
     name?: string
     value: string
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    setError?: (msg: string) => void
     error?: string | null
     visible: boolean
     onToggleVisibility: (e: React.MouseEvent<HTMLDivElement>) => void

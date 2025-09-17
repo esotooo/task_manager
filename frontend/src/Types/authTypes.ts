@@ -1,7 +1,12 @@
 export type LoginType = {
-    username?: string, 
-    email?: string,
+    loginInput: string
     user_password: string
+}
+
+export type InformationReceivedType ={
+    id_user: number,
+    firstname: string,
+    lastname: string
 }
 
 export type RegisterType = {
