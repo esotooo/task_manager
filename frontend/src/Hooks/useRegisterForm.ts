@@ -1,9 +1,8 @@
-import { useAuth } from "./useAuth";
-import React, { useState, useEffect, useRef } from "react";
-import  lottie, {AnimationItem} from 'lottie-web';
-
-
-type FieldsErrors = { [key: string]: string };
+import React, { useState, useRef } from "react";
+import  lottie, {type AnimationItem} from 'lottie-web';
+import type {RegisterType } from '../Types/authTypes.ts'
+import { api } from '../Utils/axiosInstance.ts'
+import { useNavigate } from "react-router-dom";
 
 const passwordRequirements = [
     { test: /.{8,}/, label: 'Mínimo 8 caracteres.' },
@@ -12,10 +11,13 @@ const passwordRequirements = [
     { test: /\d/, label: 'Al menos un número.' },
     { test: /[^A-Za-z0-9]/, label: 'Al menos un carácter especial.' }
 ]
+type FieldsErrors = { [key: string]: string };
+
+
 
 export const useRegisterForm = () => {
-    const { state, registerNewUser, fieldMessage, showConfirm, showError, searchExistingUsernames, suggestions} = useAuth()
-
+    // --- ESTADOS ---
+    //Formulario
     const [form, setForm] = useState({
         firstname: '',
         lastname: '', 
@@ -25,30 +27,101 @@ export const useRegisterForm = () => {
         confirm_password: ''
     })
 
+    //Mensajes / errores
+    const [fieldMessage, setFieldMessage] = useState<{ [key: string]: string }>({});
+    const [showConfirm, setShowConfirm] = useState(false)
+    const [showError, setShowError] = useState(false)
+    const [message, setMessage] = useState<string | null>(null)
+
+    //Sugerencias y otros
+    const [suggestions, setSuggestions] = useState<string[]>([])
     const [passwordVisible, setPasswordVisible] = useState(false)
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
     const [requirements, setRequirements] = useState(false)
 
-    const container = useRef<HTMLDivElement>(null)
-    const animInstance = useRef<AnimationItem | null>(null)
+    const navigate = useNavigate()
 
+
+    //Animaciones
+    const container = useRef<HTMLDivElement>(null)
+
+
+    // --- FUNCIONES : Errores ---
+    
+    // --- FUNCIONES: API ---
+    const searchExistingUsernames = async(username : string) => {
+        try {
+            const res = await api.get(`/api/users/search-username?username=${username}`)
+            if (res.status === 200) {
+                setSuggestions([])
+            }
+            return true
+        } catch (error: any) {
+            if (error.response) {
+                if (error.response.status === 409) {
+                    setSuggestions(error.response.data.data.suggestions)
+                    return false
+                }
+            } 
+            setSuggestions([])
+            return false
+        }
+    }
+    
+    const registerNewUser = async (newUser: RegisterType) => {
+        try {
+            const res = await api.post('/api/users/register', newUser);
+        
+            if (res.status === 201) {
+                setShowConfirm(true)
+                setMessage(res.data.message)
+
+                setTimeout(() => {
+                    setMessage('')
+                    setShowConfirm(false)
+                    setFieldMessage({})
+                    navigate('/login')
+                }, 5000)
+
+                return true
+            }
+            return false
+
+        } catch (error: any) {
+            if(error.response){
+                if(error.response.data.fields){
+                    setFieldMessage(error.response.data.fields)
+                }if(error.response.data.message){
+                    setShowError(true)
+                    setMessage(error.response.data.message)
+                    setTimeout(() => {
+                        setShowError(false)
+                        setMessage('')
+                    }, 5000);
+                }
+            }else{
+                setShowError(true)
+                setMessage('Error en la conexión con el servidor.')
+                setTimeout(() => {
+                    setShowError(false)
+                    setMessage('')
+                }, 5000);
+            }
+            return false
+        }
+    }
+
+
+    const navigateTo = (page: string) => {
+        navigate(page)
+    }
+
+    //--- FUNCIONES: FORMULARIO ----
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setForm(prev => 
             ({ ...prev, [name]: value })
         )
-    }
-
-    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) =>
-        (e: React.MouseEvent) => { e.preventDefault(); setter(prev => !prev) }
-
-    const togglePasswordVisibility = toggleVisibility(setPasswordVisible)
-    const toggleConfirmPasswordVisibility = toggleVisibility(setConfirmPasswordVisible)
-
-    const getFieldsError = (fieldname: string) => {
-        if (!fieldMessage) return null
-        const fields = fieldMessage as unknown as FieldsErrors
-        return fields[fieldname] || null
     }
 
     const clearForm = () => setForm({ 
@@ -67,39 +140,34 @@ export const useRegisterForm = () => {
         if (success) clearForm()
     }
 
-    // Lottie animation hook unificado
-    useEffect(() => {
-        if ((showConfirm || showError) && container.current) {
-            animInstance.current = lottie.loadAnimation({
-                container: container.current,
-                renderer: 'svg',
-                loop: false,
-                autoplay: true,
-                path: showConfirm ? '/gif/Success.json' : '/gif/error.json'
-            })
-        }
+    // --- FUNCIONES: UI ----
+    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) =>
+        (e: React.MouseEvent) => { e.preventDefault(); setter(prev => !prev) }
 
-        return () => {
-            if (animInstance.current) {
-                animInstance.current.destroy();
-                animInstance.current = null;
-            }
-        };
-    }, [showConfirm, showError])
+    const togglePasswordVisibility = toggleVisibility(setPasswordVisible)
+    const toggleConfirmPasswordVisibility = toggleVisibility(setConfirmPasswordVisible)
+
+
     
+    // --- HELPERS ---
+    const getFieldsError = (fieldname: string) => {
+        if (!fieldMessage) return null
+        const fields = fieldMessage as unknown as FieldsErrors
+        return fields[fieldname] || null
+    }
 
     return {
         // Estados
         form, 
         passwordVisible, 
         confirmPasswordVisible,
-        state, 
         requirements, 
         showError, 
         showConfirm, 
         container, 
         passwordRequirements,
         suggestions,
+        message,
 
         // Handlers
         handleChange, 
@@ -110,7 +178,7 @@ export const useRegisterForm = () => {
         hideRequirements: () => setRequirements(false),
         setForm,
 
-        // Utils
         getFieldsError,
+        navigateTo
     }
 }
