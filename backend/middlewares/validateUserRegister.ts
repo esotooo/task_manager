@@ -1,8 +1,10 @@
 import {body, validationResult} from 'express-validator';
 import pool from '../database/connection';
-import { registerQueries } from '../SQL/Auth/registerQueries';
+import { registerQueries } from '../Queries/Auth/registerQueries';
 import { GetEmailType, GetUsernameType } from '../types/usersTypes';
 import { NextFunction, Request, Response } from 'express';
+import { validateEmailDomain } from './validateEmailDomain';
+
 
 export const validateUserRegister = [
     body('firstname')
@@ -55,9 +57,16 @@ export const validateUserRegister = [
         .withMessage('El email no tiene un formato válido.')
         .bail()
         .custom( async(email) => {
-            const [users] = await pool.query<GetEmailType[]>(registerQueries.validateEmail, [email])
+            const [users] = await pool.query<GetEmailType[]>(registerQueries.validateEmail, [email]);
             if(users.length > 0 ){
-                throw new Error ('El correo electrónico ya esta registrado.')
+                throw new Error ('El correo electrónico ya esta registrado.');
+            }
+            return true;
+        })
+        .custom(async(email) => {
+            const isValid = await validateEmailDomain(email)
+            if(!isValid){
+                throw new Error ('Ingrese un dominio existente.');
             }
             return true;
         }),
