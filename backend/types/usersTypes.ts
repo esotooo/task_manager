@@ -11,5 +11,7 @@ export interface GetUsernameType extends RowDataPacket{
 }
 
 export interface GetEmailType extends RowDataPacket{
-    email: string
+    email: string,
+    firstname: string,
+    lastname: string
 }
