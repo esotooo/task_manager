@@ -3,7 +3,7 @@ import { Router, Request, Response} from 'express';
 import { ResultSetHeader } from 'mysql2';
 import { hashPassword } from '../../utils/hashPassword';
 import { sendError, sendSucess } from '../../utils/responseHandler';
-import { registerQueries } from '../../SQL/Auth/registerQueries';
+import { registerQueries } from '../../Queries/Auth/registerQueries';
 import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
 import { GetUsernameType } from '../../types/usersTypes';
 import { generateUsernames } from '../../utils/generateUsernames';
@@ -19,7 +19,7 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
         const [register] = await pool.query<ResultSetHeader>(registerQueries.registerUserQuery, [
             firstname, lastname, username, email, hashedPassword
         ])
-
+        
         //Proceder con el registro
         if(register.affectedRows > 0){
             const newUser = {
@@ -37,6 +37,7 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
         return sendError(res, 500, "Error en el servidor.");
     }
 })
+
 
 router.get('/search-username', async(req: Request, res: Response) => {
     try{
