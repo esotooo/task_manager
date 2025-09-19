@@ -1,7 +1,7 @@
 import pool from '../../database/connection';
 import { Router, Request, Response } from 'express';
 import { sendError, sendSucess } from '../../utils/responseHandler';
-import { GetEmailType } from '../../types/usersTypes';
+import { GetEmailType } from '../../types/MailType';
 import { changePasswordQueries } from '../../Queries/Auth/changePassword';
 import { generateCode } from '../../utils/generateCode';
 import { sendEmail } from '../../utils/emailGenerator';
