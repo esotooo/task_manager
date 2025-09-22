@@ -27,7 +27,7 @@ export default function LoginPage() {
                     <SiTask className="text-white text-5xl sm:text-6xl"/>
                     <div>
                         <h1 className="text-4xl sm:text-6xl text-white">
-                        Task <span className="-ml-2 sm:-ml-3 font-extrabold">Flow!</span>
+                        Task <span className="-ml-2 sm:-ml-3 font-extrabold">Flow</span>
                         </h1>
                     </div>
                 </div>
