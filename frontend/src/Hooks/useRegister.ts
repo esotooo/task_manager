@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import  lottie, {type AnimationItem} from 'lottie-web';
 import type {RegisterType } from '../Types/authTypes.ts'
 import { api } from '../Utils/axiosInstance.ts'
 import { useNavigate } from "react-router-dom";
@@ -45,8 +44,6 @@ export const useRegisterForm = () => {
     //Animaciones
     const container = useRef<HTMLDivElement>(null)
 
-
-    // --- FUNCIONES : Errores ---
     
     // --- FUNCIONES: API ---
     const searchExistingUsernames = async(username : string) => {
