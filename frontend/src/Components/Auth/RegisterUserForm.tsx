@@ -1,4 +1,4 @@
-import { useRegisterForm } from "../../Hooks/useRegisterForm"
+import { useRegisterForm } from "../../Hooks/useRegister"
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 import StateWindows from "../../Components/Auth/StateWindows";
 
