@@ -1,4 +1,4 @@
-import { useLoginForm } from '../../Hooks/useLoginForm';
+import { useLoginForm } from '../../Hooks/useLogin';
 import { currentYear } from "../../Utils/helpers";
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
