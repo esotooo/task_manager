@@ -2,7 +2,7 @@ import pool from '../../database/connection';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Router } from 'express';
-import { sendError, sendSucess } from '../../utils/responseHandler';
+import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { usersQueries } from '../../Queries/Auth/usersQueries';
 import { LoginType } from '../../types/usersTypes';
 import dotenv from 'dotenv'
@@ -45,7 +45,7 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
             {expiresIn: '1h'}
         )
 
-        return sendSucess(res, 200, {
+        return sendSuccess(res, 200, {
             id_user: user.id_user,
             firstname: user.firstname,
             lastname: user.lastname,

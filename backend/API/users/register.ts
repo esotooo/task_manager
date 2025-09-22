@@ -2,7 +2,7 @@ import pool from '../../database/connection';
 import { Router, Request, Response} from 'express';
 import { ResultSetHeader } from 'mysql2';
 import { hashPassword } from '../../utils/hashPassword';
-import { sendError, sendSucess } from '../../utils/responseHandler';
+import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { registerQueries } from '../../Queries/Auth/registerQueries';
 import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
 import { GetUsernameType } from '../../types/usersTypes';
@@ -28,7 +28,7 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
                 lastname: lastname, 
                 username: username, 
             }
-            return sendSucess(res, 201, newUser, "Se ha registro el usuario exitosamente.");
+            return sendSuccess(res, 201, newUser, "Se ha registro el usuario exitosamente.");
         }
         else{
             return sendError(res, 400, "No se puedo registrar correctamente. Porfavor intente de nuevo.");
@@ -49,12 +49,12 @@ router.get('/search-username', async(req: Request, res: Response) => {
 
         const [existedUser] = await pool.query<GetUsernameType[]>(registerQueries.searchUsername, [username.trim()]);
         if(existedUser.length === 0){
-            return sendSucess(res, 200, [], "Usuario disponible.");
+            return sendSuccess(res, 200, [], "Usuario disponible.");
         }else{
             const taken = new Set(existedUser.map(u => u.username));
             const suggestions = generateUsernames(username, taken);
             
-            return sendSucess(res, 409, { taken: existedUser, suggestions }, "Usuario ya existe.");
+            return sendSuccess(res, 409, { taken: existedUser, suggestions }, "Usuario ya existe.");
         }
     }catch{
         return sendError(res, 500, "Error en el servidor.")

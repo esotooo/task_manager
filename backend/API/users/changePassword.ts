@@ -1,6 +1,6 @@
 import pool from '../../database/connection';
 import { Router, Request, Response } from 'express';
-import { sendError, sendSucess } from '../../utils/responseHandler';
+import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { GetEmailType } from '../../types/MailType';
 import { changePasswordQueries } from '../../Queries/Auth/changePassword';
 import { generateCode } from '../../utils/generateCode';
@@ -47,7 +47,7 @@ router.post('/send-otp', async (req: Request, res: Response) => {
             otp: code
         });
 
-        return sendSucess(res, 200, 'OTP enviado exitosamente.');
+        return sendSuccess(res, 200, [],'OTP enviado exitosamente.');
 
     } catch{
         return sendError(res, 500, 'Error en la conexión con el servidor.');
@@ -76,7 +76,7 @@ router.post('/verify-otp', async(req: Request, res: Response) => {
         verifiedEmails.add(emailNormalized);
         delete otpStore[emailNormalized];
 
-        return sendSucess(res, 200, 'OTP verificado correctamente.')    
+        return sendSuccess(res, 200, 'OTP verificado correctamente.')    
     }catch{
         return sendError(res, 500, "Error en la conexión con el servidor.")
     }
@@ -96,7 +96,7 @@ router.put('/change-password', async(req: Request, res: Response) => {
 
         verifiedEmails.delete(emailNormalized);
 
-        return sendSucess(res, 201, 'Contraseña actualizada exitosamente.')
+        return sendSuccess(res, 201, 'Contraseña actualizada exitosamente.')
     }catch{
         return sendError(res, 500, 'Error en la conexión con el servidor.')
     }
