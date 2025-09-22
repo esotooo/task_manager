@@ -1,10 +1,10 @@
 import {body, validationResult} from 'express-validator';
 import pool from '../database/connection';
 import { registerQueries } from '../Queries/Auth/registerQueries';
-import { GetEmailType, GetUsernameType } from '../types/usersTypes';
+import {  GetUsernameType } from '../types/usersTypes';
 import { NextFunction, Request, Response } from 'express';
 import { validateEmailDomain } from './validateEmailDomain';
-
+import { GetEmailType } from '../types/MailType';
 
 export const validateUserRegister = [
     body('firstname')
