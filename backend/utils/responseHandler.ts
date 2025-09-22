@@ -9,7 +9,7 @@ type apiResponse = {
     field?: string
 }
 
-export function sendSucess(res: Response, statusCode: number, data?: any, message = "Sucess", token?: any){
+export function sendSuccess(res: Response, statusCode: number, data?: any, message = "Sucess", token?: any){
     const response : apiResponse = {
         success: true,
         data,
