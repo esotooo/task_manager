@@ -53,7 +53,6 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
 
 
     }catch(error){
-        console.error(error)
         return sendError(res, 500, 'Error en el servidor.')
     }
 })
