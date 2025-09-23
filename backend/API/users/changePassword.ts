@@ -8,6 +8,7 @@ import { sendEmail } from '../../utils/emailGenerator';
 import { OTPType } from '../../types/MailType';
 import { hashPassword } from '../../utils/hashPassword';
 import { ResultSetHeader } from 'mysql2';
+import { handleValidationErrorsByField, validateEmail } from '../../middlewares/validateChangePassword';
 
 const router = Router();
 
@@ -16,10 +17,9 @@ export const otpStore: OTPType = {};
 const verifiedEmails: Set<string> = new Set();
 
 
-router.post('/send-otp', async (req: Request, res: Response) => {
+router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-        if (!email) return sendError(res, 400, 'El correo es obligatorio.');
 
         // Generar código OTP
         const { code, expiresAt } = generateCode();
