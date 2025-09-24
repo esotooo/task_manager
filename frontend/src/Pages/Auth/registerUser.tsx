@@ -1,7 +1,8 @@
 import RegisterUserForm from "../../Components/Auth/RegisterUserForm";
 import { SiTask } from "react-icons/si";
 
-export default function registerUser() {
+
+export default function RegisterUser() {
 
     return (
         <div className="w-screen h-screen flex flex-col items-start sm:py-20 sm:items-center py-10 px-5">
@@ -11,6 +12,7 @@ export default function registerUser() {
                 Task <span className="font-extrabold -ml-2">Flow</span></h1>  
             </div>
             <RegisterUserForm />
+
         </div>
     )
 }
