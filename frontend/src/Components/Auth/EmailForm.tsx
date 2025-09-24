@@ -1,16 +1,25 @@
-import { useChangePassword } from "../../Hooks/useChangePassword";
+import { useChangePassword } from "../../Hooks/Auth/useChangePassword";
 import { FormInput } from "../Layout/ReusableInput";
+import { useNavigate } from "react-router-dom";
 
 export default function EmailForm() {
+
+    const navigate = useNavigate()
 
     const {
         handleChange,
         handleSendOTP,
         form,
-        message,
         error,
-        
+        getFieldsError,
+        clearFieldsError,
+        showRegisterBtn
+    
     } = useChangePassword()
+
+    const navigateTo = (page: string) => {
+        navigate(page)
+      }
     
   return (
     <div>
@@ -23,12 +32,28 @@ export default function EmailForm() {
             <FormInput 
                 placeholder="Correo electrónico"
                 name="email"
+                type="email"
                 value={form.email}
                 onChange={handleChange}
+                error={getFieldsError('email')}
+                setError={() => clearFieldsError('email', '')}
             />
 
-            {message && <p>{message}</p>}   
-            {error && <p>{error}</p>} 
+            <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-7 text-rose-400 flex
+                    ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+                <p>
+                    {error ?? ' '}
+                </p>
+
+                {showRegisterBtn && (
+                    <button className="underline font-bold text-black cursor-pointer"
+                        onClick={() => navigateTo('/register')} 
+                    >
+                        ¿Desea registrarse?
+                    </button>
+                )}
+            </div>
+           
 
             <button 
                 type="submit" 
