@@ -1,4 +1,4 @@
-import { useRegisterForm } from "../../Hooks/useRegister"
+import { useRegisterForm } from "../../Hooks/Auth/useRegister"
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 import StateWindows from "../../Components/Auth/StateWindows";
 
@@ -24,6 +24,7 @@ export default function RegisterUserForm() {
         showRequirements,
         hideRequirements,
         getFieldsError,
+        clearFieldsError,
         navigateTo
     } = useRegisterForm()
 
@@ -48,6 +49,7 @@ export default function RegisterUserForm() {
                         value={form.firstname}
                         onChange={handleChange}
                         error={getFieldsError('firstname')}
+                        setError={() => clearFieldsError('firstname', '')}
                     />
 
                     <FormInput 
@@ -55,7 +57,8 @@ export default function RegisterUserForm() {
                         name="lastname"
                         value={form.lastname}
                         onChange={handleChange}
-                        error={getFieldsError('lastname')}    
+                        error={getFieldsError('lastname')} 
+                        setError={() => clearFieldsError('lastname', '')}   
                     />
 
                     <FormInput
@@ -74,6 +77,7 @@ export default function RegisterUserForm() {
                                 {suggestion}
                             </button>
                         ))}
+                        setError={() => clearFieldsError('username', '')}
                     />
 
                     <FormInput 
@@ -83,6 +87,7 @@ export default function RegisterUserForm() {
                         value={form.email}
                         onChange={handleChange}
                         error={getFieldsError('email')}
+                        setError={() => clearFieldsError('email', '')}
                     />
 
                     <div>
@@ -96,6 +101,7 @@ export default function RegisterUserForm() {
                             error={getFieldsError('user_password')}
                             onFocus={showRequirements}
                             onBlur={hideRequirements}
+                            setError={() => clearFieldsError('user_password', '')}
                         />
 
                         <div className={`
@@ -128,6 +134,7 @@ export default function RegisterUserForm() {
                         visible={confirmPasswordVisible}
                         onToggleVisibility={toggleConfirmPasswordVisibility}
                         error={getFieldsError('confirm_password')}
+                        setError={() => clearFieldsError('confirm_password', '')}
                     />
 
                     <button className="bg-black text-white font-bold w-full py-2.5 mt-5 rounded-lg cursor-pointer hover:bg-black/80">
