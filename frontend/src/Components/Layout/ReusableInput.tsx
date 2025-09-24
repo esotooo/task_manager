@@ -1,7 +1,6 @@
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import type { FormInputProps, PasswordInputProps } from "../../Types/inputTypes";
 
-
 export const FormInput: React.FC<FormInputProps> = ({
     type = 'text',
     placeholder,
@@ -14,9 +13,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     suggestions,
 }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (setError && error) {
-            setError('');
-        }
+        if (setError) setError('')
         onChange(e);
     }
 
@@ -42,11 +39,12 @@ export const FormInput: React.FC<FormInputProps> = ({
             
             <div className="flex flex-row items-center gap-3 text-xs mt-1">
                 {/* Mensajes de Error */}
-                <div
-                    className={`overflow-hidden ease-in-out transition-all transform duration-300
-                        ${error ? "opacity-100 h-auto" : "opacity-0 h-0"}`}
-                >
-                    {error && <p className="text-rose-400 italic">{error}</p>}
+                <div className={`overflow-hidden transition-all duration-300 max-h-20`}>
+                    <p className={`text-rose-400 italic transition-all duration-300
+                        ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 animate__animated animate__fadeOut'}`
+                    }>
+                        {error ?? ' '}
+                    </p>
                 </div>
 
                 {/* Sugerencias */}
@@ -77,9 +75,7 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
     
 }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (setError && error) {
-            setError('');
-        }
+        if (setError) setError('')
         onChange(e);
     }
 
@@ -112,10 +108,12 @@ export const PasswordInput : React.FC<PasswordInputProps> = ({
                     {visible ? <LuEye /> : <LuEyeClosed />}
                 </div>
             </div>
-            <div className={`overflow-hidden ease-in-out transition-all transform duration-300
-                ${error ? 'opacity-100 h-5' : 'opacity-0 h-0'}`}
-            >
-                {error && <p className="text-rose-400 text-xs mt-1 italic">{error}</p>}
+            <div className={`overflow-hidden transition-all duration-300 max-h-20`}>
+                <p className={`text-rose-400 italic transition-all duration-300 text-xs
+                    ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`
+                }>
+                    {error  ?? ' '}
+                </p>
             </div>
         </div>
     )
