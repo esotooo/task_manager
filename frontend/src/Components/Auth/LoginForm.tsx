@@ -1,11 +1,10 @@
-import { useLoginForm } from '../../Hooks/useLogin';
+import { useLoginForm } from '../../Hooks/Auth/useLogin';
 import { currentYear } from "../../Utils/helpers";
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 
-
 export default function LoginForm() {
 
-    
+
     const {
         form,
         passwordVisible,
@@ -13,8 +12,9 @@ export default function LoginForm() {
         handleChange,
         handleLogin,
         togglePasswordVisibility,
+        navigateTo,
         getFieldsError,
-        navigateTo
+        clearFieldsError
     } = useLoginForm()
     
 
@@ -40,6 +40,7 @@ export default function LoginForm() {
                         value={form.loginInput}
                         onChange={handleChange}
                         error={getFieldsError('loginInput')}
+                        setError={() => clearFieldsError('loginInput', '')}
                     />
 
                     <PasswordInput 
@@ -50,6 +51,7 @@ export default function LoginForm() {
                         visible={passwordVisible}
                         onToggleVisibility={togglePasswordVisibility}
                         error={getFieldsError('user_password')}
+                        setError={() => clearFieldsError('user_password', '')}
                         />
 
                     <div className="h-5">
