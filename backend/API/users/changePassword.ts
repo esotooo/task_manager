@@ -8,7 +8,7 @@ import { sendEmail } from '../../utils/emailGenerator';
 import { OTPType } from '../../types/MailType';
 import { hashPassword } from '../../utils/hashPassword';
 import { ResultSetHeader } from 'mysql2';
-import { handleValidationErrorsByField, validateEmail } from '../../middlewares/validateChangePassword';
+import { handleValidationErrorsByField, validateEmail, validateOTP } from '../../middlewares/validateChangePassword';
 
 const router = Router();
 
@@ -33,7 +33,7 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
         );
 
         if (existingEmail.length === 0) {
-            return sendError(res, 400, 'El correo electrónico ingresado aún no está registrado. ¿Desea registrarse? ');
+            return sendError(res, 400, 'El correo electrónico ingresado aún no está registrado. ');
         }
 
         // Guardar OTP temporal
@@ -55,11 +55,9 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
 });
 
 
-router.post('/verify-otp', async(req: Request, res: Response) => {
+router.post('/verify-otp', validateOTP, handleValidationErrorsByField, async(req: Request, res: Response) => {
     try{
         const {email, otp} = req.body;
-
-        if(!otp) return sendError(res, 401, "El OTP es obligatorio.");
 
         const emailNormalized = email.trim().toLowerCase();
         const storedOTP = otpStore[emailNormalized];
@@ -76,7 +74,8 @@ router.post('/verify-otp', async(req: Request, res: Response) => {
         verifiedEmails.add(emailNormalized);
         delete otpStore[emailNormalized];
 
-        return sendSuccess(res, 200, 'OTP verificado correctamente.')    
+        return sendSuccess(res, 200, 'OTP verificado correctamente.')  
+        
     }catch{
         return sendError(res, 500, "Error en la conexión con el servidor.")
     }
