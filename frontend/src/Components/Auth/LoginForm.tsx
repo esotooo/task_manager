@@ -7,11 +7,9 @@ export default function LoginForm() {
 
     const {
         form,
-        passwordVisible,
         message,
         handleChange,
         handleLogin,
-        togglePasswordVisibility,
         navigateTo,
         getFieldsError,
         clearFieldsError
@@ -48,8 +46,6 @@ export default function LoginForm() {
                         name="user_password"
                         value={form.user_password}
                         onChange={handleChange}
-                        visible={passwordVisible}
-                        onToggleVisibility={togglePasswordVisibility}
                         error={getFieldsError('user_password')}
                         setError={() => clearFieldsError('user_password', '')}
                         />
