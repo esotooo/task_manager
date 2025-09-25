@@ -54,14 +54,13 @@ export default function LoginForm() {
                         setError={() => clearFieldsError('user_password', '')}
                         />
 
-                    <div className="h-5">
+                    <div className="h-1">
                         {message && 
                             <p className="text-xs text-rose-400 italic">{message}</p>
                         }
                     </div>
 
-
-                    <button type='submit' className="mt-5 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
+                    <button type='submit' className="mt-8 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
                         Iniciar Sesión
                     </button>
                 </form>
