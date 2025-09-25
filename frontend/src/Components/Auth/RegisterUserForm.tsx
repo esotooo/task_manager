@@ -7,8 +7,6 @@ export default function RegisterUserForm() {
 
     const { 
         form, 
-        passwordVisible, 
-        confirmPasswordVisible,
         suggestions,
         showConfirm,
         showError,
@@ -17,8 +15,6 @@ export default function RegisterUserForm() {
         setForm,
         handleRegister, 
         handleChange, 
-        toggleConfirmPasswordVisibility,
-        togglePasswordVisibility,
         getFieldsError,
         clearFieldsError,
         navigateTo
@@ -91,8 +87,6 @@ export default function RegisterUserForm() {
                         name="user_password"
                         value={form.user_password}
                         onChange={handleChange}
-                        visible={passwordVisible}
-                        onToggleVisibility={togglePasswordVisibility}
                         error={getFieldsError('user_password')}
                         setError={() => clearFieldsError('user_password', '')}
                         showPasswordRequirements
@@ -103,8 +97,6 @@ export default function RegisterUserForm() {
                         name="confirm_password"
                         value={form.confirm_password}
                         onChange={handleChange}
-                        visible={confirmPasswordVisible}
-                        onToggleVisibility={toggleConfirmPasswordVisibility}
                         error={getFieldsError('confirm_password')}
                         setError={() => clearFieldsError('confirm_password', '')}
                     />
