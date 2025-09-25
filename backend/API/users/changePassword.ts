@@ -8,7 +8,7 @@ import { sendEmail } from '../../utils/emailGenerator';
 import { OTPType } from '../../types/MailType';
 import { hashPassword } from '../../utils/hashPassword';
 import { ResultSetHeader } from 'mysql2';
-import { handleValidationErrorsByField, validateEmail, validateOTP } from '../../middlewares/validateChangePassword';
+import { handleValidationErrorsByField, validateEmail, validateNewPassword, validateOTP } from '../../middlewares/validateChangePassword';
 
 const router = Router();
 
@@ -47,7 +47,7 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
             otp: code
         });
 
-        return sendSuccess(res, 200, [],'OTP enviado exitosamente.');
+        return sendSuccess(res, 200, [], 'OTP enviado exitosamente.');
 
     } catch{
         return sendError(res, 500, 'Error en la conexión con el servidor.');
@@ -60,28 +60,18 @@ router.post('/verify-otp', validateOTP, handleValidationErrorsByField, async(req
         const {email, otp} = req.body;
 
         const emailNormalized = email.trim().toLowerCase();
-        const storedOTP = otpStore[emailNormalized];
-
-        if(Date.now() > storedOTP.expiresAt){
-            delete otpStore[emailNormalized];
-            return sendError(res, 400, "El OTP ha expirado. ¿Desea reenviarlo?");
-        }
-
-        if(storedOTP.code !== otp){
-            return sendError(res, 403, "OTP incorrecto.");
-        }
 
         verifiedEmails.add(emailNormalized);
         delete otpStore[emailNormalized];
 
-        return sendSuccess(res, 200, 'OTP verificado correctamente.')  
+        return sendSuccess(res, 200, [], 'Código verificado correctamente.')  
         
     }catch{
         return sendError(res, 500, "Error en la conexión con el servidor.")
     }
 })
 
-router.put('/change-password', async(req: Request, res: Response) => {
+router.put('/change-password', validateNewPassword, handleValidationErrorsByField, async(req: Request, res: Response) => {
     try{
         const {email, user_password} = req.body;
         const emailNormalized = email.trim().toLowerCase();
@@ -95,7 +85,7 @@ router.put('/change-password', async(req: Request, res: Response) => {
 
         verifiedEmails.delete(emailNormalized);
 
-        return sendSuccess(res, 201, 'Contraseña actualizada exitosamente.')
+        return sendSuccess(res, 201, [], 'Contraseña actualizada exitosamente.')
     }catch{
         return sendError(res, 500, 'Error en la conexión con el servidor.')
     }
