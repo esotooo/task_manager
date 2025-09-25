@@ -4,7 +4,7 @@ import { PasswordInput } from "../Layout/ReusableInput";
 export default function ChangePasswordForm() {
 
     const {handleChangePassword, form, handleChange,
-        togglePasswordVisibility, passwordVisible, getFieldsError, clearFieldsError
+        getFieldsError, clearFieldsError
     } = useChangePassword()
         
     return (
@@ -19,8 +19,6 @@ export default function ChangePasswordForm() {
                         name="user_password"
                         value={form.user_password}
                         onChange={handleChange}
-                        onToggleVisibility={togglePasswordVisibility}
-                        visible={passwordVisible}
                         error={getFieldsError('user_password')}
                         setError={() => clearFieldsError('user_password', '')}
                         showPasswordRequirements
