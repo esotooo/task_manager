@@ -13,7 +13,7 @@ export default function EmailForm() {
         error,
         getFieldsError,
         clearFieldsError,
-        showRegisterBtn
+        showButton
     
     } = useChangePassword()
 
@@ -39,15 +39,16 @@ export default function EmailForm() {
                 setError={() => clearFieldsError('email', '')}
             />
 
-            <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-7 text-rose-400 flex
+            <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-1 text-rose-400 flex gap-1 italic
                     ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
                 <p>
                     {error ?? ' '}
                 </p>
 
-                {showRegisterBtn && (
-                    <button className="underline font-bold text-black cursor-pointer"
-                        onClick={() => navigateTo('/register')} 
+                {showButton && (
+                    <button className="underline font-bold text-black cursor-pointer not-italic"
+                        onClick={() => navigateTo('/register')}
+                        type="button" 
                     >
                         ¿Desea registrarse?
                     </button>
@@ -57,7 +58,7 @@ export default function EmailForm() {
 
             <button 
                 type="submit" 
-                className="cursor-pointer bg-black text-white mt-8 font-bold
+                className="cursor-pointer bg-black text-white mt-6 font-bold
                 w-full py-3 text-sm rounded-md hover:bg-black/80"   
             >
                 Enviar Código
