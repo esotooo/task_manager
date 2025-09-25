@@ -10,9 +10,9 @@ export const useLoginForm = () => {
         loginInput: '',
         user_password: ''
     })
-    const [passwordVisible, setPasswordVisible] = useState(false)
     const [showError, setShowError] = useState(false);
     const [message, setMessage] = useState<string | null>(null)
+
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
 
     const navigate = useNavigate()
@@ -41,24 +41,16 @@ export const useLoginForm = () => {
         }
     }
 
-    const togglePasswordVisibility = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.preventDefault()
-        setPasswordVisible(prev => !prev)
-    }
-
-
     const navigateTo = (page: string) => {
         navigate(page)
     }
 
     return{
         form,
-        passwordVisible,
         message,
         showError,
         handleChange,
         handleLogin,
-        togglePasswordVisibility,
         getFieldsError,
         clearFieldsError,
         navigateTo

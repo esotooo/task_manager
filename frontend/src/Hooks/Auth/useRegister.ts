@@ -4,14 +4,6 @@ import { api } from '../../Utils/axiosInstance.ts'
 import { useNavigate } from "react-router-dom";
 import { useInputError } from "../Layout/useInputError.ts";
 
-const passwordRequirements = [
-    { test: /.{8,}/, label: 'Mínimo 8 caracteres.' },
-    { test: /[A-Z]/, label: 'Al menos una mayúscula.' },
-    { test: /[a-z]/, label: 'Al menos una minúscula.' },
-    { test: /\d/, label: 'Al menos un número.' },
-    { test: /[^A-Za-z0-9]/, label: 'Al menos un carácter especial.' }
-]
-
 export const useRegisterForm = () => {
     // --- ESTADOS ---
     //Formulario
@@ -31,9 +23,6 @@ export const useRegisterForm = () => {
 
     //Sugerencias y otros
     const [suggestions, setSuggestions] = useState<string[]>([])
-    const [passwordVisible, setPasswordVisible] = useState(false)
-    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
-    const [requirements, setRequirements] = useState(false)
 
     const navigate = useNavigate()
 
@@ -134,38 +123,21 @@ export const useRegisterForm = () => {
         if (success) clearForm()
     }
 
-    // --- FUNCIONES: UI ----
-    const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) =>
-        (e: React.MouseEvent) => { e.preventDefault(); setter(prev => !prev) }
-
-    const togglePasswordVisibility = toggleVisibility(setPasswordVisible)
-    const toggleConfirmPasswordVisibility = toggleVisibility(setConfirmPasswordVisible)
-
-
-    
 
     return {
         // Estados
         form, 
-        passwordVisible, 
-        confirmPasswordVisible,
-        requirements, 
         showError, 
         showConfirm, 
         container, 
-        passwordRequirements,
         suggestions,
         message,
 
         // Handlers
         handleChange, 
         handleRegister, 
-        togglePasswordVisibility, 
-        toggleConfirmPasswordVisibility,
-        showRequirements: () => setRequirements(true),
-        hideRequirements: () => setRequirements(false),
         setForm,
-
+        
         getFieldsError,
         clearFieldsError,
         navigateTo
