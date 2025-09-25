@@ -72,14 +72,11 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
     onChange,
     error,
     setError,
-    visible,
-    onToggleVisibility,
     requirements = passwordRequirements,
-    showPasswordRequirements = false
+    showPasswordRequirements = false,
 }) => {
-
-    
     const [showRequirements, setShowRequirements] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (setError) setError("")
@@ -103,6 +100,10 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         }
     } 
 
+    const togglePasswordVisibility = () => {
+        setPasswordVisible((prev) => !prev)
+    }
+
     return (
         <div className="relative pb-3">
             {/* Input */}
@@ -112,7 +113,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                 ${error ? "border-b-rose-400" : ""}`}
             >
                 <input
-                    type={visible ? "text" : "password"}
+                    type={passwordVisible ? "text" : "password"}
                     placeholder={placeholder}
                     name={name}
                     value={value}
@@ -125,10 +126,10 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                     onPaste={blockCopyPaste}
                 />
                 <div
-                    onClick={onToggleVisibility}
+                    onClick={togglePasswordVisibility}
                     className="cursor-pointer ml-2 pr-2 hover:opacity-80"
                 >
-                    {visible ? <LuEye /> : <LuEyeClosed />}
+                    {passwordVisible ? <LuEye /> : <LuEyeClosed />}
                 </div>
             </div>
 
