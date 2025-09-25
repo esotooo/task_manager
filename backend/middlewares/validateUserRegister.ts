@@ -10,7 +10,7 @@ export const validateUserRegister = [
     body('firstname')
         .trim()
         .notEmpty()
-        .withMessage('El nombre es obligatorio.')
+        .withMessage('Por favor, ingrese su nombre.')
         .bail()
         .isLength({min: 2, max: 50})
         .withMessage('El nombre debe tener entre 2 y 50 caracteres.')
@@ -18,10 +18,10 @@ export const validateUserRegister = [
         .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
         .withMessage('El nombre solo puede contener letras y espacios.'),
 
-    body('lastname')
+    body('lastname') 
         .trim()
         .notEmpty()
-        .withMessage('El apellido es obligatorio.')
+        .withMessage('Por favor, ingrese su apellido.')
         .bail()
         .isLength({min: 2, max: 50})
         .withMessage('El apellido debe tener entre 2 y 50 caracteres.')
@@ -32,7 +32,7 @@ export const validateUserRegister = [
     body('username')
         .trim()
         .notEmpty()
-        .withMessage('El usuario es obligatorio.')
+        .withMessage('Por favor, ingrese su nombre de usuario.')
         .bail()
         .isLength({min: 3, max: 30})
         .withMessage('El usuario debe tener entre 3 y 30 caracteres.')
@@ -51,7 +51,7 @@ export const validateUserRegister = [
     body('email')
         .trim()
         .notEmpty()
-        .withMessage('El correo electrónico es obligatorio.')
+        .withMessage('Por favor, ingrese su correo electrónico.')
         .bail()
         .isEmail()
         .withMessage('El email no tiene un formato válido.')
@@ -73,7 +73,7 @@ export const validateUserRegister = [
     
     body('user_password')
         .notEmpty()
-        .withMessage('La contraseña es obligatoria.')
+        .withMessage('Por favor, ingrese su contraseña.')
         .bail()
         .isLength({min: 8, max: 128})
         .withMessage('La contraseña debe tener entre 8 y 128 caracteres.')
@@ -83,7 +83,7 @@ export const validateUserRegister = [
 
     body('confirm_password')
         .notEmpty()
-        .withMessage('Confirmación de contraseña requerida.')
+        .withMessage('Por favor, confirme su contraseña.')
         .bail()
         .custom((value, { req }) => {
             if (value !== req.body.user_password) {
