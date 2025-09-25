@@ -18,7 +18,7 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
     user_password: ''
   })
 
-  const initialForm = {
+  const clearForm = {
     email: '',
     otp: '',
     user_password: ''
@@ -30,7 +30,6 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
   const [timeLeft, setTimeLeft] = useState(0)
   const [isCounting, setIsCounting] = useState(false)
   const [showCounter, setShowCounter] = useState(true)
-  const [passwordVisible, setPasswordVisible] = useState(false)
 
   const sendOTP = async (email: string) => {
       try{
@@ -97,7 +96,10 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
       const res = await api.put('/api/users/change-password', {email, user_password})
       if(res.status === 200){
         setError('')
-        setForm(initialForm)
+        setForm(clearForm)
+        setTimeout(() => {
+          navigate('/login', {replace: true})
+        }, 3000)
         return true
       }
     }catch(error: any){
@@ -114,7 +116,6 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
       return false
     }
   }
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const {name, value} = e.target
@@ -137,14 +138,12 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     await changePassword(form.email, form.user_password)
-    navigate('/login', {replace: true})
   }
-
 
   const backToEmail = () => {
     setStep('email')
     setError('')
-    setForm(initialForm)
+    setForm(clearForm)
     setIsCounting(false)
     setTimeLeft(0)
   }
@@ -170,17 +169,24 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
     await sendOTP(form.email);
   }
 
-  const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<boolean>>) =>
-    (e: React.MouseEvent) => { e.preventDefault(); setter(prev => !prev) }
-
-  const togglePasswordVisibility = toggleVisibility(setPasswordVisible)
-
   return(
     <ChangePasswordContext.Provider value={{
-      form, error, step, showButton, setStep, handleChange, handleSendOTP, getFieldsError, clearFieldsError, 
-      handleVerifyOTP, backToEmail, minutes, seconds, resendOTP, showCounter, handleChangePassword,
-      passwordVisible,
-      togglePasswordVisibility
+      form, 
+      error, 
+      step, 
+      showButton, 
+      minutes,
+      seconds,
+      showCounter,
+      setStep, 
+      handleChange, 
+      handleSendOTP, 
+      getFieldsError, 
+      clearFieldsError, 
+      handleVerifyOTP, 
+      backToEmail,   
+      resendOTP, 
+      handleChangePassword,
     }}>
       {children}
     </ChangePasswordContext.Provider>
