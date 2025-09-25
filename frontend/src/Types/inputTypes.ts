@@ -10,6 +10,12 @@ export type FormInputProps = {
     suggestions?: React.ReactElement[]
 }
 
+export interface PasswordRequirement {
+    label: string;
+    test: RegExp;
+}
+  
+
 export type PasswordInputProps = {
     placeholder: string
     name?: string
@@ -21,5 +27,7 @@ export type PasswordInputProps = {
     onToggleVisibility: (e: React.MouseEvent<HTMLDivElement>) => void
     className?: string
     onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void
-    onFocus?: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onFocus?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    requirements?: PasswordRequirement[]
+    showPasswordRequirements?: boolean
 }
