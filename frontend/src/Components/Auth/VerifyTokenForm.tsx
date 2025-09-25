@@ -1,16 +1,11 @@
-import { useNavigate } from "react-router-dom";
 import { useChangePassword } from "../../Hooks/Auth/useChangePassword";
 import { FormInput } from "../Layout/ReusableInput";
 
 export default function VerifyTokenForm() {
 
-  const navigate = useNavigate()
-
-  const {handleChange, handleVerifyOTP, getFieldsError, clearFieldsError, form, backToEmail} = useChangePassword()
-
-  const navigateTo = (page: string) => {
-    navigate(page)
-  }
+  const {handleChange, handleVerifyOTP, getFieldsError, clearFieldsError, form, backToEmail, error,
+    minutes, seconds, showButton, resendOTP, showCounter
+  } = useChangePassword()
 
   return ( 
     <div>
@@ -18,15 +13,39 @@ export default function VerifyTokenForm() {
           Hemos enviado un código de verificación al correo electrónico que registraste anteriormente. 
           Por favor, ingrésalo para continuar con el proceso de restablecimiento de contraseña.
         </p>
+
       <form onSubmit={handleVerifyOTP}>
           <FormInput 
             placeholder=""
+            type="number"
             name="otp"
             value={form.otp}
             onChange={handleChange}
             error={getFieldsError('otp')}
             setError={() => clearFieldsError('otp', '')}
           />
+
+          <div className={`overflow-hidden transition-all duration-300 max-h-10 text-xs mt-7 text-rose-400 italic
+                    ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+                <p>
+                    {error ?? ' '}
+                </p>
+          </div>
+
+          <div className="flex justify-center flex-col">
+            {showCounter && (
+              <p className="text-xs text-center mt-2"> Expira en: {' '}
+                <span className="font-bold">{minutes}:{seconds.toString().padStart(2, "0")}</span>
+              </p>
+            )}
+
+
+            {showButton && (
+              <button className="text-xs underline font-bold cursor-pointer" onClick={resendOTP}>Reenviar código</button>
+            )}
+          </div>
+          
+       
 
           <button 
               type="submit" 
