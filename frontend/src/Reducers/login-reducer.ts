@@ -6,7 +6,7 @@ export type LoginActions =
 
 export type LoginState = {
     form: {
-        loginInput: string,
+        email: string,
         user_password: string
     }
     showError: boolean
@@ -15,7 +15,7 @@ export type LoginState = {
 
 export const initialState : LoginState = {
     form: {
-        loginInput: '',
+        email: '',
         user_password: ''
     },
     showError: false,
