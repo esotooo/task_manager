@@ -1,11 +1,11 @@
 import { useState } from "react"
 
 type FieldsErrors = {
-  [key: string]: string
+  [key: string]: string 
 }
 
 export const useInputError = (initialErrors: FieldsErrors = {}) => {
-  const [fieldMessage, setFieldMessage] = useState<FieldsErrors>(initialErrors)
+  const [fieldMessage, setFieldMessage] = useState<FieldsErrors | null>(initialErrors)
 
   const getFieldsError = (fieldname: string) => {
     if (!fieldMessage) return null
