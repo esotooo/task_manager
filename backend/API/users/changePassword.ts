@@ -33,7 +33,7 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
         );
 
         if (existingEmail.length === 0) {
-            return sendError(res, 400, 'El correo electrónico ingresado aún no está registrado. ');
+            return sendError(res, 404, 'El correo electrónico ingresado aún no está registrado. ');
         }
 
         // Guardar OTP temporal
@@ -78,14 +78,14 @@ router.put('/change-password', validateNewPassword, handleValidationErrorsByFiel
         const hashedPassword = await hashPassword(user_password);
 
         if (!verifiedEmails.has(emailNormalized)) {
-            return sendError(res, 400, 'Debes verificar el OTP antes de cambiar la contraseña.');
+            return sendError(res, 403, 'Debes verificar el OTP antes de cambiar la contraseña.');
         }
 
         await pool.query<ResultSetHeader>(changePasswordQueries.updatePassword, [hashedPassword, emailNormalized]);
 
         verifiedEmails.delete(emailNormalized);
 
-        return sendSuccess(res, 201, [], 'Contraseña actualizada exitosamente.')
+        return sendSuccess(res, 200, [], 'Contraseña actualizada exitosamente.')
     }catch{
         return sendError(res, 500, 'Error en la conexión con el servidor.')
     }
