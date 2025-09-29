@@ -2,15 +2,15 @@ import {body, validationResult} from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
 
 export const validateLogin = [
-    body('loginInput')
+    body('email')
         .trim()
         .notEmpty()
-        .withMessage('Ingrese su usuario o correo electrónico.'),
+        .withMessage('Por favor, ingrese su correo electrónico.'),
         
     body('user_password')
         .trim()
         .notEmpty()
-        .withMessage('Ingrese su contraseña.')
+        .withMessage('Por favor, ingrese su contraseña.')
 ]
 
 export const handleLoginErrors = (req: Request, res: Response, next: NextFunction) => {
