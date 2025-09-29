@@ -6,8 +6,7 @@ type AuthContextProps = {
   user: InformationReceivedType | null
   login: (body: LoginType) => Promise<loginResult>
   logout: () => void
-};
-
+}
 
 type loginResult = {
     success: boolean;
@@ -18,6 +17,7 @@ type loginResult = {
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+
     const [user, setUser] = useState<InformationReceivedType | null>(null)
 
     const login = async (credentials: LoginType): Promise<loginResult> => {
