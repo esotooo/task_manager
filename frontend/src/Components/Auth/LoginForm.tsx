@@ -32,12 +32,13 @@ export default function LoginForm() {
                 <form onSubmit={handleLogin} className="mt-7 space-y-5">
 
                     <FormInput 
-                        placeholder="Usuario o Correo Electrónico"
-                        name="loginInput"
-                        value={state.form.loginInput}
+                        placeholder="Correo Electrónico"
+                        type='email'
+                        name="email"
+                        value={state.form.email}
                         onChange={handleChange}
-                        error={getFieldsError('loginInput')}
-                        setError={() => clearFieldsError('loginInput', '')}
+                        error={getFieldsError('email')}
+                        setError={() => clearFieldsError('email', '')}
                     />
 
                     <PasswordInput 
