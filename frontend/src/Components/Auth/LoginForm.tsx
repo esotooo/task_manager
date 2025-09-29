@@ -6,13 +6,12 @@ export default function LoginForm() {
 
 
     const {
-        form,
-        message,
+        state,
         handleChange,
         handleLogin,
         navigateTo,
         getFieldsError,
-        clearFieldsError
+        clearFieldsError,
     } = useLoginForm()
     
 
@@ -35,7 +34,7 @@ export default function LoginForm() {
                     <FormInput 
                         placeholder="Usuario o Correo Electrónico"
                         name="loginInput"
-                        value={form.loginInput}
+                        value={state.form.loginInput}
                         onChange={handleChange}
                         error={getFieldsError('loginInput')}
                         setError={() => clearFieldsError('loginInput', '')}
@@ -44,15 +43,15 @@ export default function LoginForm() {
                     <PasswordInput 
                         placeholder="Contraseña"
                         name="user_password"
-                        value={form.user_password}
+                        value={state.form.user_password}
                         onChange={handleChange}
                         error={getFieldsError('user_password')}
                         setError={() => clearFieldsError('user_password', '')}
                         />
 
                     <div className="h-1">
-                        {message && 
-                            <p className="text-xs text-rose-400 italic">{message}</p>
+                        {state.message && 
+                            <p className="text-xs text-rose-400 italic">{state.message}</p>
                         }
                     </div>
 
