@@ -3,8 +3,8 @@ import { FormInput } from "../Layout/ReusableInput";
 
 export default function VerifyTokenForm() {
 
-  const {handleChange, handleVerifyOTP, getFieldsError, clearFieldsError, form, backToEmail, error,
-    minutes, seconds, showButton, resendOTP, showCounter
+  const {handleChange, handleVerifyOTP, getFieldsError, clearFieldsError, backToEmail, state
+    ,minutes, seconds, resendOTP
   } = useChangePassword()
 
   return ( 
@@ -19,33 +19,37 @@ export default function VerifyTokenForm() {
             placeholder=""
             type="number"
             name="otp"
-            value={form.otp}
+            value={state.form.otp}
             onChange={handleChange}
             error={getFieldsError('otp')}
             setError={() => clearFieldsError('otp', '')}
           />
 
           <div className={`overflow-hidden transition-all duration-300 max-h-10 text-xs mt-7 text-rose-400 italic
-                    ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+                    ${state.showError ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
                 <p>
-                    {error ?? ' '}
+                    {state.message ?? ' '}
                 </p>
           </div>
 
           <div className="flex justify-center flex-col">
-            {showCounter && (
+            {state.otpTimer.showCounter && (
               <p className="text-xs text-center mt-2"> Expira en: {' '}
                 <span className="font-bold">{minutes}:{seconds.toString().padStart(2, "0")}</span>
               </p>
             )}
 
-
-            {showButton && (
-              <button className="text-xs underline font-bold cursor-pointer" onClick={resendOTP}>Reenviar código</button>
+            {state.otpTimer.showButton && (
+              <button 
+                className="text-xs underline font-bold cursor-pointer" 
+                onClick={resendOTP} 
+                type="button"
+              >
+                Reenviar código
+              </button>
             )}
           </div>
           
-       
 
           <button 
               type="submit" 
