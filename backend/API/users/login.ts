@@ -49,6 +49,8 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
             id_user: user.id_user,
             firstname: user.firstname,
             lastname: user.lastname,
+            username: user.username,
+            email: user.email
         }, "Sesión iniciada exitosamente.", token)
 
 
