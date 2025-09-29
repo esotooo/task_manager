@@ -2,22 +2,17 @@ import { useRegisterForm } from "../../Hooks/Auth/useRegister"
 import { FormInput, PasswordInput } from "../Layout/ReusableInput";
 import StateWindows from "../../Components/Auth/StateWindows";
 
-
 export default function RegisterUserForm() {
 
     const { 
-        form, 
-        suggestions,
-        showConfirm,
-        showError,
-        message,
+        state,
         container,
-        setForm,
         handleRegister, 
         handleChange, 
         getFieldsError,
         clearFieldsError,
-        navigateTo
+        navigateTo,
+        dispatch
     } = useRegisterForm()
 
 
@@ -26,9 +21,9 @@ export default function RegisterUserForm() {
             <h2 className="font-bold text-[20px] mb-4">Registrarse</h2>
             <div className="relative">
             <StateWindows
-                showConfirm={showConfirm}
-                showError={showError}
-                message={message}
+                showConfirm={state.showConfirm}
+                showError={state.showError}
+                message={state.message}
                 container={container}
             />       
          <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
@@ -38,7 +33,7 @@ export default function RegisterUserForm() {
                     <FormInput
                         placeholder='Nombre'
                         name='firstname'
-                        value={form.firstname}
+                        value={state.form.firstname}
                         onChange={handleChange}
                         error={getFieldsError('firstname')}
                         setError={() => clearFieldsError('firstname', '')}
@@ -47,7 +42,7 @@ export default function RegisterUserForm() {
                     <FormInput 
                         placeholder='Apellido'
                         name="lastname"
-                        value={form.lastname}
+                        value={state.form.lastname}
                         onChange={handleChange}
                         error={getFieldsError('lastname')} 
                         setError={() => clearFieldsError('lastname', '')}   
@@ -56,17 +51,17 @@ export default function RegisterUserForm() {
                     <FormInput
                         placeholder="Usuario"
                         name="username"
-                        value={form.username}
+                        value={state.form.username}
                         onChange={handleChange}
                         error={getFieldsError('username')}
-                        suggestions={suggestions.map((suggestion, index) => (
+                        suggestions={state.suggestions.map((s, idx) => (
                             <button 
-                                key={index}
+                                key={idx}
                                 type="button"
-                                onClick={() => setForm({...form, username: suggestion})}
+                                onClick={() =>  dispatch({type: 'SET_FIELD', field: 'username', value: s})}
                                 className="text-sm bg-gray-200/80 px-2 rounded-md font-bold"
                             >
-                                {suggestion}
+                                {s}
                             </button>
                         ))}
                         setError={() => clearFieldsError('username', '')}
@@ -76,7 +71,7 @@ export default function RegisterUserForm() {
                         type="email"
                         placeholder="Correo electrónico"
                         name="email"
-                        value={form.email}
+                        value={state.form.email}
                         onChange={handleChange}
                         error={getFieldsError('email')}
                         setError={() => clearFieldsError('email', '')}
@@ -85,7 +80,7 @@ export default function RegisterUserForm() {
                     <PasswordInput
                         placeholder="Contraseña"
                         name="user_password"
-                        value={form.user_password}
+                        value={state.form.user_password}
                         onChange={handleChange}
                         error={getFieldsError('user_password')}
                         setError={() => clearFieldsError('user_password', '')}
@@ -95,7 +90,7 @@ export default function RegisterUserForm() {
                     <PasswordInput
                         placeholder="Verificar Contraseña"
                         name="confirm_password"
-                        value={form.confirm_password}
+                        value={state.form.confirm_password}
                         onChange={handleChange}
                         error={getFieldsError('confirm_password')}
                         setError={() => clearFieldsError('confirm_password', '')}
