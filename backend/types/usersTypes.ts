@@ -12,3 +12,8 @@ export interface GetUsernameType extends RowDataPacket{
     username: string
 }
 
+export interface VerificationType extends RowDataPacket{
+    id_user: number,
+    is_valid: boolean
+}
+
