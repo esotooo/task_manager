@@ -1,67 +1,56 @@
-import React, { useState, useRef } from "react";
+import React, {useRef, useReducer } from "react";
 import type {RegisterType } from '../../Types/authTypes.ts'
 import { api } from '../../Utils/axiosInstance.ts'
 import { useNavigate } from "react-router-dom";
 import { useInputError } from "../Layout/useInputError.ts";
+import { initialState, RegisterReducer } from "../../Reducers/register-reducer.ts";
 
 export const useRegisterForm = () => {
     // --- ESTADOS ---
-    //Formulario
-    const [form, setForm] = useState({
-        firstname: '',
-        lastname: '', 
-        username: '', 
-        email: '', 
-        user_password: '', 
-        confirm_password: ''
-    })
+    // useReducer para manejo de logica en formulario para ingresar usuarios
+    const [state, dispatch] = useReducer(RegisterReducer, initialState);
 
+    // custom hook para manejo de errores por campo
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
-    const [showConfirm, setShowConfirm] = useState(false)
-    const [showError, setShowError] = useState(false)
-    const [message, setMessage] = useState<string | null>(null)
 
-    //Sugerencias y otros
-    const [suggestions, setSuggestions] = useState<string[]>([])
-
+    // navigate para manejar cambio de paginas
     const navigate = useNavigate()
 
 
     //Animaciones
     const container = useRef<HTMLDivElement>(null)
-
     
     // --- FUNCIONES: API ---
+    // Funcion para buscar que el usuario ingresado no exista en la DB y mostrar sugerencias
     const searchExistingUsernames = async(username : string) => {
         try {
             const res = await api.get(`/api/users/search-username?username=${username}`)
             if (res.status === 200) {
-                setSuggestions([])
+                dispatch({type: 'SET_SUGGESTIONS', suggestions: []})
             }
             return true
         } catch (error: any) {
             if (error.response) {
                 if (error.response.status === 409) {
-                    setSuggestions(error.response.data.data.suggestions)
+                    dispatch({type: 'SET_SUGGESTIONS', suggestions: error.response.data.data.suggestions})
                     return false
                 }
             } 
-            setSuggestions([])
+            dispatch({type: 'SET_SUGGESTIONS', suggestions: []})
             return false
         }
     }
-    
+
+    // Funcion para register usuarios nuevos
     const registerNewUser = async (newUser: RegisterType) => {
         try {
             const res = await api.post('/api/users/register', newUser);
         
             if (res.status === 201) {
-                setShowConfirm(true)
-                setMessage(res.data.message)
+                dispatch({type: 'SET_CONFIRM', message: res.data.message})
 
                 setTimeout(() => {
-                    setMessage('')
-                    setShowConfirm(false)
+                    dispatch({type: 'SET_CONFIRM', message: ''})
                     setFieldMessage({})
                     navigate('/login')
                 }, 5000)
@@ -74,70 +63,52 @@ export const useRegisterForm = () => {
             if(error.response){
                 if(error.response.data.fields){
                     setFieldMessage(error.response.data.fields)
-                }if(error.response.data.message){
-                    setShowError(true)
-                    setMessage(error.response.data.message)
-                    setTimeout(() => {
-                        setShowError(false)
-                        setMessage('')
-                    }, 5000);
+                } 
+                if(error.response.data.message){
+                    dispatch({ type: "SET_ERROR", message: error.response.data.message })
+                    setTimeout(() => dispatch({ type: "SET_ERROR", message: null }), 5000)
                 }
+                return false;
             }else{
-                setShowError(true)
-                setMessage('Error en la conexión con el servidor.')
-                setTimeout(() => {
-                    setShowError(false)
-                    setMessage('')
-                }, 5000);
+                dispatch({type: 'SET_ERROR', message: 'Error en la conexión con el servidor'})
+                setTimeout(() => dispatch({ type: "SET_ERROR", message: null }), 5000)
             }
             return false
         }
     }
 
-
+    // Funcion para navegar entre paginas
     const navigateTo = (page: string) => {
         navigate(page)
     }
 
     //--- FUNCIONES: FORMULARIO ----
+    // Funcion para detectar cambios en input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setForm(prev => 
-            ({ ...prev, [name]: value })
-        )
+        dispatch({type: 'SET_FIELD', field: e.target.name, value: e.target.value})
     }
 
-    const clearForm = () => setForm({ 
-        firstname: '', 
-        lastname: '',
-        username: '', 
-        email: '', 
-        user_password: '', 
-        confirm_password: '' 
-    })
+    // Funcion para limpiar el formulario
+    const clearForm = () => dispatch({ type: "CLEAR_FORM" });
 
+    // Funcion para registrar usuario por medio de un formulario
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
-        await searchExistingUsernames(form.username)
-        const success = await registerNewUser(form)
+        await searchExistingUsernames(state.form.username)
+        const success = await registerNewUser(state.form)
         if (success) clearForm()
     }
 
-
     return {
         // Estados
-        form, 
-        showError, 
-        showConfirm, 
+        state,
         container, 
-        suggestions,
-        message,
 
         // Handlers
+        dispatch,
         handleChange, 
         handleRegister, 
-        setForm,
-        
+
         getFieldsError,
         clearFieldsError,
         navigateTo
