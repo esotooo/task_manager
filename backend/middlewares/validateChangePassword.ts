@@ -70,7 +70,13 @@ export const handleValidationErrorsByField = (req: Request, res: Response, next:
         errorsByField[field] = error.msg;
         });
 
-        return(res.status(400).json({
+        const otpExpired = Object.values(errorsByField).some(msg => 
+          msg.includes("El código ha expirado.")
+        )
+
+        const statusCode = otpExpired ? 401 : 400;
+
+        return(res.status(statusCode).json({
             success: false,
             fields: errorsByField
         }));
