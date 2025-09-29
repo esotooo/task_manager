@@ -1,46 +1,31 @@
-import { createContext, useEffect} from 'react'
-import { useState } from "react"
+import { createContext, useEffect, useReducer} from 'react'
 import { api } from '../Utils/axiosInstance.ts'
 import { useInputError } from '../Hooks/Layout/useInputError.ts'
+import { ChangePasswordReducer, initialState } from '../Reducers/changepassword-reducer.ts'
 import { useNavigate } from 'react-router-dom'
 
 export const ChangePasswordContext = createContext<any>(null)
 
 export const ChangePasswordProvider = ({ children }: { children: React.ReactNode }) => {
 
-  const navigate = useNavigate()
-    
   const {getFieldsError, clearFieldsError, setFieldMessage } = useInputError();
 
-  const [form, setForm] = useState({
-    email: '',
-    otp: '',
-    user_password: ''
-  })
+  const [state, dispatch] = useReducer(ChangePasswordReducer, initialState)
 
-  const clearForm = {
-    email: '',
-    otp: '',
-    user_password: ''
-  }
-
-  const [error, setError] = useState('')
-  const [step, setStep] = useState<'email' | 'otp' | 'change'>('email')
-  const [showButton, setShowButton] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(0)
-  const [isCounting, setIsCounting] = useState(false)
-  const [showCounter, setShowCounter] = useState(true)
-
+  const navigate = useNavigate()
+  
   const sendOTP = async (email: string) => {
       try{
           const res = await api.post('/api/users/send-otp', {email})
           if(res.status === 200){
-              setStep('otp')
-              setTimeLeft(5 * 60)
-              setIsCounting(true)
-              setShowButton(false)
-              setShowCounter(true)
-              setError('')
+
+              dispatch({type: 'START_COUNTER'})
+              dispatch({type:'SET_MESSAGE', message: res.data.message, status: 'success'})
+              setTimeout(() => {
+                dispatch({type: 'SET_MESSAGE', message: '', status:  null})
+                dispatch({type: 'SET_STEP', step: 'otp'})
+              }, 3000)
+
               return true 
           }
           return false
@@ -49,15 +34,15 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
           if(error.response.data.fields){
             setFieldMessage(error.response.data.fields)
           }
-          if(error.response.status === 400){
-            setError(error.response.data.message)
-            setShowButton(true)
+          if(error.response.status === 404){
+            dispatch({type: 'SET_MESSAGE', message: error.response.data.message, status: 'error'})
+            dispatch({type: 'SHOW_BUTTON'})
           }
           if(error.response.data.message){
-              setError(error.response.data.message)
+            dispatch({type: 'SET_MESSAGE', message: error.response.data.message, status: 'error'})
           }
         }else{
-          setError('Error en la conexión con el servidor.')
+          dispatch({type: 'SET_MESSAGE', message: 'Error en la conexión con el servidor.', status: 'error'})
         }
           return false
       }
@@ -67,13 +52,14 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
     try{
       const res = await api.post('/api/users/verify-otp', {email, otp})
       if(res.status === 200){
-        setStep('change')
-        setError('')
-        setForm(prev => ({
-          ...prev,
-          otp: ''
-      }))        
-      return true
+        dispatch({type: 'SET_FIELD', field: 'otp', value: ''}) 
+        dispatch({type:'SET_MESSAGE', message: res.data.message, status: 'success'})
+        setTimeout(() => {
+          dispatch({type: 'SET_MESSAGE', message: '', status: null})
+          dispatch({type: 'SET_STEP', step: 'change'})    
+        }, 3000)   
+
+        return true
       }
       return false
     }catch(error:any){
@@ -82,10 +68,10 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
           setFieldMessage(error.response.data.fields)
         }
         if(error.response.data.message){
-            setError(error.response.data.message)
+          dispatch({type: 'SET_MESSAGE', message: error.response.data.message, status: 'error'})
         }
       }else{
-        setError('Error en la conexión con el servidor.')
+        dispatch({type: 'SET_MESSAGE', message: 'Error en la conexión con el servidor.', status: 'error'})
       }
       return false
     }
@@ -95,11 +81,11 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
     try{
       const res = await api.put('/api/users/change-password', {email, user_password})
       if(res.status === 200){
-        setError('')
-        setForm(clearForm)
+        dispatch({type: 'RESET_FORM'})
+        dispatch({type:'SET_MESSAGE', message: res.data.message, status:'success'})
         setTimeout(() => {
-          navigate('/login', {replace: true})
-        }, 3000)
+          dispatch({type: 'SET_MESSAGE', message: '', status: null})
+        }, 3000)   
         return true
       }
     }catch(error: any){
@@ -108,77 +94,72 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
           setFieldMessage(error.response.data.fields)
         }
         if(error.response.data.message){
-          setError(error.response.data.message)
+          dispatch({type: 'SET_MESSAGE', message: error.response.data.message, status: 'error'})
         }
       }else{
-        setError('Error en la conexión con el servidor.')
+        dispatch({type: 'SET_MESSAGE', message: 'Error en la conexión con el servidor.', status: 'error'})
       }
       return false
     }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const {name, value} = e.target
-      setForm(prev => ({
-          ...prev,
-          [name]: value
-      }))
+      dispatch({type: 'SET_FIELD', field: e.target.name, value: e.target.value})
   }
 
   const handleSendOTP =  async (e: React.FormEvent) => {
       e.preventDefault()
-      await sendOTP(form.email)
+      await sendOTP(state.form.email)
   }
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault()
-    await validateOTP(form.email, form.otp)
+    await validateOTP(state.form.email, state.form.otp)
   }
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    await changePassword(form.email, form.user_password)
+    const success = await changePassword(state.form.email, state.form.user_password)
+    if(success){
+      navigate('/login', {replace: true})
+    }
+  }
+
+  const resendOTP = async () => {
+    await sendOTP(state.form.email);
   }
 
   const backToEmail = () => {
-    setStep('email')
-    setError('')
-    setForm(clearForm)
-    setIsCounting(false)
-    setTimeLeft(0)
+    dispatch({type: 'SET_STEP', step: 'email'})
+    dispatch({type: 'SET_MESSAGE', message: '', status: null})
+    dispatch({type: 'RESET_FORM'})
+    dispatch({type: 'RESTART_COUNTER'})
+    setFieldMessage(null)
   }
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
+      dispatch({type: 'TICK_COUNTER'})
     }, 1000)
 
-    if (!isCounting || timeLeft <= 0){
-      setShowButton(true)
-      setShowCounter(false)
+    if (!state.otpTimer.isCounting || state.otpTimer.timeLeft <= 0){
+      dispatch({ type: "RESTART_COUNTER" })
       clearInterval(timer)
     }
 
     return () => clearInterval(timer)
-  }, [isCounting, timeLeft])
+  }, [state.otpTimer.isCounting, state.otpTimer.timeLeft])
 
-  const minutes = Math.floor(timeLeft / 60)
-  const seconds = timeLeft % 60
+  const minutes = Math.floor(state.otpTimer.timeLeft / 60)
+  const seconds = state.otpTimer.timeLeft % 60
 
-  const resendOTP = async () => {
-    await sendOTP(form.email);
-  }
 
   return(
     <ChangePasswordContext.Provider value={{
-      form, 
-      error, 
-      step, 
-      showButton, 
+      state,
       minutes,
       seconds,
-      showCounter,
-      setStep, 
+
       handleChange, 
       handleSendOTP, 
       getFieldsError, 
