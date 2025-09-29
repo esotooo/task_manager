@@ -6,7 +6,9 @@ export type LoginType = {
 export type InformationReceivedType ={
     id_user: number,
     firstname: string,
-    lastname: string
+    lastname: string,
+    email: string,
+    username: string
 }
 
 export type RegisterType = {
