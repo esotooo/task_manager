@@ -5,6 +5,7 @@ import {  GetUsernameType } from '../types/usersTypes';
 import { NextFunction, Request, Response } from 'express';
 import { validateEmailDomain } from './validateEmailDomain';
 import { GetEmailType } from '../types/MailType';
+import { sendVerificationEmail } from '../utils/emailGenerator';
 
 export const validateUserRegister = [
     body('firstname')
