@@ -4,7 +4,7 @@ import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { GetEmailType } from '../../types/MailType';
 import { changePasswordQueries } from '../../Queries/Auth/changePassword';
 import { generateCode } from '../../utils/generateCode';
-import { sendEmail } from '../../utils/emailGenerator';
+import { sendChangePasswordEmail } from '../../utils/emailGenerator';
 import { OTPType } from '../../types/MailType';
 import { hashPassword } from '../../utils/hashPassword';
 import { ResultSetHeader } from 'mysql2';
@@ -14,7 +14,7 @@ const router = Router();
 
 // OTP temporal almacenado por email
 export const otpStore: OTPType = {};
-const verifiedEmails: Set<string> = new Set();
+export const verifiedEmails: Set<string> = new Set();
 
 
 router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (req: Request, res: Response) => {
@@ -40,7 +40,7 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
         otpStore[emailNormalized] = { code, expiresAt };
 
         // Enviar OTP por correo
-        await sendEmail({
+        await sendChangePasswordEmail({
             email: emailNormalized,
             firstname: existingEmail[0].firstname,
             lastname: existingEmail[0].lastname,
@@ -57,7 +57,7 @@ router.post('/send-otp', validateEmail, handleValidationErrorsByField, async (re
 
 router.post('/verify-otp', validateOTP, handleValidationErrorsByField, async(req: Request, res: Response) => {
     try{
-        const {email, otp} = req.body;
+        const {email} = req.body;
 
         const emailNormalized = email.trim().toLowerCase();
 
@@ -70,7 +70,7 @@ router.post('/verify-otp', validateOTP, handleValidationErrorsByField, async(req
         return sendError(res, 500, "Error en la conexión con el servidor.")
     }
 })
-
+ 
 router.put('/change-password', validateNewPassword, handleValidationErrorsByField, async(req: Request, res: Response) => {
     try{
         const {email, user_password} = req.body;
