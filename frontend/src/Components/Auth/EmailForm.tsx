@@ -7,14 +7,11 @@ export default function EmailForm() {
     const navigate = useNavigate()
 
     const {
+        state,
         handleChange,
         handleSendOTP,
-        form,
-        error,
         getFieldsError,
         clearFieldsError,
-        showButton
-    
     } = useChangePassword()
 
     const navigateTo = (page: string) => {
@@ -33,19 +30,21 @@ export default function EmailForm() {
                 placeholder="Correo electrónico"
                 name="email"
                 type="email"
-                value={form.email}
+                value={state.form.email}
                 onChange={handleChange}
                 error={getFieldsError('email')}
                 setError={() => clearFieldsError('email', '')}
             />
 
-            <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-1 text-rose-400 flex gap-1 italic
-                    ${error ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+            <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-1 flex gap-1 italic
+                    ${state.status === "error" ? "text-rose-400" : ""}
+                    ${state.status === "success" ? "text-green-400" : ""}
+                    ${state.showMessage ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}}`}>
                 <p>
-                    {error ?? ' '}
+                    {state.message ?? ' '}
                 </p>
 
-                {showButton && (
+                {(state.showButton && state.status === "error") && (
                     <button className="underline font-bold text-black cursor-pointer not-italic"
                         onClick={() => navigateTo('/register')}
                         type="button" 
