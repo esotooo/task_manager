@@ -7,28 +7,35 @@ import { registerQueries } from '../../Queries/Auth/registerQueries';
 import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
 import { GetUsernameType } from '../../types/usersTypes';
 import { generateUsernames } from '../../utils/generateUsernames';
+import { tokenStore } from '../../utils/generateVerificationToken';
+import { generateVerificationToken } from '../../utils/generateVerificationToken';
 
-const router = Router()
+const router = Router();
 
 router.post('/register', validateUserRegister, handleValidationErrorsByField, async (req: Request, res: Response) => {
     try{
         const {firstname, lastname, username, email, user_password} = req.body;
 
+        const emailNormalized = email.trim().toLowerCase();
+
         //Ingresar contraseña ya hasheada la base de datos
         const hashedPassword = await hashPassword(user_password);
         const [register] = await pool.query<ResultSetHeader>(registerQueries.registerUserQuery, [
-            firstname, lastname, username, email, hashedPassword
-        ])
+            firstname, lastname, username, emailNormalized, hashedPassword, false
+        ]);
         
         //Proceder con el registro
         if(register.affectedRows > 0){
+            generateVerificationToken(emailNormalized)
+
             const newUser = {
                 id_user: register.insertId,
                 firstname: firstname,
                 lastname: lastname, 
                 username: username, 
             }
-            return sendSuccess(res, 201, newUser, "Se ha registro el usuario exitosamente.");
+            return sendSuccess(res, 201, newUser, `El usuario se ha registrado exitosamente. Se ha enviado un correo al email 
+                proporcionado para validar la cuenta.`);
         }
         else{
             return sendError(res, 400, "No se puedo registrar correctamente. Porfavor intente de nuevo.");
@@ -36,8 +43,7 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
     }catch(error){
         return sendError(res, 500, "Error en el servidor.");
     }
-})
-
+});
 
 router.get('/search-username', async(req: Request, res: Response) => {
     try{
@@ -57,8 +63,27 @@ router.get('/search-username', async(req: Request, res: Response) => {
             return sendSuccess(res, 409, { taken: existedUser, suggestions }, "Usuario ya existe.");
         }
     }catch{
-        return sendError(res, 500, "Error en el servidor.")
+        return sendError(res, 500, "Error en el servidor.");
     }
-})
+});
+
+router.get('/verify-email' , async(req: Request, res:Response) => {
+    const {token, email} = req.query as {token: string; email: string};
+    
+    const emailNormalized = email.trim().toLowerCase();
+
+    const record = tokenStore[emailNormalized];
+    if(!record) return res.redirect(`http://localhost:5173/login?verified=false`);
+    if(record.token !== token || Date.now() > record.expiresAt){
+        return res.redirect(`http://localhost:5173/login?verified=false`);
+    }
+
+    await pool.query(registerQueries.updateValidationState, [emailNormalized]);
+
+    delete tokenStore[emailNormalized];
+
+    return res.redirect(`http://localhost:5173/login?verified=true`);
+});
+
 
 export default router;
