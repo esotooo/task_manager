@@ -1,6 +1,6 @@
 export type LoginType = {
     email: string
-    user_password: string
+    user_password?: string
 }
 
 export type InformationReceivedType ={
