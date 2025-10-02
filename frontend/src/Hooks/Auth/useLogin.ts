@@ -3,7 +3,7 @@ import {useAuth} from './useAuth'
 import { useReducer } from 'react'
 import { useInputError } from '../Layout/useInputError';
 import { LoginReducer, initialState} from '../../Reducers/login-reducer';
-
+import { api } from '../../Utils/axiosInstance.ts'
 
 export const useLoginForm = () => {
 
@@ -32,14 +32,40 @@ export const useLoginForm = () => {
         if(result.success){
             navigate('/main', {replace: true})
             setFieldMessage({})
-            dispatch({type: 'CLEAR_ERROR'})
+            dispatch({type: 'SET_MESSAGE', message: '', status: null})
             dispatch({type: 'CLEAR_FIELDS'})
 
         }else{
             setFieldMessage(result.fields || {})
-            dispatch({type: 'SET_ERROR', message: result.message || null})
+            if(result.message === "Debes verificar tu cuenta antes de iniciar sesión."){
+                dispatch({type: 'SET_MESSAGE', message: result.message || null, status: 'error'})
+                dispatch({type: 'SHOW_BUTTON'})
+            }else{
+                dispatch({type: 'SET_MESSAGE', message: result.message || null, status: 'error'})
+                dispatch({type: 'HIDE_BUTTON'})
+            }
         }
     }
+
+    const resendVerificationEmail = async (email : string) => {
+        try{
+            const res = await api.get(`/api/users/resend-verification?email=${email}`)
+            if(res.status === 200){
+                dispatch({type: 'SET_MESSAGE', message: res.data.message, status: 'success'})
+                dispatch({type: 'HIDE_BUTTON'})
+            }
+        }catch(error : any){
+            dispatch({type: 'SET_MESSAGE', message: error.data.message, status: 'error'})
+            dispatch({type: 'HIDE_BUTTON'})
+        }
+    }
+
+    const handleResendButton = async ( e: React.FormEvent ) => {
+        e.preventDefault()
+        await resendVerificationEmail(state.form.email)
+    }
+
+
 
     const navigateTo = (page: string) => {
         navigate(page)
@@ -52,5 +78,6 @@ export const useLoginForm = () => {
         getFieldsError,
         clearFieldsError,
         navigateTo,
+        handleResendButton,
     }
 }
