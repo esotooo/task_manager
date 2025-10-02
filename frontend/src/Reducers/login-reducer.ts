@@ -1,16 +1,19 @@
 export type LoginActions = 
     | {type: 'SET_FIELD'; field: string; value: string}
-    | {type: 'SET_ERROR'; message: string | null}
+    | {type: 'SET_MESSAGE'; message: string | null; status: 'error' | 'success' | null}
     | {type: 'CLEAR_FIELDS'}
-    | {type: 'CLEAR_ERROR'}
+    | {type: 'SHOW_BUTTON'}
+    | {type: 'HIDE_BUTTON'}
 
 export type LoginState = {
     form: {
-        email: string,
+        email: string
         user_password: string
     }
-    showError: boolean
+    showMessage: boolean
     message: string | null
+    showButton: boolean
+    status: 'error' | 'success' | null
 }
 
 export const initialState : LoginState = {
@@ -18,8 +21,10 @@ export const initialState : LoginState = {
         email: '',
         user_password: ''
     },
-    showError: false,
+    showMessage: false,
     message: null,
+    showButton: false,
+    status: null
 }
 
 export const LoginReducer = (
@@ -35,23 +40,29 @@ export const LoginReducer = (
                     [action.field]: action.value
                 }
             }
-        case 'SET_ERROR':
+        case 'SET_MESSAGE':
             return{
                 ...state,
                 message: action.message, 
-                showError: !!action.message,
-            }
-        case 'CLEAR_ERROR':
-            return{
-                ...state,
-                message: '',
-                showError: false
+                status: action.status,
+                showMessage: !!action.message
             }
         case 'CLEAR_FIELDS':
             return{
                 ...state,
                 form: initialState.form
             }
+        case 'SHOW_BUTTON':
+            return{
+                ...state,
+                showButton: true
+            }
+        case 'HIDE_BUTTON':
+            return{
+                ...state,
+                showButton: false
+            }
+            
         default:
             return state
     }
