@@ -26,7 +26,7 @@ export default function RegisterUserForm() {
                 message={state.message}
                 container={container}
             />       
-         <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
+             <p className="text-xs text-gray-500 mb-5">¡Uneté hoy y lleva el control de tus pendientes sin estrés!</p>
                 
                 <form onSubmit={handleRegister} className="space-y-4 w-full">
 
