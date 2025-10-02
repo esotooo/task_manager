@@ -4,6 +4,7 @@ import MainPage from './Pages/Main/MainPage'
 import RegisterUser from './Pages/Auth/RegisterUser'
 import { ProtectedMain } from './Components/Private/ProtectedMain'
 import ChangePasswordPages from './features/ChangePasswordPages'
+import VerifyResult from './Pages/Auth/VerifyResult'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <Route path='/login' element={<LoginPage />} />
       <Route path='/change-password' element={<ChangePasswordPages />}/>
       <Route path='/register' element={<RegisterUser />}/>
+      <Route path='/verify-result' element={<VerifyResult />}/>
       <Route path='/main' element={
         <ProtectedMain>
           <MainPage />
