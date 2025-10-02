@@ -29,7 +29,7 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
         }
 
         if(!user.is_valid){
-            return sendError(res, 403, "Debes verificar tu usuario antes de iniciar sesión.");
+            return sendError(res, 403, "Debes verificar tu cuenta antes de iniciar sesión.");
         }
 
         //Generar token para usar opciones dentro de la aplicación
