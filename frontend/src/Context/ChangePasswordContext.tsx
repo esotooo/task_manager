@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer} from 'react'
+import { createContext, useEffect, useReducer, useRef} from 'react'
 import { api } from '../Utils/axiosInstance.ts'
 import { useInputError } from '../Hooks/Layout/useInputError.ts'
 import { ChangePasswordReducer, initialState } from '../Reducers/changepassword-reducer.ts'
@@ -13,6 +13,8 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
   const [state, dispatch] = useReducer(ChangePasswordReducer, initialState)
 
   const navigate = useNavigate()
+
+  const container = useRef<HTMLDivElement>(null)
   
   const sendOTP = async (email: string) => {
       try{
@@ -82,9 +84,11 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
       const res = await api.put('/api/users/change-password', {email, user_password})
       if(res.status === 200){
         dispatch({type: 'RESET_FORM'})
-        dispatch({type:'SET_MESSAGE', message: res.data.message, status:'success'})
+        dispatch({type: 'SET_CONFIRM', message: res.data.message})
         setTimeout(() => {
-          dispatch({type: 'SET_MESSAGE', message: '', status: null})
+          dispatch({type: 'SET_CONFIRM', message: ''})
+          navigate('/login', {replace: true})
+
         }, 3000)   
         return true
       }
@@ -94,11 +98,16 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
           setFieldMessage(error.response.data.fields)
         }
         if(error.response.data.message){
-          dispatch({type: 'SET_MESSAGE', message: error.response.data.message, status: 'error'})
+          dispatch({type: 'SET_ERROR', message: error.response.data.message})
+          setTimeout(() => {
+            dispatch({type: 'SET_ERROR', message: ''})
+          }, 3000);
         }
       }else{
-        dispatch({type: 'SET_MESSAGE', message: 'Error en la conexión con el servidor.', status: 'error'})
-      }
+        dispatch({type: 'SET_ERROR', message: 'Error en la conexión con el servidor.'})
+        setTimeout(() => {
+          dispatch({type: 'SET_ERROR', message: ''})
+        }, 3000);      }
       return false
     }
   }
@@ -119,10 +128,7 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    const success = await changePassword(state.form.email, state.form.user_password)
-    if(success){
-      navigate('/login', {replace: true})
-    }
+    await changePassword(state.form.email, state.form.user_password)
   }
 
   const resendOTP = async () => {
@@ -159,7 +165,7 @@ export const ChangePasswordProvider = ({ children }: { children: React.ReactNode
       state,
       minutes,
       seconds,
-
+      container,
       handleChange, 
       handleSendOTP, 
       getFieldsError, 
