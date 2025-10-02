@@ -9,6 +9,8 @@ export type ChangePasswordActions =
    | {type: "SET_MESSAGE"; message: string | null; status: 'error' | 'success' | null} 
    | {type: "RESET_FORM"}
    | {type: "TICK_COUNTER"}
+   | {type: 'SET_ERROR', message: string | null}
+   | {type: 'SET_CONFIRM', message: string | null}
 
 export type ChangePasswordState = {
     form: {
@@ -27,6 +29,8 @@ export type ChangePasswordState = {
     showMessage: boolean,
     status: 'error' | 'success' | null,
     showButton: boolean
+    showError: boolean,
+    showConfirm: boolean;
 }
 
 export const initialState: ChangePasswordState = {
@@ -45,7 +49,9 @@ export const initialState: ChangePasswordState = {
     showButton: false,
     message: null,
     showMessage: false,
-    status: null
+    status: null,
+    showError: false,
+    showConfirm: false,
 }
 
 export const ChangePasswordReducer = (
@@ -115,6 +121,20 @@ export const ChangePasswordReducer = (
                 ...state.otpTimer,
                 timeLeft: state.otpTimer.timeLeft - 1
                 }
+            }
+        case 'SET_CONFIRM':
+            return{
+                ...state,
+                message: action.message,
+                showError: false,
+                showConfirm: !!action.message
+            }
+        case 'SET_ERROR':
+            return{
+                ...state,
+                message: action.message,
+                showConfirm: false,
+                showError: !!action.message
             }
             
 
