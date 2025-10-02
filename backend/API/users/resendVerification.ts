@@ -12,10 +12,9 @@ router.get('/resend-verification', async (req: Request, res:Response) => {
     try{
         const email = (req.query.email as string)?.trim().toLowerCase();
 
-
         const [rows] = await pool.query<RowDataPacket[]>(validateEmailQueries.validateEmail, [email]);
         if(rows.length === 0){
-            return sendSuccess(res, 200, null, "Si el correo existe y no está verificado, se ha reenviado el link.");
+            return sendSuccess(res, 200, null, "El correo de verificación ha sido enviado.");
         }
 
         const user = rows[0];
@@ -26,7 +25,7 @@ router.get('/resend-verification', async (req: Request, res:Response) => {
         
         generateVerificationToken(email);
 
-        return sendSuccess(res, 200, null, "Si el correo existe y no está verificado, se ha reenviado el link.");
+        return sendSuccess(res, 200, null, "El correo de verificación ha sido enviado.");
 
     }catch{
         return sendError(res, 500, 'Error en el servidor.')
