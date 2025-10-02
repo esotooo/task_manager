@@ -73,16 +73,16 @@ router.get('/verify-email' , async(req: Request, res:Response) => {
     const emailNormalized = email.trim().toLowerCase();
 
     const record = tokenStore[emailNormalized];
-    if(!record) return res.redirect(`http://localhost:5173/login?verified=false`);
+    if(!record) return res.redirect(`http://localhost:5173/verify-result?verified=false`);
     if(record.token !== token || Date.now() > record.expiresAt){
-        return res.redirect(`http://localhost:5173/login?verified=false`);
+        return res.redirect(`http://localhost:5173/verify-result?verified=false`);
     }
 
     await pool.query(registerQueries.updateValidationState, [emailNormalized]);
 
     delete tokenStore[emailNormalized];
 
-    return res.redirect(`http://localhost:5173/login?verified=true`);
+    return res.redirect(`http://localhost:5173/verify-result?verified=true`);
 });
 
 
