@@ -3,8 +3,16 @@ import { FormInput } from "../Layout/ReusableInput";
 
 export default function VerifyTokenForm() {
 
-  const {handleChange, handleVerifyOTP, getFieldsError, clearFieldsError, backToEmail, state
-    ,minutes, seconds, resendOTP
+  const {
+    handleChange, 
+    handleVerifyOTP, 
+    getFieldsError, 
+    clearFieldsError, 
+    backToEmail, 
+    state,
+    minutes, 
+    seconds, 
+    resendOTP
   } = useChangePassword()
 
   return ( 
@@ -25,8 +33,10 @@ export default function VerifyTokenForm() {
             setError={() => clearFieldsError('otp', '')}
           />
 
-          <div className={`overflow-hidden transition-all duration-300 max-h-10 text-xs mt-7 text-rose-400 italic
-                    ${state.showError ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+          <div className={`overflow-hidden transition-all duration-300 max-h-10 text-xs mt-2 italic
+                    ${state.status === "error" ? 'text-rose-400' : ''}
+                    ${state.status === "success" ? 'text-green-400' : ''}
+                    ${state.showMessage ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
                 <p>
                     {state.message ?? ' '}
                 </p>
@@ -34,7 +44,7 @@ export default function VerifyTokenForm() {
 
           <div className="flex justify-center flex-col">
             {state.otpTimer.showCounter && (
-              <p className="text-xs text-center mt-2"> Expira en: {' '}
+              <p className="text-xs text-center mt-2"> El código expira en: {' '}
                 <span className="font-bold">{minutes}:{seconds.toString().padStart(2, "0")}</span>
               </p>
             )}
