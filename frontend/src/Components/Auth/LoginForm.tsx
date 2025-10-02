@@ -12,6 +12,7 @@ export default function LoginForm() {
         navigateTo,
         getFieldsError,
         clearFieldsError,
+        handleResendButton
     } = useLoginForm()
     
 
@@ -50,11 +51,23 @@ export default function LoginForm() {
                         setError={() => clearFieldsError('user_password', '')}
                         />
 
-                    <div className="h-1">
-                        {state.message && 
-                            <p className="text-xs text-rose-400 italic">{state.message}</p>
-                        }
+                    <div className={`overflow-hidden transition-all duration-300 max-h-20 text-xs mt-1 flex gap-1 italic
+                        ${state.status === "error" ? "text-rose-400" : ""}
+                        ${state.status === "success" ? "text-green-400" : ""}
+                        ${state.showMessage ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}}`}>
+                    <p>
+                        {state.message ?? ' '}
+                    </p>
+                    {state.showButton && (
+                        <button
+                            className='text-xs underline font-bold cursor-pointer text-black'
+                            type='button'
+                            onClick={handleResendButton}>
+                                ¿Quieres reenviar el correo de verificación?
+                        </button>
+                    )}
                     </div>
+
 
                     <button type='submit' className="mt-8 bg-black text-white font-bold w-full py-3 text-sm rounded-md cursor-pointer hover:bg-black/80">
                         Iniciar Sesión
