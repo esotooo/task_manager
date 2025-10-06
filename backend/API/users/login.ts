@@ -7,6 +7,7 @@ import { loginQueries } from '../../Queries/Auth/loginQueries';
 import { LoginType, VerificationType } from '../../types/usersTypes';
 import { validateLogin, handleLoginErrors } from '../../middlewares/validateLogin';
 import { Request, Response } from 'express';
+import { validateSession } from '../../middlewares/validateSession';
 
 const router = Router();
 
@@ -36,8 +37,16 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
         const token = jwt.sign(
             {id: user.id_user, email: user.email},
             process.env.JWT_SECRET || 'defaultsecret',
-            {expiresIn: '1h'}
+            {expiresIn: '7d'}
         )
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, 
+            sameSite: 'lax', 
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        
 
         return sendSuccess(res, 200, {
             id_user: user.id_user,
@@ -52,5 +61,18 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
         return sendError(res, 500, 'Error en el servidor.')
     }
 });
+
+router.get("/active-session", validateSession, (req, res) => {
+    return res.json({ success: true, user: (req as any).user });
+})
+
+router.post('/logout',(req ,res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: false, 
+        sameSite: 'lax',
+    });
+    return res.json({ success: true, message: 'Sesión cerrada' });
+})
 
 export default router;
