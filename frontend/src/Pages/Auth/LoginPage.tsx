@@ -1,9 +1,13 @@
 import LoginForm from "../../Components/Auth/LoginForm";
 import { SiTask } from "react-icons/si";
 import { currentYear } from "../../Utils/helpers";
-
+import { useAuth } from "../../Hooks/Auth/useAuth";
+import { Navigate } from "react-router-dom";
 
 export default function LoginPage() {
+    
+    const { user } = useAuth();
+    if (user) return <Navigate to="/main" replace />;
 
     return (
         <section 
