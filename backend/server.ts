@@ -4,6 +4,8 @@ import registerAPI from './API/users/register';
 import loginAPI from './API/users/login';
 import recoverPasswordAPI from './API/users/changePassword';
 import validateEmail from './API/users/resendVerification';
+import cookieParser from 'cookie-parser';
+
 
 const PORT = 4000;
 const app = express();
@@ -16,6 +18,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(cookieParser());
+
 
 app.use('/api/users', registerAPI);
 app.use('/api/users', loginAPI);
