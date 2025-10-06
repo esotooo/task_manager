@@ -30,7 +30,7 @@ export default function StateWindows({ showConfirm, showError, message }: StateW
 
     return (
         <div className="absolute inset-0 bg-white flex flex-col rounded-lg z-10">
-            <div className="flex items-center p-4">
+            <div className="flex items-center p-4 gap-2">
                 <div className="w-15 h-15" ref={container}></div>
                 <p className="font-bold">{message}</p>
             </div>
