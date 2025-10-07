@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try{
                 const res = await api.get('/api/users/active-session', {withCredentials: true})
                 if (res.data.success){
-                    setUser(res.data.user)
+                    setUser(res.data)
                 }
             }catch{
                 setUser(null)
