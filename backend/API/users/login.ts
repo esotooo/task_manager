@@ -35,7 +35,13 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
 
         //Generar token para usar opciones dentro de la aplicación
         const token = jwt.sign(
-            {id: user.id_user, email: user.email},
+            {
+                id_user: user.id_user, 
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                username: user.username
+            },
             process.env.JWT_SECRET || 'defaultsecret',
             {expiresIn: '7d'}
         )
@@ -54,7 +60,7 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
             lastname: user.lastname,
             username: user.username,
             email: user.email
-        }, "Sesión iniciada exitosamente.", token)
+        }, "Sesión iniciada exitosamente.")
 
 
     }catch{
@@ -62,9 +68,19 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
     }
 });
 
-router.get("/active-session", validateSession, (req, res) => {
-    return res.json({ success: true, user: (req as any).user });
-})
+router.get("/active-session", validateSession, (req: Request, res: Response) => {
+    const user = (req as any).user;
+
+    return sendSuccess(res, 200, {
+        id_user: user.id_user,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        username: user.username,
+        email: user.email
+    }, "Sesión activa.");
+});
+
+
 
 router.post('/logout',(req ,res) => {
     res.clearCookie('token', {
