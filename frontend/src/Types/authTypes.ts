@@ -3,12 +3,14 @@ export type LoginType = {
     user_password?: string
 }
 
-export type InformationReceivedType ={
-    id_user: number,
-    firstname: string,
-    lastname: string,
-    email: string,
-    username: string
+export type InformationReceivedType ={ 
+    data : {
+        id_user: number,
+        firstname: string,
+        lastname: string,
+        email: string,
+        username: string
+    }
 }
 
 export type RegisterType = {
