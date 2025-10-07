@@ -5,16 +5,14 @@ type apiResponse = {
     data?: any, 
     message?: string, 
     error?: any,
-    token?: any | null,
     field?: string
 }
 
-export function sendSuccess(res: Response, statusCode: number, data?: any, message = "Sucess", token?: any){
+export function sendSuccess(res: Response, statusCode: number, data?: any, message = "Sucess"){
     const response : apiResponse = {
         success: true,
         data,
         message,
-        token
     }
     return res.status(statusCode).json(response);
 }
