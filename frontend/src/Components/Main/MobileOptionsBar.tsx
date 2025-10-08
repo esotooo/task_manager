@@ -1,8 +1,11 @@
 import { SiTask } from "react-icons/si";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { options } from "../../Utils/optionsList";
 
 export default function MobileOptionsBar() {
+
+    const location = useLocation()
+
   return (
     <>
       <section className="md:hidden fixed top-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50">
@@ -22,17 +25,23 @@ export default function MobileOptionsBar() {
                 </Link> 
             </div>
             <div className="border-t-1 border-gray-100 flex justify-between px-0">
-                {options.map(option => (
+                {options.map(option => {
+
+                    const isActive = location.pathname === option.route
+
+                    return(
                     <Link
                         to={option.route}
                         key={option.id}
-                        className="flex-1 flex justify-center items-center text-2xl border-r-1 border-b-2 border-b-gray-300 border-r-gray-100 py-3 hover:bg-gray-100 transition last:border-r-0"
+                        className={`flex-1 flex justify-center items-center text-2xl border-r-1 border-b-2 border-b-gray-300 border-r-gray-100 py-3 hover:bg-gray-100 transition last:border-r-0
+                            ${isActive ? 'text-amber-500' : ''}`}
                         >
                         <div>
                             {option.icon}
                         </div>
                     </Link>
-                ))}
+                    )
+                })}
             </div>
         </section>
     </>
