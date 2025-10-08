@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { useAuth } from "../../Hooks/Auth/useAuth"
 import { GiHamburgerMenu } from "react-icons/gi";
 import { SiTask } from "react-icons/si";
 import { options } from "../../Utils/optionsList";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function DesktopSidebar() {
-    const { user} = useAuth();
-    const [isOpen, setIsOpen] = useState(true)
+
+    const { user, setIsOpen, isOpen } = useAuth()
+    const location = useLocation()
 
   return (
     <>
@@ -35,11 +35,15 @@ export default function DesktopSidebar() {
 
             {/** SIDEBAR OPTIONS */}
             <div className="text-white mt-20">
-                {options.map(option => (
+                {options.map(option => {
+
+                    const isActive = location.pathname === option.route
+                    return(
                     <Link 
                         to={option.route}
                         key={option.id}
-                        className="flex items-center space-x-4 w-full py-3.5 px-2 hover:bg-[#2A2A2A] hover:rounded-lg transition-colors duration-200 cursor-pointer"
+                        className={`flex items-center space-x-4 w-full py-3.5 px-2 hover:bg-[#2A2A2A] hover:rounded-lg transition-colors duration-200 cursor-pointer
+                            ${isActive ? 'text-amber-500' : ''}`}
                     >
                         <div className="text-2xl transition-all"
                         style={{ transform: isOpen ? 'scale(1)' : 'scale(1.1)' }}
@@ -53,8 +57,8 @@ export default function DesktopSidebar() {
                         </h2>
 
                     </Link>
-
-                ))}
+                    )
+                })}
             </div>
 
 
