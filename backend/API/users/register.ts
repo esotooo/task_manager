@@ -40,7 +40,7 @@ router.post('/register', validateUserRegister, handleValidationErrorsByField, as
         else{
             return sendError(res, 400, "No se puedo registrar correctamente. Porfavor intente de nuevo.");
         }
-    }catch(error){
+    }catch{
         return sendError(res, 500, "Error en el servidor.");
     }
 });
