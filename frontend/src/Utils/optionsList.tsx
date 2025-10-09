@@ -1,7 +1,8 @@
 import type { JSX } from "react"
-import { GrTasks } from "react-icons/gr";
-import { GoGraph } from "react-icons/go";
 import { FaHouse, FaCalendar } from "react-icons/fa6";
+import { BsGraphUpArrow } from "react-icons/bs";
+import { FaTasks } from "react-icons/fa";
+
 
 type OptionsType = {
     id: number, 
@@ -20,13 +21,13 @@ export const options : OptionsType[] = [
     {
         id: 2,
         name: "Tareas",
-        icon: <GrTasks />,
+        icon: <FaTasks />,
         route: '/tasks' 
     },
     {
         id: 3,
         name: "Gráficos",
-        icon: <GoGraph />,
+        icon: <BsGraphUpArrow />,
         route: '/graphs'
     },
     {
