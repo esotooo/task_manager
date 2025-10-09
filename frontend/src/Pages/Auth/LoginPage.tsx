@@ -3,11 +3,17 @@ import { SiTask } from "react-icons/si";
 import { currentYear } from "../../Utils/helpers";
 import { useAuth } from "../../Hooks/Auth/useAuth";
 import { Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function LoginPage() {
     
     const { user } = useAuth();
-    if (user) return <Navigate to="/main" replace />;
+    const location = useLocation();
+  
+    if (user) {
+      const from = location.state?.from?.pathname || "/main";
+      return <Navigate to={from} replace />;
+    }
 
     return (
         <section 
