@@ -6,7 +6,8 @@ type AuthContextProps = {
   user: InformationReceivedType | null
   login: (body: LoginType) => Promise<loginResult>
   logout: () => void
-  loading: boolean
+  isOpen: boolean
+  setIsOpen: (isOpen : boolean) => void
 }
 
 type loginResult = {
@@ -20,7 +21,7 @@ export const AuthContext = createContext<AuthContextProps | undefined>(undefined
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [user, setUser] = useState<InformationReceivedType | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
 
     const login = async (credentials: LoginType): Promise<loginResult> => {
         try {
@@ -49,10 +50,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if (res.data.success){
                     setUser(res.data)
                 }
+                setIsOpen(true)
             }catch{
                 setUser(null)
-            }finally{
-                setLoading(false)
             }
         }
         fetchUser()
@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.error('Error cerrando sesión') //Modificar esto
         }finally{
             setUser(null)
+            setIsOpen(true)
         }
     }
 
@@ -75,7 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             user, 
             login, 
             logout,
-            loading
+            isOpen,
+            setIsOpen
         }}>
             {children}
         </AuthContext.Provider>
