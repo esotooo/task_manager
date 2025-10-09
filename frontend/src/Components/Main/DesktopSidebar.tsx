@@ -12,7 +12,7 @@ export default function DesktopSidebar() {
   return (
     <>
         {/** SIDEBAR */}
-        <section className={`bg-[#1A1A1A] px-7 py-5 hidden flex-col transition-all duration-300 md:flex
+        <aside className={`bg-[#1A1A1A] px-7 py-5 hidden flex-col transition-all duration-300 md:flex
             ${isOpen ? 'w-[250px]': 'w-[100px] '} `}
         >
 
@@ -34,7 +34,7 @@ export default function DesktopSidebar() {
             </div>
 
             {/** SIDEBAR OPTIONS */}
-            <div className="text-white mt-20">
+            <section className="text-white mt-20">
                 {options.map(option => {
 
                     const isActive = location.pathname === option.route
@@ -59,13 +59,12 @@ export default function DesktopSidebar() {
                     </Link>
                     )
                 })}
-            </div>
+            </section>
 
 
             <Link to={'/profile'} className="text-white mt-auto flex items-center mb-4 hover:bg-[#2A2A2A] hover:rounded-lg transition-colors duration-200 py-3.5 px-1.5">
                 {/* Círculo fijo, sin animación */}
-                <div className="w-8 h-8 rounded-full bg-white flex-shrink-0 flex items-center justify-center">
-                </div>
+                <div className="w-8 h-8 rounded-full bg-white flex-shrink-0 flex items-center justify-center"></div>
 
                 {/* Texto animado suavemente */}
                 <div className="overflow-hidden transition-all duration-300 cursor-pointer">
@@ -76,7 +75,7 @@ export default function DesktopSidebar() {
                     </h3>
                 </div>
             </Link> 
-        </section>
+        </aside>
     </>
   )
 }
