@@ -4,7 +4,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import pool from '../../database/connection';
 import { CRUDqueries } from "../../Queries/Tasks/CRUDqueries";
 import { sendError, sendSuccess } from "../../utils/responseHandler";
-import { GetIDType, GetTaskType } from "../../types/taskTypes";
+import { GetIDType, GetTaskType } from "../../types/TaskTypes";
 
 const router = Router();
 
@@ -69,8 +69,9 @@ router.get('/get-tasks', async (req: Request, res: Response) => {
     }
 });
 
-router.put('/update-task', async(req: Request, res:Response) => {
+router.put('/update-task/:id_task/:id_user', async(req: Request, res:Response) => {
     try{
+        const {id_task, id_user} = req.params
         const {
             task_title, 
             task_description,
@@ -78,13 +79,15 @@ router.put('/update-task', async(req: Request, res:Response) => {
             id_state, 
             due_date, 
             end_date, 
-            id_task,
-            id_user
         } = req.body;
 
-        await pool.query<ResultSetHeader>(CRUDqueries.updateTask, [
+        const [update] = await pool.query<ResultSetHeader>(CRUDqueries.updateTask, [
             task_title, task_description, id_priority, id_state, due_date, end_date, id_task, id_user
         ]);
+
+        if (update.affectedRows === 0) {
+            return sendError(res, 404, 'No se encontró la tarea para actualizar.');
+        }
 
         return sendSuccess(res, 200, [], 'Tarea actualizada exitosamente.');
 
@@ -93,7 +96,7 @@ router.put('/update-task', async(req: Request, res:Response) => {
     }
 });
 
-router.delete('/delete-task', async(req: Request, res:Response) => {
+router.delete('/delete-task/:id_task/:id_user', async(req: Request, res:Response) => {
     try{
         const {id_task, id_user} = req.body;
         
