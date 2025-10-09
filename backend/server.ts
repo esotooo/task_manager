@@ -4,6 +4,7 @@ import registerAPI from './API/users/register';
 import loginAPI from './API/users/login';
 import recoverPasswordAPI from './API/users/changePassword';
 import validateEmail from './API/users/resendVerification';
+import tasksCrud from './API/tasks/tasksCRUD';
 import cookieParser from 'cookie-parser';
 
 
@@ -25,6 +26,8 @@ app.use('/api/users', registerAPI);
 app.use('/api/users', loginAPI);
 app.use('/api/users', recoverPasswordAPI);
 app.use('/api/users', validateEmail);
+app.use('/api/tasks', tasksCrud);
+
 
 
 app.listen(PORT, () => {
