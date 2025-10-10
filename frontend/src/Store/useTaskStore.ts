@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../Utils/axiosInstance.ts';
 
-
 type TaskType = {
     id_task: number
     task_title: string
@@ -24,6 +23,16 @@ type FormType= {
     end_date?: string | null
 }
 
+type TaskStatesType = {
+    id_state: number,
+    state: string
+}
+
+type TaskPrioritiesType = {
+    id_priority: number
+    priority: string
+}
+
 const initialFormState : FormType = {
     id_task: null,
     task_title: '',
@@ -39,6 +48,8 @@ type State = {
     message: string
     form: FormType
     tasks: TaskType[]
+    states: TaskStatesType[]
+    priorities: TaskPrioritiesType[]
 }
 
 type Actions = {
@@ -51,6 +62,8 @@ type Actions = {
     createTask: (form: FormType) => Promise<void>
     updateTask: (form: FormType) => Promise<void>
     deleteTask: (id_task: number, id_user: number) => Promise<void>
+    fetchPriorities: () => Promise<void>
+    fetchStates: () => Promise<void>
 }
 
 export const useTaskStore = create<State & Actions>((set) => ({
@@ -58,6 +71,8 @@ export const useTaskStore = create<State & Actions>((set) => ({
     form: initialFormState,
     tasks: [],
     message: '',
+    states: [],
+    priorities: [],
 
     openForm: () => set({isOpen: true}),
     closeForm: () => set({isOpen: false}),
@@ -132,6 +147,28 @@ export const useTaskStore = create<State & Actions>((set) => ({
             }else{
                 set({message: 'Error en la conexión con el servidor.'})
             }
+        }
+    },
+
+    fetchPriorities: async() => {
+        try{
+            const res = await api.get(`/api/tasks/get-priorities`)
+            if(res.status === 200){
+                set({priorities: res.data.data})
+            }
+        }catch{
+            set({message: ''})
+        }
+    },
+
+    fetchStates: async() => {
+        try{
+            const res = await api.get(`/api/tasks/get-states`)
+            if(res.status === 200){
+                set({states: res.data.data})
+            }
+        }catch{
+            set({message: ''})
         }
     }
 }))
