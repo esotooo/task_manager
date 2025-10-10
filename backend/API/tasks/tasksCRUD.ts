@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { ResultSetHeader } from 'mysql2';
 import pool from '../../database/connection';
 import { CRUDqueries } from "../../Queries/Tasks/CRUDqueries";
 import { sendError, sendSuccess } from "../../utils/responseHandler";
