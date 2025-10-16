@@ -20,7 +20,7 @@ INNER JOIN task_priority p
 ON p.id_priority = u.id_priority
 INNER JOIN task_state s
 ON s.id_state = u.id_state
-WHERE id_user = 292;`;
+WHERE id_user = ?`;
 
 const updateTask = `UPDATE user_tasks
 SET task_title = ?,
