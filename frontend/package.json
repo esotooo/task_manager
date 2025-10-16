@@ -13,6 +13,8 @@
     "animate.css": "^4.1.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hot-toast": "^2.6.0",
+    "react-swipeable-list": "^1.10.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
