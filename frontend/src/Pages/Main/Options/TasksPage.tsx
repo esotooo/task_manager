@@ -1,8 +1,9 @@
+import { Toaster } from "react-hot-toast";
 import DesktopSidebar from "../../../Components/Main/DesktopSidebar";
 import MobileOptionsBar from "../../../Components/Main/MobileOptionsBar";
-import SearchBar from "../../../Components/Main/Tasks/SearchBar";
 import TaskForm from "../../../Components/Main/Tasks/TaskForm";
 import { useTaskStore } from "../../../Store/useTaskStore";
+import MainView from "../../../Components/Main/Tasks/MainView";
 
 export default function TasksPage() {
 
@@ -17,13 +18,12 @@ export default function TasksPage() {
             <h1 className="text-3xl font-bold">Tareas</h1>
 
             {!isOpen ? 
-                <SearchBar />
+                <MainView />
             :  
                 <TaskForm />
             }
-            
+            <Toaster />
         </main>
-
     </div>
   )
 }
