@@ -55,9 +55,9 @@ router.post('/create-task', async (req: Request, res: Response) => {
 
 router.get('/get-tasks', async (req: Request, res: Response) => {
     try{
-        const {id_user} = req.params;
+        const {id_user} = req.query;
 
-        const [data] = await pool.query<GetTaskType[]>(CRUDqueries.getTasks, id_user);
+        const [data] = await pool.query<GetTaskType[]>(CRUDqueries.getTasks, [id_user]);
     
         if(data.length === 0){
             return sendError(res, 400, 'Aún no cuentas con tareas creadas.');
