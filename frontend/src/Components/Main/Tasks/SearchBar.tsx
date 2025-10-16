@@ -6,7 +6,7 @@ export default function SearchBar() {
 
   return (
     <>
-        <section className="flex flex-col md:items-center w-auto justify-between mb-4 mt-3
+    <section className="flex flex-col md:items-center w-auto justify-between mb-4 mt-3
         text-sm shadow-2xl md:shadow-none px-1 py-1 rounded-lg border border-gray-100 md:border-none">
 
             {/* Input de búsqueda + select */}
