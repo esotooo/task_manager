@@ -59,9 +59,9 @@ type Actions = {
     resetForm: () => void
     
     fetchTasks: (id_user: number) => Promise<void>
-    createTask: (form: FormType) => Promise<void>
-    updateTask: (form: FormType) => Promise<void>
-    deleteTask: (id_task: number, id_user: number) => Promise<void>
+    createTask: (form: FormType) => Promise<string>
+    updateTask: (form: FormType) => Promise<string>
+    deleteTask: (id_task: number, id_user: number) => Promise<string>
     fetchPriorities: () => Promise<void>
     fetchStates: () => Promise<void>
 }
@@ -84,7 +84,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
     fetchTasks: async (id_user) => {
         try{
             const res = await api.get(`/api/tasks/get-tasks?id_user=${id_user}`)
-            if(res.data === 200){
+            if(res.status === 200){
                 set({tasks: res.data.data})
             }
         }catch(error : any){
@@ -101,12 +101,13 @@ export const useTaskStore = create<State & Actions>((set) => ({
             const res = await api.post(`/api/tasks/create-task`, form)
             if(res.status === 201){
                 set((state) => ({ tasks: [...state.tasks, res.data.data] }));
+                return res.data.message
             }
         }catch(error : any){
             if(error.response){
-                set({message: error.response.message})
+                throw new Error(error.response.data.message);
             }else{
-                set({message: 'Error en la conexión con el servidor.'})
+                throw new Error('Error en la conexión con el servidor.');
             }
         }
     },
@@ -121,12 +122,13 @@ export const useTaskStore = create<State & Actions>((set) => ({
                         {...t, ...res.data.data} : t
                     )
                 }))
+                return res.data.message
             }
         }catch(error : any){
             if(error.response){
-                set({message: error.response.message})
+                throw new Error(error.response.data.message)
             }else{
-                set({message: 'Error en la conexión con el servidor.'})
+                throw new Error('Error en la conexión con el servidor.');
             }
         }
     },
@@ -139,13 +141,14 @@ export const useTaskStore = create<State & Actions>((set) => ({
                     tasks: state.tasks.filter(
                         (t) => t.id_task !== id_task || t.id_user !== id_user
                     ),
-                }));
+                }))
+                return res.data.message
             }
         }catch(error : any){
             if(error.response){
-                set({message: error.response.message})
+                throw new Error(error.response.data.message)
             }else{
-                set({message: 'Error en la conexión con el servidor.'})
+                throw new Error('Error en la conexión con el servidor.');
             }
         }
     },
