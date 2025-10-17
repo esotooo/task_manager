@@ -2,12 +2,12 @@ import { useTask } from "../../../Hooks/Tasks/useTask";
 
 export default function TaskForm() {
 
-  const {form, priorities, handleChange, handleCancel, handleSubmit} = useTask();
+  const {form, priorities, handleChange, handleCancel, handleSubmit, isEditing, states} = useTask();
 
   return (
     <section className="mt-6 mx-auto bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
         <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            Agregar Tarea
+            {isEditing ? 'Editar Tarea' : 'Agregar Tarea'}
         </h2>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -28,7 +28,7 @@ export default function TaskForm() {
             <div className="flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1">Prioridad</label>
                 <select
-                    value={form.id_priority}
+                    value={form.id_priority ?? ''}
                     name="id_priority"
                     className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     onChange={handleChange}
@@ -39,6 +39,23 @@ export default function TaskForm() {
                     ))}
                 </select>
             </div>
+
+            {isEditing && (
+                <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <select
+                        value={form.id_state ?? ''}
+                        name="id_state"
+                        className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        onChange={handleChange}
+                    >
+                        <option value="">Seleccionar Estado</option>
+                        {states.map(i => (
+                            <option value={i.id_state} key={i.id_state}>{i.state}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
 
             {/* Descripción */}
             <div className="flex flex-col">
@@ -65,13 +82,26 @@ export default function TaskForm() {
                 />
             </div>
 
+            {isEditing && (
+                <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">Fecha Finalización</label>
+                    <input
+                        onChange={handleChange}
+                        value={form.end_date ?? ''}
+                        name="end_date"
+                        type="date"
+                        className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                </div>
+            )}
+
             {/* Botones */}
             <div className="flex flex-col md:flex-row gap-3 mt-4">
                 <button
                     className="bg-amber-500 hover:bg-amber-600 px-4 py-2 cursor-pointer text-sm font-semibold text-white rounded-lg transition-all w-full md:w-auto"
                     type="submit"
                 >
-                    Agregar tarea
+                    {isEditing ? 'Editar Tarea' : 'Agregar Tarea'}
                 </button>
                 <button
                     className="bg-gray-800 hover:bg-gray-900 px-4 py-2 cursor-pointer text-sm font-semibold text-white rounded-lg transition-all w-full md:w-auto"
