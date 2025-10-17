@@ -5,10 +5,10 @@ import { HiDotsVertical } from "react-icons/hi";
 
 export default function TasksDesktopView() {
 
-    const {tasks, formatDate, toggleRow, openRowId, optionsList, editTask} = useTask()
+    const {tasks, formatDate, toggleRow, openRowId, optionsList, editTask, openWindow, seeTask} = useTask()
     
   return (
-    <section className="max-h-[510px] max-w-auto overflow-x-hidden overflow-y-auto">
+    <section className="h-[510px] max-w-auto overflow-x-hidden overflow-y-auto">
         <table className="min-w-full">
         <thead className="sticky top-0 bg-white border-b border-gray-200 z-10">
             <tr>
@@ -72,13 +72,25 @@ export default function TasksDesktopView() {
                                 bg-white border border-gray-100 rounded-lg p-3 shadow-lg z-10 w-30 text-xs flex flex-col"
                                 ref={optionsList}
                             >
-                                <button type="button" className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" >
+                                <button 
+                                    type="button" 
+                                    className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                    onClick={() => seeTask(task.id_task, task.id_user)}
+                                    >
                                     Ver
                                 </button>
-                                <button type="button" className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" onClick={() => editTask(task.id_task, task.id_user)} >
+                                <button 
+                                    type="button" 
+                                    className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                    onClick={() => editTask(task.id_task, task.id_user)} 
+                                >
                                     Editar
                                 </button>
-                                <button type="button" className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" >
+                                <button 
+                                    type="button" 
+                                    className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                    onClick={() => openWindow(task.id_task)}    
+                                >
                                     Eliminar
                                 </button>
                             </div>
