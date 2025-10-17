@@ -69,9 +69,8 @@ router.get('/get-tasks', async (req: Request, res: Response) => {
     }
 });
 
-router.put('/update-task/:id_task/:id_user', async(req: Request, res:Response) => {
+router.put('/update-task', async(req: Request, res:Response) => {
     try{
-        const {id_task, id_user} = req.params
         const {
             task_title, 
             task_description,
@@ -79,6 +78,8 @@ router.put('/update-task/:id_task/:id_user', async(req: Request, res:Response) =
             id_state, 
             due_date, 
             end_date, 
+            id_task,
+            id_user
         } = req.body;
 
         const [update] = await pool.query<ResultSetHeader>(CRUDqueries.updateTask, [
@@ -96,9 +97,9 @@ router.put('/update-task/:id_task/:id_user', async(req: Request, res:Response) =
     }
 });
 
-router.delete('/delete-task/:id_task/:id_user', async(req: Request, res:Response) => {
+router.delete('/delete-task', async(req: Request, res:Response) => {
     try{
-        const {id_task, id_user} = req.body;
+        const {id_task, id_user} = req.query;
         
         const [task] = await pool.query<ResultSetHeader>(CRUDqueries.deleteTask, [id_task, id_user]);
 
