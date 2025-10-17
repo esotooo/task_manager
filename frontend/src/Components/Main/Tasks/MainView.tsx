@@ -1,14 +1,24 @@
-import SearchBar from "./SearchBar"
-import TasksDesktopView from "./TasksDesktopView"
+import { useState, useEffect } from "react";
+import SearchBar from "./SearchBar";
+import TasksDesktopView from "./TasksDesktopView";
+import TasksMobileView from "./TasksMobileView";
 
 export default function MainView() {
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
-    return (
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
     <>
-        <SearchBar />
-        <TasksDesktopView />
+      <SearchBar />
+      {isMobile ? <TasksMobileView /> : <TasksDesktopView />}
     </>
-
-  )
+  );
 }
