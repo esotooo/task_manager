@@ -14,7 +14,9 @@ const getTasks = `SELECT
     s.state,
     u.due_date,
     u.create_date,
-    u.end_date
+    u.end_date,
+    p.id_priority,
+    s.id_state
 FROM user_tasks u
 INNER JOIN task_priority p
 ON p.id_priority = u.id_priority
