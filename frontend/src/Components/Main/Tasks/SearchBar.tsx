@@ -45,7 +45,7 @@ export default function SearchBar() {
             </div>
         </section>
         <button 
-                className="bg-[#1A1A1A] px-4 py-2 text-sm mb-4 font-bold text-white rounded-lg cursor-pointer w-full md:w-auto"
+                className="bg-amber-500 px-4 py-2 text-sm mb-4 font-bold text-white rounded-lg cursor-pointer w-full md:w-auto hover:bg-amber-500/85" 
                 type="button"
                 onClick={() => openForm()}
             >
