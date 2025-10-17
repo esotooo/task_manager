@@ -97,7 +97,7 @@ router.put('/update-task', async(req: Request, res:Response) => {
     }
 });
 
-router.delete('/delete-task', async(req: Request, res:Response) => {
+router.delete(`/delete-task`, async(req: Request, res:Response) => {
     try{
         const {id_task, id_user} = req.query;
         
