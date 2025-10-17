@@ -4,11 +4,7 @@ import { useTask } from "../../../Hooks/Tasks/useTask";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 export default function TasksMobileView() {
-  const { tasks, formatDate, editTask} = useTask();
-
-  const eliminando = () => {
-    console.log("Eliminando")
-  }
+  const { tasks, formatDate, editTask, openWindow, seeTask} = useTask();
 
   const leadingActions = (id_task: number, id_user: number) => {
     return (
@@ -20,10 +16,10 @@ export default function TasksMobileView() {
     )
   }
 
-  const trailingActions = () => {
+  const trailingActions = (id_task: number) => {
     return (
         <TrailingActions>
-            <SwipeAction onClick={eliminando}>
+            <SwipeAction onClick={() => openWindow(id_task)}>
                 <div className="flex items-center bg-rose-200 font-bold p-5 rounded-tr-lg rounded-br-lg">Eliminar</div>
             </SwipeAction>
         </TrailingActions>
@@ -36,7 +32,7 @@ export default function TasksMobileView() {
         <SwipeableListItem
             key={task.id_task}
             leadingActions={leadingActions(task.id_task, task.id_user)}
-            trailingActions={trailingActions()}
+            trailingActions={trailingActions(task.id_task)}
             className="mb-3"
         >
                 <div className="pt-4 px-4 pb-2 border border-gray-100 relative overflow-hidden w-full">
@@ -66,9 +62,17 @@ export default function TasksMobileView() {
                                 {" "}{task.state}
                             </span>
                         </p>
-                        <div className="flex items-center justify-center text-[20px] -mt-1">
-                            <RiArrowDropDownLine />
+                        <div className="flex justify-center mt-1">
+                            <button 
+                                className="flex items-center"
+                                type="button"
+                                onClick={() => seeTask(task.id_task, task.id_user)}
+                            >
+                                <span className="text-xs">Ver más</span>
+                                <RiArrowDropDownLine className="text-[20px]"/>
+                            </button>
                         </div>
+           
                     </div>
                 </div>
         </SwipeableListItem>
