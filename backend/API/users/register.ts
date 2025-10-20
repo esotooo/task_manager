@@ -4,7 +4,7 @@ import { ResultSetHeader } from 'mysql2';
 import { hashPassword } from '../../utils/hashPassword';
 import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { registerQueries } from '../../Queries/Auth/registerQueries';
-import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/validateUserRegister';
+import { handleValidationErrorsByField, validateUserRegister } from '../../middlewares/fieldsValidation/users/validateUserRegister';
 import { GetUsernameType } from '../../types/usersTypes';
 import { generateUsernames } from '../../utils/generateUsernames';
 import { tokenStore } from '../../utils/generateVerificationToken';

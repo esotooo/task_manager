@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { sendError, sendSuccess } from '../../utils/responseHandler';
 import { loginQueries } from '../../Queries/Auth/loginQueries';
 import { LoginType, VerificationType } from '../../types/usersTypes';
-import { validateLogin, handleLoginErrors } from '../../middlewares/validateLogin';
+import { validateLogin, handleLoginErrors } from '../../middlewares/fieldsValidation/users/validateLogin';
 import { Request, Response } from 'express';
 import { validateSession } from '../../middlewares/validateSession';
 
@@ -53,6 +53,7 @@ router.post('/login', validateLogin, handleLoginErrors,  async (req: Request, re
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         
+
 
         return sendSuccess(res, 200, {
             id_user: user.id_user,

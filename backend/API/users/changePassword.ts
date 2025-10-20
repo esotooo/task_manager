@@ -8,7 +8,7 @@ import { sendChangePasswordEmail } from '../../utils/emailGenerator';
 import { OTPType } from '../../types/MailType';
 import { hashPassword } from '../../utils/hashPassword';
 import { ResultSetHeader } from 'mysql2';
-import { handleValidationErrorsByField, validateEmail, validateNewPassword, validateOTP } from '../../middlewares/validateChangePassword';
+import { handleValidationErrorsByField, validateEmail, validateNewPassword, validateOTP } from '../../middlewares/fieldsValidation/users/validateChangePassword';
 
 const router = Router();
 
