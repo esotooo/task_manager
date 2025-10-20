@@ -5,10 +5,11 @@ import pool from '../../database/connection';
 import { CRUDqueries } from "../../Queries/Tasks/CRUDqueries";
 import { sendError, sendSuccess } from "../../utils/responseHandler";
 import { GetIDType, GetTaskType } from "../../types/TaskTypes";
+import { validateToken } from "../../middlewares/validateToken";
 
 const router = Router();
 
-router.post('/create-task', async (req: Request, res: Response) => {
+router.post('/create-task', validateToken, async (req: Request, res: Response) => {
     try{
         const{
             task_title, 
@@ -53,7 +54,7 @@ router.post('/create-task', async (req: Request, res: Response) => {
 });
 
 
-router.get('/get-tasks', async (req: Request, res: Response) => {
+router.get('/get-tasks', validateToken, async (req: Request, res: Response) => {
     try{
         const {id_user} = req.query;
 
@@ -69,7 +70,7 @@ router.get('/get-tasks', async (req: Request, res: Response) => {
     }
 });
 
-router.put('/update-task', async(req: Request, res:Response) => {
+router.put('/update-task', validateToken,  async(req: Request, res:Response) => {
     try{
         const {
             task_title, 
@@ -97,7 +98,7 @@ router.put('/update-task', async(req: Request, res:Response) => {
     }
 });
 
-router.delete(`/delete-task`, async(req: Request, res:Response) => {
+router.delete(`/delete-task`, validateToken, async(req: Request, res:Response) => {
     try{
         const {id_task, id_user} = req.query;
         

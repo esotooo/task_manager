@@ -4,10 +4,11 @@ import pool from '../../database/connection';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { sendError, sendSuccess } from "../../utils/responseHandler";
 import { utilsQueries } from "../../Queries/Tasks/utilsQueries";
+import { validateToken } from "../../middlewares/validateToken";
 
 const router = Router();
 
-router.get('/get-priorities', async (req: Request, res: Response) => {
+router.get('/get-priorities', validateToken, async (req: Request, res: Response) => {
     try{
         const [data] = await pool.query<RowDataPacket[]>(utilsQueries.getPriorities);
         if(data.length === 0){
@@ -19,7 +20,7 @@ router.get('/get-priorities', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/get-states', async (req: Request, res: Response) => {
+router.get('/get-states', validateToken,  async (req: Request, res: Response) => {
     try{
         const [data] = await pool.query<RowDataPacket[]>(utilsQueries.getStates);
         if(data.length === 0){
