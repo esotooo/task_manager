@@ -11,6 +11,11 @@ export function useTask(){
         tasks, 
         message, 
         openRowId,
+        isEditing,
+        states,
+        confirmDelete,
+        isViewing,
+
         toggleRow,
         fetchPriorities, 
         createTask, 
@@ -19,14 +24,15 @@ export function useTask(){
         updateForm, 
         resetForm,
         editTask,
-        isEditing,
         fetchStates,
-        states,
-        updateTask
+        updateTask,
+        openWindow,
+        closeWindow,
+        deleteTask,
+        seeTask,
     } = useTaskStore();
 
     const optionsList = useRef<HTMLDivElement | null>(null)
-
 
     function formatDate(dateStr: string) {
         if (!dateStr) return '';
@@ -41,12 +47,11 @@ export function useTask(){
         const newValue = numericFields.includes(name) && value !== "" ? Number(value) : value;
 
         updateForm(name as keyof typeof form, newValue);
-    };
+    }
     
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!user?.data.id_user) return;
+        if(!user?.data.id_user) return
         try{
 
             const payload = {
@@ -72,11 +77,32 @@ export function useTask(){
                 closeForm()
             }, 1000)
            
-        } catch(err : any) {
-            toast.error(err.message, { duration: 4000, position: "top-right" })
+        } catch(err : unknown) {
+            if(err instanceof Error){
+                toast.error(err.message, { duration: 4000, position: "top-right" })
+            }else{
+                toast.error('Error en la conexion con el servidor.', {duration: 4000, position: "top-right"})
+            }
         }
     }
-
+    
+    const handleDelete = async () => {
+        if(confirmDelete.id_task == null || !user?.data.id_user) return;
+    
+        try {
+            const msg = await deleteTask(confirmDelete.id_task, user.data.id_user)
+            toast.success(msg, { duration: 4000, position: "top-right" })
+            closeWindow()
+            await fetchTasks(user.data.id_user)
+        } catch(err : unknown) {
+            if(err instanceof Error){
+                toast.error(err.message, { duration: 4000, position: "top-right" })
+            }else{
+                toast.error('Error en la conexion con el servidor.', {duration: 4000, position: "top-right"})
+            }
+        }
+    }
+    
     const handleCancel = () => {
         resetForm()
         closeForm()
@@ -107,21 +133,42 @@ export function useTask(){
         return() => document.removeEventListener("mousedown", handleClickOutside) 
     },[openRowId, toggleRow])
 
+    useEffect(() => {
+        if(confirmDelete.open){
+            document.body.style.overflow = 'hidden'
+        }else{
+            document.body.style.overflow = 'auto'
+        }
+
+        return () => {
+            document.body.style.overflow = 'auto'
+        }
+    }, [confirmDelete.open])
+
     return({
+        //Estados
         form,
-        handleChange,
-        handleSubmit,
-        handleCancel,
         priorities,
         tasks,
         message,
-        formatDate,
-        toggleRow,
         openRowId,
         optionsList,
-        editTask,
         isEditing,
-        states
+        states,
+        confirmDelete,
+        isViewing,
+
+        //Funciones
+        handleChange,
+        handleSubmit,
+        handleCancel,
+        formatDate,
+        toggleRow,
+        editTask,
+        openWindow,
+        closeWindow,
+        handleDelete,
+        seeTask
     })    
 }
 
