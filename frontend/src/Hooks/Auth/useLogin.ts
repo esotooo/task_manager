@@ -65,8 +65,6 @@ export const useLoginForm = () => {
         await resendVerificationEmail(state.form.email)
     }
 
-
-
     const navigateTo = (page: string) => {
         navigate(page)
     }

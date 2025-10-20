@@ -47,6 +47,11 @@ const initialFormState : FormType = {
     end_date: null
 }
 
+type ConfirmDeleteType = {
+    open: boolean
+    id_task: number | null
+}
+
 type State = {
     isOpen: boolean
     message: string
@@ -56,17 +61,32 @@ type State = {
     priorities: TaskPrioritiesType[]
     isEditing: boolean
     openRowId: number | null
+    confirmDelete: ConfirmDeleteType
+    isViewing: boolean
+}
+
+export function formatDateForInput(dateStr: string | null) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; 
 }
 
 type Actions = {
     openForm: () => void
     closeForm: () => void
+    openWindow: (id_task: number) => void
+    closeWindow: () => void
     updateForm: (field: keyof FormType, value: string | number | null) => void;
     resetForm: () => void
     
     toggleRow: (id: number) => void
 
     editTask: (id_task: number, id_user: number) => void
+    seeTask: (id_task: number, id_user: number) => void
+
 
     fetchTasks: (id_user: number) => Promise<void>
     createTask: (form: FormType) => Promise<string>
@@ -85,9 +105,16 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
     priorities: [],
     isEditing: false,
     openRowId: null,
+    confirmDelete: {
+        open: false,
+        id_task: null
+    },
+    isViewing: false,
 
     openForm: () => set({isOpen: true}),
-    closeForm: () => set({isOpen: false, isEditing: false, openRowId: null}),
+    closeForm: () => set({isOpen: false, isEditing: false, openRowId: null, isViewing: false}),
+    openWindow: (id_task: number) => set({ confirmDelete: { open: true, id_task: id_task } }),
+    closeWindow: () => set({ confirmDelete: { open: false, id_task: null } }),
     resetForm: () => set({form: initialFormState}),
     updateForm: (field, value) =>
         set((state) => ({ form: { ...state.form, [field]: value } })),
@@ -101,16 +128,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         const { tasks } = get();
         const taskToEdit = tasks.find(
             (t) => t.id_task === id_task && t.id_user === id_user
-        );
-
-        function formatDateForInput(dateStr: string | null) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`; 
-        }
+        )
           
         if (taskToEdit) {
             set({
@@ -129,6 +147,31 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
             })
         }
     },
+
+    seeTask: (id_task: number, id_user: number) => {
+        const { tasks } = get();
+        const taskToView = tasks.find(
+            (t) => t.id_task === id_task && t.id_user === id_user
+        )
+
+        if (taskToView) {
+            set({
+                form: {
+                    id_task: taskToView.id_task,
+                    task_title: taskToView.task_title,
+                    task_description: taskToView.task_description,
+                    id_priority: taskToView.id_priority ?? null,
+                    id_state: taskToView.id_state ?? null,
+                    due_date: formatDateForInput(taskToView.due_date),
+                    id_user: taskToView.id_user,
+                    end_date: formatDateForInput(taskToView.end_date)
+                },
+                isViewing: true,
+                isOpen: true
+            })
+        }
+    },
+    
     
     //CRUD
     fetchTasks: async (id_user) => {
@@ -187,7 +230,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
 
     deleteTask: async (id_task, id_user) => {
         try{
-            const res = await api.delete(`/api/tasks/delete-task/${id_task}/${id_user}`)
+            const res = await api.delete(`/api/tasks/delete-task?id_task=${id_task}&id_user=${id_user}`);
             if (res.status === 200) {
                 set((state) => ({
                     tasks: state.tasks.filter(

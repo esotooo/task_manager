@@ -10,7 +10,7 @@ export default function GraphsPage() {
             <h1 className="text-3xl font-bold">Gráficos</h1>
 
             <section>
-                
+            
             </section>
 
         </div>
