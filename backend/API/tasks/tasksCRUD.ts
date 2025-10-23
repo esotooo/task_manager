@@ -6,10 +6,11 @@ import { CRUDqueries } from "../../Queries/Tasks/CRUDqueries";
 import { sendError, sendSuccess } from "../../utils/responseHandler";
 import { GetIDType, GetTaskType } from "../../types/TaskTypes";
 import { validateToken } from "../../middlewares/validateToken";
+import { handleTasksErrors, validateTasks } from "../../middlewares/fieldsValidation/tasks/validateTask";
 
 const router = Router();
 
-router.post('/create-task', validateToken, async (req: Request, res: Response) => {
+router.post('/create-task', validateTasks, handleTasksErrors, validateToken, async (req: Request, res: Response) => {
     try{
         const{
             task_title, 
@@ -70,7 +71,7 @@ router.get('/get-tasks', validateToken, async (req: Request, res: Response) => {
     }
 });
 
-router.put('/update-task', validateToken,  async(req: Request, res:Response) => {
+router.put('/update-task', validateTasks, handleTasksErrors, validateToken,  async(req: Request, res:Response) => {
     try{
         const {
             task_title, 
