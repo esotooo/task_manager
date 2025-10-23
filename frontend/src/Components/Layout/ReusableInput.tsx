@@ -1,9 +1,12 @@
 import { LuEye, LuEyeClosed } from "react-icons/lu";
-import type { FormInputProps, PasswordInputProps } from "../../Types/inputTypes";
+import type { FormInputProps, PasswordInputProps, SelectProps, TextAreaProps } from "../../Types/Layout/inputTypes";
 import { passwordRequirements } from "../../Utils/passwordRequirements";
-import { useState } from "react";
+import React, { useState } from "react";
+import { MdErrorOutline } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
 
-export const FormInput: React.FC<FormInputProps> = ({
+
+export const FormInput: React.FC<FormInputProps & {variant?: 'base' | 'custom'}> = ({
     type = 'text',
     placeholder,
     name,
@@ -13,30 +16,30 @@ export const FormInput: React.FC<FormInputProps> = ({
     setError,  
     className = '',
     suggestions,
+    disabled,
+    variant = 'base'
 }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (setError) setError('')
         onChange(e);
     }
 
-    const blockCopyPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-        e.preventDefault()
-    }
+    const baseStyles = `
+        w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
+        focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black
+        ${error ? 'border-b-rose-400' : ''}
+    `;
 
     return(
-        <div className="relative pb-3">
+        <div className="relative pb-2">
             <input 
                 type={type} 
                 placeholder={placeholder}
                 name={name}
                 value={value}
                 onChange={handleChange}
-                onCopy={blockCopyPaste}
-                onPaste={blockCopyPaste}
-                onCut={blockCopyPaste}
-                className={`w-full text-sm outline-none px-1 py-2 text-gray-500/80 border-b-3 border-b-gray-300
-                focus-within:border-b-black focus:font-bold focus-within:bg-gray-200/30 focus-within:text-black
-                ${error ? 'border-b-rose-400' : ''} ${className}`}
+                disabled={disabled}
+                className={`${variant === 'base' ? baseStyles : ''} ${className}`}
             />
             
             <div className="flex flex-row items-center gap-3 text-xs mt-1 absolute">
@@ -63,6 +66,95 @@ export const FormInput: React.FC<FormInputProps> = ({
     )
 }
 
+
+export const SelectInput : React.FC<SelectProps> = ({
+    name,
+    value,
+    onChange,
+    setError,
+    error,
+    className='',
+    disabled,
+    options = [],
+    placeholder
+}) => {
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (setError) setError('')
+        onChange(e);
+    }
+
+    return(
+        <div className="relative pb-2">
+            <select
+                value={value ?? 0}
+                name={name}
+                className={`${className}`}
+                onChange={handleChange}
+                disabled={disabled}
+            >
+                <option value={0} disabled hidden>{placeholder}</option>
+                {options.map(opt => (
+                    <option value={opt.value} key={opt.value}>{opt.label}</option>
+                ))}
+            </select>
+
+                
+            {/* Error */}
+            <div className={`overflow-hidden transition-all duration-300 max-h-20 mt-1 absolute`}>
+                <p
+                    className={`text-rose-400 italic transition-all duration-300 text-xs
+                    ${error ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+                >
+                    {error ?? " "}
+                </p>
+            </div>
+
+        </div>
+    )
+}
+
+export const TextArea : React.FC<TextAreaProps & {variant?: 'base' | 'custom'}> = ({
+    placeholder,
+    name,
+    value,
+    onChange,
+    setError,
+    error,
+    className = '',
+    disabled
+}) => {
+
+    const handleChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (setError) setError('')
+        onChange(e);
+    }
+
+    return(
+        <div className="relative pb-2">
+
+            <textarea
+                onChange={handleChange}
+                value={value}
+                name={name}
+                rows={3}
+                placeholder={placeholder}
+                className={`${className}`}
+                disabled={disabled}
+            ></textarea>
+
+            {/* Error */}
+            <div className={`overflow-hidden transition-all duration-300 max-h-20  absolute`}>
+                <p
+                    className={`text-rose-400 italic transition-all duration-300 text-xs
+                    ${error ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+                >
+                    {error ?? " "}
+                </p>
+            </div>
+        </div>
+    )
+}
 
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -105,7 +197,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
     }
 
     return (
-        <div className="relative pb-3">
+        <div className="relative pb-2">
             {/* Input */}
             <div
                 className={`flex w-full px-1 py-2 text-sm text-gray-500/80 border-b-3 border-b-gray-300 items-center
@@ -162,7 +254,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                                 passed ? "text-green-600" : "text-gray-500"
                             }`}
                             >
-                                <span>{passed ? "✅" : "❌"}</span>
+                                <span>{passed ? <FaCheckCircle /> : <MdErrorOutline />}</span>
                                     {req.label}
                             </li>
                         )
