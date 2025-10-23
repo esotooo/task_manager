@@ -1,5 +1,5 @@
 import React, {useRef, useReducer } from "react";
-import type {RegisterType } from '../../Types/authTypes.ts'
+import type {RegisterType } from '../../Types/Auth/authTypes.ts'
 import { api } from '../../Utils/axiosInstance.ts'
 import { useNavigate } from "react-router-dom";
 import { useInputError } from "../Layout/useInputError.ts";

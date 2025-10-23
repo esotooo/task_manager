@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
 import { api } from '../Utils/axiosInstance.ts';
-import type { InformationReceivedType, LoginType } from '../Types/authTypes.ts';
+import type { InformationReceivedType, LoginType } from '../Types/Auth/authTypes.ts';
 
 type AuthContextProps = {
   user: InformationReceivedType | null
