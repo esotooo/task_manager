@@ -1,7 +1,8 @@
 import { useAuth } from "../Auth/useAuth"
-import { useTaskStore } from "../../Store/useTaskStore";
+import { useTaskStore, ValidationError } from "../../Store/useTaskStore";
 import { useEffect, useRef } from "react";
 import {toast} from 'react-hot-toast'
+import { useInputError } from "../Layout/useInputError";
 
 export function useTask(){
     const { user } = useAuth()
@@ -15,7 +16,6 @@ export function useTask(){
         states,
         confirmDelete,
         isViewing,
-
         toggleRow,
         fetchPriorities, 
         createTask, 
@@ -31,6 +31,8 @@ export function useTask(){
         deleteTask,
         seeTask,
     } = useTaskStore();
+
+    const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
 
     const optionsList = useRef<HTMLDivElement | null>(null)
 
@@ -68,18 +70,21 @@ export function useTask(){
             }else{
                 msg = await createTask(payload)
             }
-
             toast.success(msg, { duration: 4000, position: "top-right" })
-    
+            setFieldMessage({})
+
             await fetchTasks(user.data.id_user)
             setTimeout(() => {
                 resetForm()
                 closeForm()
             }, 1000)
            
-        } catch(err : unknown) {
-            if(err instanceof Error){
-                toast.error(err.message, { duration: 4000, position: "top-right" })
+        } catch(error : unknown) {
+            if(error instanceof ValidationError){
+                setFieldMessage(error.fields)
+            }
+            else if(error instanceof Error){
+                toast.error(error.message, { duration: 4000, position: "top-right" })                            
             }else{
                 toast.error('Error en la conexion con el servidor.', {duration: 4000, position: "top-right"})
             }
@@ -168,7 +173,10 @@ export function useTask(){
         openWindow,
         closeWindow,
         handleDelete,
-        seeTask
+        seeTask,
+
+        getFieldsError,
+        clearFieldsError
     })    
 }
 
