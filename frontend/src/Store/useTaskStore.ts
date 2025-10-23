@@ -1,39 +1,14 @@
 import { create } from 'zustand';
 import { api } from '../Utils/axiosInstance.ts';
+import type { FormType, TaskType, TaskStatesType, TaskPrioritiesType } from '../Types/Tasks/TaskTypes.ts';
 
-type TaskType = {
-    id_task: number
-    task_title: string
-    task_description: string
-    priority: string
-    state: string 
-    due_date: string
-    create_date: string
-    end_date: string
-    id_user: number
-    id_state: number
-    id_priority: number
-}
-
-type FormType= {
-    id_task: number | null
-    task_title: string | null
-    task_description: string | null
-    id_priority: number | null
-    id_state: number | null
-    due_date: string | null 
-    id_user: number | null
-    end_date?: string | null
-}
-
-type TaskStatesType = {
-    id_state: number,
-    state: string
-}
-
-type TaskPrioritiesType = {
-    id_priority: number
-    priority: string
+export class ValidationError extends Error {
+    fields: Record<string, string>;
+    constructor(fields: Record<string, string>) {
+      super('Errores de validación');
+      this.name = 'ValidationError';
+      this.fields = fields;
+    }
 }
 
 const initialFormState : FormType = {
@@ -182,7 +157,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
             }
         }catch(error : any){
             if(error.response){
-                set({message: error?.response?.message})
+                set({message: error?.response?.data.message})
             }else{
                 set({message: 'Error en la conexión con el servidor.'})
             }
@@ -198,7 +173,12 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
             }
         }catch(error : any){
             if(error.response){
-                throw new Error(error.response.data.message);
+                if(error.response.data.fields){
+                    console.log(error.response.data.fields)
+                    throw new ValidationError(error.response.data.fields)
+                }else if(error.response.data.message){
+                    throw new Error(error.response.data.message);
+                }
             }else{
                 throw new Error('Error en la conexión con el servidor.');
             }
@@ -211,7 +191,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
             if(res.status === 200){
                 set((state) => ({
                     tasks: state.tasks.map((t) => 
-                        t.id_task === form.id_task && t.id_task === form.id_user ? 
+                        t.id_task === form.id_task && t.id_user === form.id_user ? 
                         {...t, ...res.data.data} : t
                     ),
                     openRowId: null 
@@ -221,7 +201,11 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
             
         }catch(error : any){
             if(error.response){
-                throw new Error(error.response.data.message)
+                if(error.response.data.fields){
+                    throw new ValidationError(error.response.data.fields)
+                }else if(error.response.data.message){
+                    throw new Error(error.response.data.message)
+                }
             }else{
                 throw new Error('Error en la conexión con el servidor.');
             }
@@ -268,5 +252,8 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         }catch{
             set({message: ''})
         }
-    }
+    }      
 }))
+
+
+  
