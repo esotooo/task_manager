@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express';
 import {body, validationResult} from 'express-validator';
 
 export const validateTasks = [
@@ -19,24 +20,43 @@ export const validateTasks = [
         .notEmpty()
         .withMessage('Por favor, seleccione una prioridad.')
         .bail()
-        .matches(/^[0-3]+$/)
+        .matches(/^[1-3]+$/)
         .withMessage('La prioridad de una tarea es de 0 a 3'),
 
     body('id_state')
         .trim()
         .notEmpty()
         .withMessage('Por favor, seleccione un estado.')
-        .bail()
-        .matches(/^[0-4]+$/)
-        .withMessage('El estado de una tarea es de 0 a 4'),
-    
+        .matches(/^[1-4]+$/)
+        .withMessage('El estado de una tarea es de 0 a 3'),
+
     body('due_date')
         .trim()
         .notEmpty()
         .withMessage('Por favor, ingrese una fecha de vencimiento.'),
 
-    body('end_date')
+    body('id_user')
         .trim()
         .notEmpty()
-        .withMessage('Por favor, ingrese una fecha de completado.')
-]
+        .withMessage('Por favor, ingrese el usuario.')
+    ]
+
+export const handleTasksErrors = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        const errorsByField: Record<string, string> = {};
+        
+        errors.array().forEach((error) => {
+        const field = (error as any).param || (error as any).path || "general";
+        errorsByField[field] = error.msg;
+        });
+
+        return(res.status(400).json({
+            success: false,
+            fields: errorsByField
+        }));
+    }
+
+    next();
+}
