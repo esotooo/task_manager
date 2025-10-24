@@ -1,8 +1,10 @@
 import { useTaskStore } from "../../../Store/useTaskStore"
+import { useTask } from "../../../Hooks/Tasks/useTask";
 
 export default function SearchBar() {
 
-    const {openForm} = useTaskStore()
+    const {openForm, } = useTaskStore()
+    const {handleSearchByTitle} = useTask();
 
   return (
     <>
@@ -17,6 +19,7 @@ export default function SearchBar() {
                     placeholder="Buscar tareas..."
                     className="px-3 py-2 flex-1 md:flex-[4] md:border-r-1 md:border-b-0 md:border-r-gray-100 
                     border-b-1 border-b-gray-100 focus:outline-none"
+                    onChange={handleSearchByTitle}
                 />
                 <select 
                     className="px-2 py-2 flex-1 md:flex-[1.2] focus:outline-none md:border-b-0
