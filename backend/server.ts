@@ -5,7 +5,8 @@ import loginAPI from './API/users/login';
 import recoverPasswordAPI from './API/users/changePassword';
 import validateEmail from './API/users/resendVerification';
 import tasksCrud from './API/tasks/tasksCRUD';
-import taskUtils from './API/tasks/taskUtils'
+import taskUtils from './API/tasks/taskUtils';
+import tasksSearch from './API/tasks/tasksSearch';
 import cookieParser from 'cookie-parser';
 
 
@@ -27,8 +28,10 @@ app.use('/api/users', registerAPI);
 app.use('/api/users', loginAPI);
 app.use('/api/users', recoverPasswordAPI);
 app.use('/api/users', validateEmail);
+
 app.use('/api/tasks', tasksCrud);
 app.use('/api/tasks', taskUtils);
+app.use('/api/tasks', tasksSearch);
 
 
 
