@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import pool from '../../database/connection';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import { sendError, sendSuccess } from "../../utils/responseHandler";
 import { utilsQueries } from "../../Queries/Tasks/utilsQueries";
 import { validateToken } from "../../middlewares/validateToken";
