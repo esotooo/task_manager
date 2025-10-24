@@ -67,6 +67,7 @@ type Actions = {
     createTask: (form: FormType) => Promise<string>
     updateTask: (form: FormType) => Promise<string>
     deleteTask: (id_task: number, id_user: number) => Promise<string>
+    searchByTitle: (id_user: number, task_title: string) => Promise<void>
     fetchPriorities: () => Promise<void>
     fetchStates: () => Promise<void>
 }
@@ -158,8 +159,10 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         }catch(error : any){
             if(error.response){
                 set({message: error?.response?.data.message})
+                set({tasks: []})
             }else{
                 set({message: 'Error en la conexión con el servidor.'})
+                set({tasks: []})
             }
         }
     },
@@ -214,7 +217,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
 
     deleteTask: async (id_task, id_user) => {
         try{
-            const res = await api.delete(`/api/tasks/delete-task?id_task=${id_task}&id_user=${id_user}`);
+            const res = await api.delete(`/api/tasks/delete-task?id_task=${id_task}&id_user=${id_user}`)
             if (res.status === 200) {
                 set((state) => ({
                     tasks: state.tasks.filter(
@@ -228,6 +231,23 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
                 throw new Error(error.response.data.message)
             }else{
                 throw new Error('Error en la conexión con el servidor.');
+            }
+        }
+    },
+
+    searchByTitle: async(id_user, task_title) => {
+        try{
+            const res = await api.get(`/api/tasks/search-by-title?id_user=${id_user}&task_title=${task_title}`)
+            if(res.status === 200){
+                set({tasks: res.data.data})
+            }
+        }catch(error:any){
+            if(error.response){
+                set({message: error?.response?.data.message})
+                set({tasks: []})
+            }else{
+               set({message: 'Error en la conexión con el servidor.'})
+               set({tasks: []})
             }
         }
     },
@@ -254,6 +274,3 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         }
     }      
 }))
-
-
-  
