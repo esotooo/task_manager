@@ -23,13 +23,6 @@ export const validateTasks = [
         .matches(/^[1-3]+$/)
         .withMessage('La prioridad de una tarea es de 0 a 3'),
 
-    body('id_state')
-        .trim()
-        .notEmpty()
-        .withMessage('Por favor, seleccione un estado.')
-        .matches(/^[1-4]+$/)
-        .withMessage('El estado de una tarea es de 0 a 3'),
-
     body('due_date')
         .trim()
         .notEmpty()
