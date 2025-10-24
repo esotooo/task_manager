@@ -1,8 +1,9 @@
 import { useAuth } from "../Auth/useAuth"
-import { useTaskStore, ValidationError } from "../../Store/useTaskStore";
-import { useEffect, useRef } from "react";
+import { useTaskStore, ValidationError } from "../../Store/useTaskStore"
+import React, { useEffect, useRef } from "react"
 import {toast} from 'react-hot-toast'
-import { useInputError } from "../Layout/useInputError";
+import { useInputError } from "../Layout/useInputError"
+import debounce from "debounce"
 
 export function useTask(){
     const { user } = useAuth()
@@ -30,6 +31,7 @@ export function useTask(){
         closeWindow,
         deleteTask,
         seeTask,
+        searchByTitle,
     } = useTaskStore();
 
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
@@ -90,15 +92,32 @@ export function useTask(){
             }
         }
     }
+
+    const debouncedSearch = debounce(async (id_user: number, task_title: string) => {
+        if(!user?.data.id_user) return;
+        const titleTrimmed = task_title.trim()
+        id_user = user.data.id_user
+        if(titleTrimmed){
+            await searchByTitle(id_user, titleTrimmed)
+        }else{
+            await fetchTasks(user?.data.id_user)
+        }
+    }, 500)   
+
+    const handleSearchByTitle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        const value = e.target.value
+        debouncedSearch(user?.data.id_user, value)
+    }   
     
     const handleDelete = async () => {
         if(confirmDelete.id_task == null || !user?.data.id_user) return;
     
         try {
             const msg = await deleteTask(confirmDelete.id_task, user.data.id_user)
+            await fetchTasks(user.data.id_user)
             toast.success(msg, { duration: 4000, position: "top-right" })
             closeWindow()
-            await fetchTasks(user.data.id_user)
         } catch(err : unknown) {
             if(err instanceof Error){
                 toast.error(err.message, { duration: 4000, position: "top-right" })
@@ -107,6 +126,7 @@ export function useTask(){
             }
         }
     }
+
     
     const handleCancel = () => {
         resetForm()
@@ -125,7 +145,7 @@ export function useTask(){
         if (user?.data.id_user) {
           fetchTasks(user.data.id_user)
         }
-    }, [user?.data.id_user, fetchTasks])
+    }, [user?.data.id_user])
       
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -174,9 +194,9 @@ export function useTask(){
         closeWindow,
         handleDelete,
         seeTask,
+        handleSearchByTitle,
 
         getFieldsError,
         clearFieldsError
     })    
 }
-
