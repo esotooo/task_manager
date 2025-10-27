@@ -32,6 +32,7 @@ export function useTask(){
         deleteTask,
         seeTask,
         searchByTitle,
+        openForm,
     } = useTaskStore();
 
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
@@ -107,7 +108,9 @@ export function useTask(){
     const handleSearchByTitle = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         const value = e.target.value
-        debouncedSearch(user?.data.id_user, value)
+        if (user?.data.id_user) {
+            debouncedSearch(user.data.id_user, value)
+        }
     }   
     
     const handleDelete = async () => {
@@ -191,6 +194,7 @@ export function useTask(){
         toggleRow,
         editTask,
         openWindow,
+        openForm,
         closeWindow,
         handleDelete,
         seeTask,

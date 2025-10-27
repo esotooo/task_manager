@@ -177,7 +177,6 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         }catch(error : any){
             if(error.response){
                 if(error.response.data.fields){
-                    console.log(error.response.data.fields)
                     throw new ValidationError(error.response.data.fields)
                 }else if(error.response.data.message){
                     throw new Error(error.response.data.message);

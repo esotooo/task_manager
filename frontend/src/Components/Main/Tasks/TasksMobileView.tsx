@@ -4,7 +4,7 @@ import { useTask } from "../../../Hooks/Tasks/useTask";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 export default function TasksMobileView() {
-  const { tasks, formatDate, editTask, openWindow, seeTask} = useTask();
+  const { tasks, formatDate, editTask, openWindow, seeTask, message, openForm} = useTask();
 
   const leadingActions = (id_task: number, id_user: number) => {
     return (
@@ -27,6 +27,15 @@ export default function TasksMobileView() {
   }
 
   return (
+    <>
+    <button 
+        className="bg-amber-500 px-4 py-2 text-sm mb-4 font-bold text-white rounded-lg cursor-pointer w-full md:w-auto hover:bg-amber-500/85" 
+        type="button"
+        onClick={() => openForm()}
+    >
+        Agregar Tarea
+    </button>
+    {tasks.length > 0 ? (
     <SwipeableList>
       {tasks.map((task) => (
         <SwipeableListItem
@@ -76,7 +85,12 @@ export default function TasksMobileView() {
                     </div>
                 </div>
         </SwipeableListItem>
-      ))}
-    </SwipeableList>
+        ))}
+        </SwipeableList>
+        ) : (
+            <p>{message}</p>
+        )
+    }
+    </>
   )
 }

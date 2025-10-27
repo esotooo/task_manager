@@ -14,15 +14,14 @@ export default function TasksPage() {
         <DesktopSidebar />
         <MobileOptionsBar />
 
-        <main className="flex-1 md:px-7 md:py-8 px-5 py-5 mt-25 md:mt-0">
-            <h1 className="text-3xl font-bold">Tareas</h1>
+        <main className="flex-1 md:px-7 md:py-8 px-5 py-5 mt-25 md:mt-0 relative">
+            <h1 className="text-3xl font-bold mb-3 md:mb-0">Tareas</h1>
 
             {!isOpen ? 
                 <MainView />
             :  
                 <TaskForm />
             }
-
             <Toaster />
         </main>
     </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import SearchBar from "./SearchBar";
+import DesktopSearchbar from "./DesktopSearchbar";
 import TasksDesktopView from "./TasksDesktopView";
 import TasksMobileView from "./TasksMobileView";
 import { useTask } from "../../../Hooks/Tasks/useTask";
 import ConfirmDeleteWindow from "./ConfirmDeleteWindow";
+import MobileSearchbar from "./MobileSearchbar";
 
 export default function MainView() {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
@@ -21,7 +22,7 @@ export default function MainView() {
 
   return (
     <>
-      <SearchBar />
+      {isMobile ? <MobileSearchbar /> : <DesktopSearchbar /> }
       {isMobile ? <TasksMobileView /> : <TasksDesktopView />}
       {confirmDelete.open && (<ConfirmDeleteWindow />)}
     </>
