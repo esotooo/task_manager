@@ -11,37 +11,40 @@ const router = Router();
 router.get('/search-tasks', async(req: Request, res: Response) => {
     try{
         const {id_user, task_title, id_priority, id_state, start_date, end_date} = req.query;
-        let query, params;
+        
+        const params: any[] = [id_user];
+        const conditions: string[] = [];
 
-        if(task_title){
-            query = searchQueries.searchByTitle;
-            params = [id_user, `%${task_title}%`];
+
+        if (start_date && end_date){ // Buscar por un rango de fechas
+            conditions.push(searchQueries.searchByDateRange);
+            params.push(start_date, end_date);
         }
-        if (start_date){
-            query = searchQueries.searchByDateStart;
-            params = [id_user, start_date];
-        }
-        if (start_date && end_date){
-            query = searchQueries.searchByDateRange;
-            params = [id_user, start_date, end_date];
-        }
-        if(id_priority){
-            query = searchQueries.searchByPriority;
-            params = [id_user, id_priority];
-        }
-        if(id_state){
-            query = searchQueries.searchByState;
-            params = [id_user, id_state];
-        }
-        if(task_title && id_priority){
-            query = searchQueries.searchByTitleAndPriority;
-            params = [id_user, id_priority, `%${task_title}%`]
+        else if (start_date){ // Fecha inicial
+            conditions.push(searchQueries.searchByDateStart);
+            params.push(start_date);
         }
 
-        if (!query || !params) {
-            return sendError(res, 400, 'Parámetros invalidos');
+        if(task_title){ // Titulo
+            conditions.push(searchQueries.searchByTitle);
+            params.push(`%${task_title}%`);
+        }
+   
+        if(id_priority){ // Buscar por prioridad
+            conditions.push(searchQueries.searchByPriority);
+            params.push(id_priority);
         }
 
+        if(id_state){ // Buscar por estado
+            conditions.push(searchQueries.searchByState);
+            params.push(id_state);
+        }
+
+        let query = searchQueries.baseQuery;
+        if(conditions.length > 0){ //Realizar busqueda con diferentes parametros
+            query += ' AND ' + conditions.join(' AND ');
+        }
+        
         const [tasks] = await pool.query<RowDataPacket[]>(query, params);
         if(tasks.length === 0){
             return sendError(res, 400 , 'No se encontro ninguna tarea.');
@@ -49,8 +52,8 @@ router.get('/search-tasks', async(req: Request, res: Response) => {
 
         return sendSuccess(res, 200, tasks);
     }
-    catch{
-        return sendError(res, 500, 'Error en el servidor.');
+    catch(error){
+        return sendError(res, 500, 'Error en el servidor.', error);
     }
 });
 

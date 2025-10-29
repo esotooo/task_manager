@@ -1,5 +1,4 @@
-// Parte común: SELECT + FROM + JOINs
-const baseSelect = `
+const baseQuery = `
 SELECT 	
 	u.id_task,
     u.task_title,
@@ -18,31 +17,21 @@ INNER JOIN task_state s
     ON s.id_state = u.id_state
 WHERE u.id_user = ?`;
 
-const searchByTitle = `
-${baseSelect} AND u.task_title LIKE ?`;
+const searchByTitle = `u.task_title LIKE ?`;
 
-const searchByDateRange = `
-${baseSelect} AND u.create_date BETWEEN ? AND ?`;
+const searchByDateRange = `u.create_date BETWEEN ? AND ?`;
 
-const searchByDateStart = `
-${baseSelect} AND u.create_date >= ?`;
+const searchByDateStart = `u.create_date >= ?`;
 
-const searchByPriority = `
-${baseSelect} AND u.id_priority = ?`;
+const searchByPriority = `u.id_priority = ?`;
 
-const searchByState = `
-${baseSelect} AND u.id_state = ?`;
+const searchByState = `u.id_state = ?`;
 
-const searchByTitleAndPriority = `
-${baseSelect} AND u.id_priority = ? AND u.task_title LIKE ?`;
-
-// Exportar
 export const searchQueries = {
+    baseQuery,
     searchByTitle,
     searchByDateRange,
     searchByDateStart,
     searchByPriority,
     searchByState,
-    searchByTitleAndPriority,
-    
 };
