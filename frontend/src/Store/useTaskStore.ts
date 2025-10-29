@@ -34,11 +34,10 @@ const initialFormState : FormType = {
 }
 
 const InitialSearchOptions : SearchOptionsType = {
+    id_user: null,
     task_title: '',
     id_priority: null,
-    priority: '',
     id_state: null,
-    state: '',
     end_date:  null,
     start_date: null
 }
@@ -56,6 +55,7 @@ type State = {
     isViewing: boolean
     optionId: number | null
     selectedOption: SearchOptionsType
+    rangeDates: [Date | null, Date | null]
 }
 
 
@@ -74,12 +74,15 @@ type Actions = {
     seeTask: (id_task: number, id_user: number) => void
 
     fetchTasks: (id_user: number) => Promise<void>
+    searchTasks: (option: SearchOptionsType) => Promise<void>
     createTask: (form: FormType) => Promise<string>
     updateTask: (form: FormType) => Promise<string>
     deleteTask: (id_task: number, id_user: number) => Promise<string>
-    searchByTitle: (id_user: number, task_title: string) => Promise<void>
     fetchPriorities: () => Promise<void>
     fetchStates: () => Promise<void>
+
+    setSelectedOption: (update: Partial<SearchOptionsType>) => void
+    setRangeDates: (range: [Date | null, Date | null]) => void
 }
 
 export const useTaskStore = create<State & Actions>((set, get) => ({
@@ -98,9 +101,13 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
     isViewing: false,
     optionId: null,
     selectedOption: InitialSearchOptions,
+    rangeDates: [null, null],
 
     openForm: () => set({isOpen: true}),
     closeForm: () => set({isOpen: false, isEditing: false, openRowId: null, isViewing: false}),
+    setSelectedOption: (update: Partial<SearchOptionsType>) => 
+        set((state) => ({ selectedOption: { ...state.selectedOption, ...update } })),
+    setRangeDates: () => set({rangeDates: [null, null]}),
     openWindow: (id_task: number) => set({ confirmDelete: { open: true, id_task: id_task } }),
     closeWindow: () => set({ confirmDelete: { open: false, id_task: null } }),
     resetForm: () => set({form: initialFormState}),
@@ -184,6 +191,32 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         }
     },
 
+    searchTasks: async (selectedOption) => {
+        try{
+            
+            const queryParams = new URLSearchParams()
+
+            if(selectedOption.task_title) queryParams.append('task_title', selectedOption.task_title)
+            if(selectedOption.id_priority) queryParams.append('id_priority', selectedOption.id_priority.toString())
+            if(selectedOption.id_state) queryParams.append('id_state', selectedOption.id_state.toString())
+            if(selectedOption.start_date) queryParams.append('start_date', selectedOption.start_date)
+            if(selectedOption.end_date) queryParams.append('end_date', selectedOption.end_date)
+
+            const res = await api.get(`/api/tasks/search-tasks?id_user=${selectedOption.id_user}&${queryParams.toString()}`)
+
+            if(res.status === 200) set({tasks: res.data.data})
+
+        }catch(error: any){
+            if(error.response){
+                set({message: error?.response?.data.message})
+                set({tasks: []})
+            }else{
+                set({message: 'Error en la conexión con el servidor.'})
+                set({tasks: []})
+            }
+        }
+    },
+
     createTask: async (form) => {
         try{
             const res = await api.post(`/api/tasks/create-task`, form)
@@ -247,23 +280,6 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
                 throw new Error(error.response.data.message)
             }else{
                 throw new Error('Error en la conexión con el servidor.');
-            }
-        }
-    },
-
-    searchByTitle: async(id_user, task_title) => {
-        try{
-            const res = await api.get(`/api/tasks/search-by-title?id_user=${id_user}&task_title=${task_title}`)
-            if(res.status === 200){
-                set({tasks: res.data.data})
-            }
-        }catch(error:any){
-            if(error.response){
-                set({message: error?.response?.data.message})
-                set({tasks: []})
-            }else{
-               set({message: 'Error en la conexión con el servidor.'})
-               set({tasks: []})
             }
         }
     },

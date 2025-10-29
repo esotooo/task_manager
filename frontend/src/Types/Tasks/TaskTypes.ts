@@ -34,13 +34,15 @@ export type TaskPrioritiesType = {
 }
 
 export type SearchOptionsType = {
-    task_title: string
-    id_priority: number | null
-    priority: string
-    id_state: number | null
-    state: string
-    end_date: string | null
-    start_date: string | null
+    id_user: number | null
+    task_title?: string
+    id_priority?: number | null
+    priority?: string
+    id_state?: number | null
+    state?: string
+    end_date?: string | null
+    start_date?: string | null
+    range?: string
 }
 
 export type ConfirmDeleteType = {

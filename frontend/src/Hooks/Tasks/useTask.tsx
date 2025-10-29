@@ -3,7 +3,6 @@ import { useTaskStore, ValidationError } from "../../Store/useTaskStore"
 import React, { useEffect, useRef } from "react"
 import {toast} from 'react-hot-toast'
 import { useInputError } from "../Layout/useInputError"
-import debounce from "debounce"
 
 export function useTask(){
     const { user } = useAuth()
@@ -18,6 +17,8 @@ export function useTask(){
         confirmDelete,
         isViewing,
         optionId,
+        selectedOption,
+        rangeDates,
         filterOption,
         toggleRow,
         fetchPriorities, 
@@ -33,8 +34,9 @@ export function useTask(){
         closeWindow,
         deleteTask,
         seeTask,
-        searchByTitle,
+        searchTasks,
         openForm,
+        setSelectedOption,
     } = useTaskStore();
 
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
@@ -96,26 +98,26 @@ export function useTask(){
             }
         }
     }
-
-    const debouncedSearch = debounce(async (id_user: number, task_title: string) => {
-        if(!user?.data.id_user) return;
-        const titleTrimmed = task_title.trim()
-        id_user = user.data.id_user
-        if(titleTrimmed){
-            await searchByTitle(id_user, titleTrimmed)
-        }else{
-            await fetchTasks(user?.data.id_user)
-        }
-    }, 500)   
-
-    const handleSearchByTitle = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault()
-        const value = e.target.value
-        if (user?.data.id_user) {
-            debouncedSearch(user.data.id_user, value)
-        }
-    }   
     
+
+    const handleSearch = async () => {
+        let start_date: string | undefined
+        let end_date: string | undefined
+    
+        if(rangeDates[0]) start_date = rangeDates[0].toISOString().split('T')[0]; 
+        if(rangeDates[1]) end_date = rangeDates[1].toISOString().split('T')[0];
+    
+        if(user?.data.id_user == null) return
+        await searchTasks({
+            id_user: user?.data.id_user,
+            task_title: selectedOption.task_title || undefined,
+            id_priority: selectedOption.id_priority || undefined,
+            id_state: selectedOption.id_state || undefined,
+            start_date,
+            end_date
+        })
+    }
+        
     const handleDelete = async () => {
         if(confirmDelete.id_task == null || !user?.data.id_user) return;
     
@@ -187,6 +189,7 @@ export function useTask(){
         isViewing,
         optionId,
         filters,
+        selectedOption,
 
         //Funciones
         handleChange,
@@ -200,10 +203,12 @@ export function useTask(){
         closeWindow,
         handleDelete,
         seeTask,
-        handleSearchByTitle,
         filterOption,
 
         getFieldsError,
-        clearFieldsError
+        clearFieldsError,
+        setSelectedOption,
+        handleSearch,
+
     })    
 }

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useTask } from "../../../Hooks/Tasks/useTask";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoMdSearch } from "react-icons/io";
@@ -12,44 +11,14 @@ export default function DesktopSearchbar() {
         optionId,
         priorities,
         states,
+        selectedOption,
         openForm, 
         filterOption,
+        setSelectedOption,
+        handleSearch,
+
     } = useTask();
 
-    const [selected, setSelected] = useState({
-        task_title: '',
-        priority: '',
-        state: '',
-        range: '',
-    });
-
-    const [rangeDates, setRangeDates] = useState<[Date | null, Date | null]>([null, null]);
-
-    const handleDateChange = (value: Date | [Date, Date]) => {
-        if (Array.isArray(value)) {
-            setRangeDates(value);
-            const rangeStr = value[1]
-                ? `${value[0].toLocaleDateString()} - ${value[1].toLocaleDateString()}`
-                : `${value[0].toLocaleDateString()} - sin límite`;
-            setSelected(prev => ({ ...prev, range: rangeStr }));
-        } else {
-            setRangeDates([value, null]);
-            setSelected(prev => ({ ...prev, range: `${value.toLocaleDateString()} - sin límite` }));
-            filterOption(0);
-        }
-    }
-
-    const handleClearRange = () => {
-        setRangeDates([null, null]);
-        setSelected(prev => ({ ...prev, range: '' }));
-    };
-
-    const handleNoLimit = () => {
-        if (rangeDates[0]) {
-            setSelected(prev => ({ ...prev, range: `${rangeDates[0]?.toLocaleDateString()} - sin límite` }));
-            setRangeDates([rangeDates[0], null]);
-        }
-    };
 
   return (
     <>
@@ -63,13 +32,14 @@ export default function DesktopSearchbar() {
                         type="text" 
                         placeholder="Buscar tareas..."
                         className="w-full px-3 py-2 focus:outline-none"
-                        onChange={e => setSelected(prev => ({...prev, task_title: e.target.value}))}
-                        value={selected.task_title}
+                        onChange={e => setSelectedOption({task_title: e.target.value})}
+                        value={selectedOption.task_title}
+                        onKeyDown={e => { if(e.key === 'Enter') handleSearch() }} 
                     />
-                    {selected.task_title && 
+                    {selectedOption.task_title && 
                         <MdOutlineCancel
                             className={`text-gray-400 mr-2 cursor-pointer`}
-                            onClick={() => setSelected(prev => ({...prev, task_title: ''}))}
+                            onClick={() => {setSelectedOption({task_title: ''})}}
                         />
                     }
                 </div>
@@ -80,34 +50,34 @@ export default function DesktopSearchbar() {
                         onClick={() => filterOption(1)}
                         id="1"
                     >
-                        <span>{selected.priority || 'Prioridad'}</span>
-                        {!selected.priority ? 
+                        <span>{selectedOption.priority || 'Prioridad'}</span>
+                        {!selectedOption.priority ? 
                             <IoMdArrowDropdown
                                 className={`transition-transform duration-200 ${optionId === 1 ? "rotate-180" : ""}`}
                             /> :
                             <MdOutlineCancel 
-                                onClick={() => setSelected(prev => ({...prev, priority: ''}))}
+                                onClick={() => {setSelectedOption({priority: '', id_priority: null})}}
                                 className="text-gray-400"
                             /> 
                         }
                     </button>
 
-                    {(optionId === 1 && !selected.priority) && (
+                    {(optionId === 1 && !selectedOption.priority) && (
                         <div 
                             className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
                             ref={filters}
                         >
                             <ul className="flex flex-col text-sm text-gray-700">
                                 {priorities.map(priority => (
-                                    <li 
+                                    <button 
                                         key={priority.id_priority} 
                                         id={priority.id_priority} 
                                         value={priority.id_priority} 
-                                        onClick={() => setSelected(prev => ({...prev, priority: priority.priority}))}
+                                        onClick={() => {setSelectedOption({priority: priority.priority, id_priority: priority.id_priority})}}
                                         className="px-3 py-2 hover:bg-amber-50 hover:text-amber-600 hover:rounded-t-lg cursor-pointer hover:rounded-b-lg"
                                     >
                                         {priority.priority}
-                                    </li>
+                                    </button>
                                 ))}
                             </ul>
                         </div>
@@ -120,34 +90,34 @@ export default function DesktopSearchbar() {
                         onClick={() => filterOption(2)}
                         id="2"
                     >
-                        <span>{selected.state || 'Estado'}</span>
-                        {!selected.state ? 
+                        <span>{selectedOption.state || 'Estado'}</span>
+                        {!selectedOption.state ? 
                             <IoMdArrowDropdown
                                 className={`transition-transform duration-200 ${optionId === 1 ? "rotate-180" : ""}`}
                             /> :
                             <MdOutlineCancel 
-                                onClick={() => setSelected(prev => ({...prev, state: ''}))}
+                                onClick={() => {setSelectedOption({state: '', id_state: null})}}
                                 className="text-gray-400"
                             /> 
                         }
                     </button>
 
-                    {(optionId === 2 && !selected.state)&& (
+                    {(optionId === 2 && !selectedOption.state)&& (
                         <div 
                             className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-auto min-w-full"
                             ref={filters}
                         >
                             <ul className="flex flex-col text-sm text-gray-700">
                                 {states.map(state => (
-                                    <li 
+                                    <button 
                                         key={state.id_state} 
                                         id={state.id_state} 
                                         value={state.id_state} 
                                         className="px-3 py-2 hover:bg-amber-50 hover:text-amber-600 hover:rounded-t-lg cursor-pointer hover:rounded-b-lg"
-                                        onClick={() => setSelected(prev => ({...prev, state: state.state}))}
+                                        onClick={() => {setSelectedOption({state: state.state, id_state: state.id_state})}}
                                     >
                                         {state.state}
-                                    </li>
+                                    </button>
                                 ))}
                             </ul>   
                         </div>
@@ -159,8 +129,8 @@ export default function DesktopSearchbar() {
                             className="flex items-center justify-between w-full cursor-pointer text-sm font-medium text-gray-700 hover:text-amber-500 transition-colors"
                             onClick={() => filterOption(3)}
                         >
-                            <p>{selected.range || "Fecha"}</p>
-                            {!selected.range ? 
+                            <p>{selectedOption.range || "Fecha"}</p>
+                            {!selectedOption.range ? 
                             <IoMdArrowDropdown
                                 className={`transition-transform duration-200 ${optionId === 3 ? "rotate-180" : ""}`}
                             /> :
@@ -174,7 +144,7 @@ export default function DesktopSearchbar() {
                             <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-auto min-w-[280px] p-3" ref={filters}>
                                 <Calendar
                                     selectRange
-                                    onChange={handleDateChange}
+                                    onChange={(value, event) => handleDateChange(value, event)}
                                     value={rangeDates}
                                     className="rounded-lg border-none shadow-sm hover:shadow-md transition-shadow duration-200"
                                 />
@@ -191,7 +161,12 @@ export default function DesktopSearchbar() {
                     </div>
 
                 <div className="text-gray-400 flex items-center gap-3 px-3 py-2">
-                    <button className="hover:text-amber-500 transition-colors cursor-pointer text-[25px]"><IoMdSearch /></button>
+                    <button 
+                        className="hover:text-amber-500 transition-colors cursor-pointer text-[25px]"
+                        onClick={handleSearch}
+                    >
+                        <IoMdSearch />
+                    </button>
                 </div>
 
             </div>
