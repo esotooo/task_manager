@@ -103,7 +103,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
     selectedOption: InitialSearchOptions,
     rangeDates: [null, null],
 
-    openForm: () => set({isOpen: true}),
+    openForm: () => set({isOpen: true, selectedOption: InitialSearchOptions, optionId: null}),
     closeForm: () => set({isOpen: false, isEditing: false, openRowId: null, isViewing: false}),
     setSelectedOption: (update: Partial<SearchOptionsType>) => 
         set((state) => ({ selectedOption: { ...state.selectedOption, ...update } })),
