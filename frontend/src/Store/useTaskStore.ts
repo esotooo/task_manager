@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { api } from '../Utils/axiosInstance.ts';
-import type { FormType, TaskType, TaskStatesType, TaskPrioritiesType } from '../Types/Tasks/TaskTypes.ts';
+import type { FormType, TaskType, TaskStatesType, TaskPrioritiesType, ConfirmDeleteType, SearchOptionsType } from '../Types/Tasks/TaskTypes.ts';
 
+//Al igual esto, pasarlo a utilites y un archivo llamada Functions o algo asi
 export class ValidationError extends Error {
     fields: Record<string, string>;
     constructor(fields: Record<string, string>) {
@@ -9,6 +10,16 @@ export class ValidationError extends Error {
       this.name = 'ValidationError';
       this.fields = fields;
     }
+}
+
+//Separar a utilities
+export function formatDateForInput(dateStr: string | null) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; 
 }
 
 const initialFormState : FormType = {
@@ -19,12 +30,17 @@ const initialFormState : FormType = {
     id_state: null,
     due_date: null,
     id_user: null,
-    end_date: null
+    end_date: null,
 }
 
-type ConfirmDeleteType = {
-    open: boolean
-    id_task: number | null
+const InitialSearchOptions : SearchOptionsType = {
+    task_title: '',
+    id_priority: null,
+    priority: '',
+    id_state: null,
+    state: '',
+    end_date:  null,
+    start_date: null
 }
 
 type State = {
@@ -38,16 +54,10 @@ type State = {
     openRowId: number | null
     confirmDelete: ConfirmDeleteType
     isViewing: boolean
+    optionId: number | null
+    selectedOption: SearchOptionsType
 }
 
-export function formatDateForInput(dateStr: string | null) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; 
-}
 
 type Actions = {
     openForm: () => void
@@ -58,10 +68,10 @@ type Actions = {
     resetForm: () => void
     
     toggleRow: (id: number) => void
+    filterOption: (id: number) => void,
 
     editTask: (id_task: number, id_user: number) => void
     seeTask: (id_task: number, id_user: number) => void
-
 
     fetchTasks: (id_user: number) => Promise<void>
     createTask: (form: FormType) => Promise<string>
@@ -86,6 +96,8 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         id_task: null
     },
     isViewing: false,
+    optionId: null,
+    selectedOption: InitialSearchOptions,
 
     openForm: () => set({isOpen: true}),
     closeForm: () => set({isOpen: false, isEditing: false, openRowId: null, isViewing: false}),
@@ -96,12 +108,17 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
         set((state) => ({ form: { ...state.form, [field]: value } })),
 
     toggleRow: (id: number) => {
-        const { openRowId } = get();
+        const { openRowId } = get()
         set({ openRowId: openRowId === id ? null : id });
     },
 
+    filterOption: (id: number) => {
+        const {optionId} = get()
+        set({optionId: optionId === id  ? null : id});
+    },
+
     editTask: (id_task: number, id_user: number) => {
-        const { tasks } = get();
+        const { tasks } = get()
         const taskToEdit = tasks.find(
             (t) => t.id_task === id_task && t.id_user === id_user
         )

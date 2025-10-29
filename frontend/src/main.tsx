@@ -5,6 +5,7 @@ import App from './App.tsx'
 import './index.css'
 import 'animate.css'
 import { AuthProvider } from './Context/AuthContext.tsx'
+import 'react-calendar/dist/Calendar.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

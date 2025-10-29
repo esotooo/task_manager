@@ -17,6 +17,8 @@ export function useTask(){
         states,
         confirmDelete,
         isViewing,
+        optionId,
+        filterOption,
         toggleRow,
         fetchPriorities, 
         createTask, 
@@ -37,7 +39,8 @@ export function useTask(){
 
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
 
-    const optionsList = useRef<HTMLDivElement | null>(null)
+    const optionsList = useRef<HTMLDivElement | null>(null) //para lista de opciones de cada tarea
+    const filters = useRef<HTMLDivElement | null>(null) //para los diferentes filtros
 
     function formatDate(dateStr: string) {
         if (!dateStr) return '';
@@ -129,7 +132,6 @@ export function useTask(){
             }
         }
     }
-
     
     const handleCancel = () => {
         resetForm()
@@ -138,11 +140,8 @@ export function useTask(){
 
     useEffect(() => {
         fetchPriorities()
-    },[fetchPriorities]) 
-
-    useEffect(() => {
         fetchStates()
-    },[fetchStates]) 
+    },[fetchPriorities, fetchStates]) 
 
     useEffect(() => {
         if (user?.data.id_user) {
@@ -152,14 +151,15 @@ export function useTask(){
       
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(optionsList.current && !optionsList.current.contains(e.target as Node)){
+            if((optionsList.current && !optionsList.current.contains(e.target as Node)) || (filters.current && !filters.current.contains(e.target as Node))){
                 if(openRowId !== null) toggleRow(openRowId)
+                if(filters !== null && optionId !== null) filterOption(optionId)
             }
         }
 
         document.addEventListener("mousedown", handleClickOutside)
         return() => document.removeEventListener("mousedown", handleClickOutside) 
-    },[openRowId, toggleRow])
+    },[openRowId, toggleRow, filterOption, optionId])
 
     useEffect(() => {
         if(confirmDelete.open){
@@ -185,6 +185,8 @@ export function useTask(){
         states,
         confirmDelete,
         isViewing,
+        optionId,
+        filters,
 
         //Funciones
         handleChange,
@@ -199,6 +201,7 @@ export function useTask(){
         handleDelete,
         seeTask,
         handleSearchByTitle,
+        filterOption,
 
         getFieldsError,
         clearFieldsError

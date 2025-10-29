@@ -5,7 +5,17 @@ import { HiDotsVertical } from "react-icons/hi";
 
 export default function TasksDesktopView() {
 
-    const {tasks, formatDate, toggleRow, openRowId, optionsList, editTask, openWindow, seeTask, message} = useTask()
+    const {
+        tasks, 
+        message,
+        optionsList, 
+        openRowId, 
+        formatDate, 
+        toggleRow, 
+        editTask, 
+        openWindow, 
+        seeTask 
+        } = useTask()
 
   return (
     <section className="h-[510px] max-w-auto overflow-x-hidden overflow-y-auto">
@@ -34,13 +44,13 @@ export default function TasksDesktopView() {
                                 <FaEye />
                                 <span>Ver más</span>
                             </button>
-                                <div 
-                                    className="absolute -left-14 top-full mt-1 hidden group-hover:block 
-                                    bg-white border border-gray-100 rounded-lg p-3 shadow-lg z-10 w-80 text-xs
-                                    opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0"
-                                >
-                                    {task.task_description}
-                                </div>
+                            <div 
+                                className="absolute -left-14 top-full mt-1 hidden group-hover:block 
+                                bg-white border border-gray-100 rounded-lg p-3 shadow-lg z-10 w-80 text-xs
+                                opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0"
+                            >
+                                {task.task_description}
+                            </div>
                             </td>
                             <td className="px-1 py-2">{formatDate(task.due_date)}</td>
                             <td className={`px-1 py-2`}>
@@ -75,21 +85,21 @@ export default function TasksDesktopView() {
                                     >
                                         <button 
                                             type="button" 
-                                            className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                            className="cursor-pointer hover:bg-amber-50 hover:text-amber-600 transition-all ease-in-out duration-300 w-full py-2" 
                                             onClick={() => seeTask(task.id_task, task.id_user)}
                                             >
                                             Ver
                                         </button>
                                         <button 
                                             type="button" 
-                                            className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                            className="cursor-pointer hover:bg-amber-50 hover:text-amber-600 transition-all ease-in-out duration-300 w-full py-2" 
                                             onClick={() => editTask(task.id_task, task.id_user)} 
                                         >
                                             Editar
                                         </button>
                                         <button 
                                             type="button" 
-                                            className="cursor-pointer hover:bg-gray-100 transition-all ease-in-out duration-300 w-full py-2" 
+                                            className="cursor-pointer hover:bg-amber-50 hover:text-amber-600 transition-all ease-in-out duration-300 w-full py-2" 
                                             onClick={() => openWindow(task.id_task)}    
                                         >
                                             Eliminar
