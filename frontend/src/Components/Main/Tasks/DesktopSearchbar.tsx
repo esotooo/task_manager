@@ -2,6 +2,7 @@ import { useTask } from "../../../Hooks/Tasks/useTask";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import Calendar from 'react-calendar';
+import { SearchbarInput } from "../../Layout/SearchbarInputs";
 
 export default function DesktopSearchbar() {
 
@@ -28,21 +29,16 @@ export default function DesktopSearchbar() {
             {/* Opciones de busqueda */}
             <div className="flex w-full flex-row items-center flex-1 border border-gray-100 px-1 py-1 rounded-lg
             shadow-lg">
-                <div className="flex-[4] border-r-1 border-b-0 border-r-gray-100 flex items-center">
-                    <input 
-                        type="text" 
-                        placeholder="Buscar tareas..."
-                        className="w-full px-3 py-2 focus:outline-none"
-                        onChange={e => setSelectedOption({task_title: e.target.value})}
-                        value={selectedOption.task_title}
-                    />
-                    {selectedOption.task_title && 
-                        <MdOutlineCancel
-                            className={`text-gray-400 mr-2 cursor-pointer`}
-                            onClick={() => {setSelectedOption({task_title: ''})}}
-                        />
-                    }
-                </div>
+                
+                <SearchbarInput 
+                    className="w-full px-3 py-2 focus:outline-none"
+                    type="text"
+                    placeholder="Buscar tareas..."
+                    onChange={e => setSelectedOption({task_title: e.target.value})}
+                    value={selectedOption.task_title}
+                    cancel={() => {setSelectedOption({task_title: ''})}}
+                    selectedOption={{ task_title: selectedOption.task_title }}
+                />
 
                 <div className="relative flex-[0.6] border-r border-gray-100 px-2 py-2">
                     <button
