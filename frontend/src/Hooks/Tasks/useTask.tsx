@@ -37,7 +37,17 @@ export function useTask(){
         searchTasks,
         openForm,
         setSelectedOption,
+        setRangeDates
     } = useTaskStore();
+
+    function formatDateForAPI(date: Date | null) {
+        if (!date) return undefined;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+    
 
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
 
@@ -99,13 +109,10 @@ export function useTask(){
         }
     }
     
-
     const handleSearch = async () => {
-        let start_date: string | undefined
-        let end_date: string | undefined
-    
-        if(rangeDates[0]) start_date = rangeDates[0].toISOString().split('T')[0]; 
-        if(rangeDates[1]) end_date = rangeDates[1].toISOString().split('T')[0];
+            
+        const start_date = formatDateForAPI(rangeDates[0]);
+        const end_date = formatDateForAPI(rangeDates[1]);        
     
         if(user?.data.id_user == null) return
         await searchTasks({
@@ -113,11 +120,110 @@ export function useTask(){
             task_title: selectedOption.task_title || undefined,
             id_priority: selectedOption.id_priority || undefined,
             id_state: selectedOption.id_state || undefined,
-            start_date,
-            end_date
+            range: {
+                start_date,
+                end_date
+            }
         })
     }
+
+    const handleFilterClick = (type: string, value: any, label: string = '') => {
+        switch (type) {
+            case 'priority':
+                setSelectedOption({
+                    ...selectedOption,
+                    priority: label,
+                    id_priority: value
+                })
+                break
+            case 'state':
+                setSelectedOption({
+                    ...selectedOption,
+                    state: label,
+                    id_state: value
+                })
+                break
+            case 'task_title':
+                setSelectedOption({
+                    ...selectedOption,
+                    task_title: value
+                })
+                break
+            case 'range': {
+                const [start, end] = value || []
+                const start_date = start ? new Date(start).toISOString().split('T')[0] : undefined
+                const end_date = end ? new Date(end).toISOString().split('T')[0] : undefined
+                setSelectedOption({
+                    ...selectedOption,
+                    range: { start_date, end_date }
+                })
+                handleSearch()
+                break
+            }
+            default:
+                break
+        }
+    }
+
+    const handleCalendarChange = (value: [Date, Date] | Date) => {
+        if (Array.isArray(value)) {
+            const start = formatDateForAPI(value[0]);
+            const end = value[1] ? formatDateForAPI(value[1]) : undefined;
+            
         
+            setRangeDates([value[0] || null, value[1] || null])
+    
+            setSelectedOption({
+                ...selectedOption,
+                range: { start_date: start, end_date: end }
+            })
+    
+            handleSearch()
+            console.log(selectedOption)
+        } else {
+            const start = value.toISOString().split("T")[0]
+    
+            setRangeDates([value, null])
+    
+            setSelectedOption({
+                ...selectedOption,
+                range: { start_date: start, end_date: undefined }
+            })
+    
+            handleSearch()
+        }
+    }
+
+    const handleNoLimit = () => {
+        const start = rangeDates[0] || (selectedOption.range?.start_date ? new Date(selectedOption.range.start_date) : null)
+        
+        if (!start) return
+    
+        const formattedStart = formatDateForAPI(start)
+    
+        setRangeDates([start, null])
+        setSelectedOption({
+            ...selectedOption,
+            range: { start_date: formattedStart, end_date: undefined }
+        })
+    
+        setTimeout(() => {
+            if (user?.data.id_user) handleSearch()
+        }, 0)
+    }
+    
+    const handleCancelDateFilter = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setRangeDates([null, null])
+        setSelectedOption({
+            ...selectedOption,
+            range: { start_date: undefined, end_date: undefined }
+        })
+        setTimeout(() => {
+            if (user?.data.id_user) handleSearch()
+        }, 0)
+    }
+    
     const handleDelete = async () => {
         if(confirmDelete.id_task == null || !user?.data.id_user) return;
     
@@ -143,14 +249,35 @@ export function useTask(){
     useEffect(() => {
         fetchPriorities()
         fetchStates()
-    },[fetchPriorities, fetchStates]) 
-
-    useEffect(() => {
+      
         if (user?.data.id_user) {
           fetchTasks(user.data.id_user)
         }
-    }, [user?.data.id_user])
+    }, [fetchPriorities, fetchStates, user?.data.id_user])
       
+
+    useEffect(() => {
+        if (
+            selectedOption.task_title ||
+            selectedOption.id_priority ||
+            selectedOption.id_state ||
+            selectedOption.range?.start_date ||
+            selectedOption.range?.end_date
+        ) {
+            handleSearch()
+        }else{
+            handleSearch()
+        }
+    }, [
+        selectedOption.task_title,
+        selectedOption.id_priority,
+        selectedOption.id_state,
+        selectedOption.range?.start_date,
+        selectedOption.range?.end_date
+    ])
+    
+    
+
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if((optionsList.current && !optionsList.current.contains(e.target as Node)) || (filters.current && !filters.current.contains(e.target as Node))){
@@ -190,6 +317,7 @@ export function useTask(){
         optionId,
         filters,
         selectedOption,
+        rangeDates,
 
         //Funciones
         handleChange,
@@ -209,6 +337,11 @@ export function useTask(){
         clearFieldsError,
         setSelectedOption,
         handleSearch,
+        handleFilterClick,
+
+        handleCalendarChange,
+        handleCancelDateFilter,
+        handleNoLimit
 
     })    
 }
