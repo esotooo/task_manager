@@ -34,7 +34,7 @@ export type TaskPrioritiesType = {
 }
 
 export type SearchOptionsType = {
-    id_user: number | null
+    id_user?: number | null
     task_title?: string
     id_priority?: number | null
     priority?: string
