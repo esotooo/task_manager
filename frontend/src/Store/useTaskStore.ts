@@ -38,8 +38,10 @@ const InitialSearchOptions : SearchOptionsType = {
     task_title: '',
     id_priority: null,
     id_state: null,
-    end_date:  null,
-    start_date: null
+    range: {
+        end_date:  null,
+        start_date: null
+    }
 }
 
 type State = {
@@ -55,7 +57,7 @@ type State = {
     isViewing: boolean
     optionId: number | null
     selectedOption: SearchOptionsType
-    rangeDates: [Date | null, Date | null]
+    rangeDates: (Date | null)[]
 }
 
 
@@ -107,7 +109,7 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
     closeForm: () => set({isOpen: false, isEditing: false, openRowId: null, isViewing: false}),
     setSelectedOption: (update: Partial<SearchOptionsType>) => 
         set((state) => ({ selectedOption: { ...state.selectedOption, ...update } })),
-    setRangeDates: () => set({rangeDates: [null, null]}),
+    setRangeDates: (range: [Date | null, Date | null]) => set({ rangeDates: range }),
     openWindow: (id_task: number) => set({ confirmDelete: { open: true, id_task: id_task } }),
     closeWindow: () => set({ confirmDelete: { open: false, id_task: null } }),
     resetForm: () => set({form: initialFormState}),
@@ -193,14 +195,14 @@ export const useTaskStore = create<State & Actions>((set, get) => ({
 
     searchTasks: async (selectedOption) => {
         try{
-            
+
             const queryParams = new URLSearchParams()
 
             if(selectedOption.task_title) queryParams.append('task_title', selectedOption.task_title)
             if(selectedOption.id_priority) queryParams.append('id_priority', selectedOption.id_priority.toString())
             if(selectedOption.id_state) queryParams.append('id_state', selectedOption.id_state.toString())
-            if(selectedOption.start_date) queryParams.append('start_date', selectedOption.start_date)
-            if(selectedOption.end_date) queryParams.append('end_date', selectedOption.end_date)
+            if(selectedOption.range?.start_date) queryParams.append('start_date', selectedOption.range?.start_date)
+            if(selectedOption.range?.end_date) queryParams.append('end_date', selectedOption.range?.end_date)
 
             const res = await api.get(`/api/tasks/search-tasks?id_user=${selectedOption.id_user}&${queryParams.toString()}`)
 

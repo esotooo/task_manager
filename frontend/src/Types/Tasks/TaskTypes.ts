@@ -40,9 +40,10 @@ export type SearchOptionsType = {
     priority?: string
     id_state?: number | null
     state?: string
-    end_date?: string | null
-    start_date?: string | null
-    range?: string
+    range?: {
+        end_date?: string | null
+        start_date?: string | null
+    }
 }
 
 export type ConfirmDeleteType = {
