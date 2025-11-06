@@ -48,11 +48,10 @@ export function useTask(){
         return `${year}-${month}-${day}`;
     }
     
-
     const {setFieldMessage, clearFieldsError, getFieldsError} = useInputError()
 
     const optionsList = useRef<HTMLDivElement | null>(null) //para lista de opciones de cada tarea
-    const filters = useRef<HTMLDivElement | null>(null) //para los diferentes filtros
+    const filters = useRef<HTMLDivElement>(null) //para los diferentes filtros
 
     function formatDate(dateStr: string) {
         if (!dateStr) return '';
@@ -179,7 +178,6 @@ export function useTask(){
             })
     
             handleSearch()
-            console.log(selectedOption)
         } else {
             const start = value.toISOString().split("T")[0]
     
