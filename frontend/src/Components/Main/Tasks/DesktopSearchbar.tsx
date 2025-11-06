@@ -1,8 +1,6 @@
 import { useTask } from "../../../Hooks/Tasks/useTask";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { MdOutlineCancel } from "react-icons/md";
-import Calendar from 'react-calendar';
-import { FilterDropdown, SearchbarInput } from "../../Layout/SearchbarInputs";
+
+import { DateFilter, FilterDropdown, SearchbarInput } from "../../Layout/SearchbarInputs";
 
 export default function DesktopSearchbar() {
 
@@ -66,52 +64,16 @@ export default function DesktopSearchbar() {
                     ref={filters}
                 />
 
-                <div className="relative flex-[1.2] px-2 py-2">
-                    <button
-                        className="flex items-center justify-between w-full cursor-pointer text-sm font-medium text-gray-700 hover:text-amber-500 transition-colors"
-                        onClick={() => filterOption(3)}
-                    >
-                        <p>
-                            {selectedOption.range?.start_date && selectedOption.range?.end_date
-                                ? `${new Date(selectedOption.range.start_date).toLocaleDateString('es-ES')} - ${new Date(selectedOption.range.end_date).toLocaleDateString('es-ES')}`
-                                : selectedOption.range?.start_date
-                                ? new Date(selectedOption.range.start_date).toLocaleDateString('es-ES')
-                                : 'Fecha'}
-                        </p>
-
-                        {selectedOption.range?.start_date || selectedOption.range?.end_date ? (
-                            <MdOutlineCancel
-                                className="text-gray-400 hover:text-red-500 transition-colors"
-                                onClick={handleCancelDateFilter}
-                            />
-                        ) : (
-                            <IoMdArrowDropdown
-                                className={`transition-transform duration-200 ${optionId === 3 ? "rotate-180" : ""}`}
-                            />
-                        )}
-                    </button>
-
-                    {optionId === 3 && (
-                        <div
-                            className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-auto min-w-[280px] p-3"
-                            ref={filters}
-                        >
-                            <Calendar
-                                selectRange
-                                className="rounded-lg border-none shadow-sm hover:shadow-md transition-shadow duration-200"
-                                onChange={handleCalendarChange}
-                            />
-                            <div className="flex justify-end mt-2 gap-2">
-                                <button
-                                    onClick={handleNoLimit}
-                                    className="text-xs text-gray-600 hover:text-amber-500"
-                                >
-                                    Sin límite
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                <DateFilter 
+                    label="Fecha"
+                    range={selectedOption.range}
+                    isOpen={optionId === 3}
+                    calendarRef={filters}
+                    onToggle={() => filterOption(3)}
+                    onChange={handleCalendarChange}
+                    onNoLimit={handleNoLimit}
+                    onClear={handleCancelDateFilter}
+                />
 
             </div>
 
