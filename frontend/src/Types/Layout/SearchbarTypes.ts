@@ -10,7 +10,6 @@ export type InputProps = {
     className: string
 }
 
-
 export type FilterDropdownProps = {
     label: string
     selectedValue: string
@@ -25,4 +24,20 @@ export type FilterDropdownProps = {
     onClear: (field: string) => void
     field: string
     ref: React.RefObject<HTMLDivElement | null> 
+    isFilterMode?: boolean
+    disabled?: boolean
+    className?: string
+}
+
+export type DateFilterProps = {
+    label: string
+    range?: { start_date?: string | null; end_date?: string | null}
+    isOpen: boolean
+    calendarRef?: React.RefObject<HTMLDivElement | null> 
+    onToggle: () => void
+    onChange: (value: [Date, Date] | Date) => void
+    onNoLimit?: () => void
+    onClear?: (e: React.MouseEvent) => void
+    allowRange?: boolean
+    allowNoLimit?: boolean
 }
