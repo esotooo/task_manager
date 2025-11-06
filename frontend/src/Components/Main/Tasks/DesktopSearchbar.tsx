@@ -2,7 +2,7 @@ import { useTask } from "../../../Hooks/Tasks/useTask";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import Calendar from 'react-calendar';
-import { SearchbarInput } from "../../Layout/SearchbarInputs";
+import { FilterDropdown, SearchbarInput } from "../../Layout/SearchbarInputs";
 
 export default function DesktopSearchbar() {
 
@@ -29,9 +29,9 @@ export default function DesktopSearchbar() {
             {/* Opciones de busqueda */}
             <div className="flex w-full flex-row items-center flex-1 border border-gray-100 px-1 py-1 rounded-lg
             shadow-lg">
-                
+
                 <SearchbarInput 
-                    className="w-full px-3 py-2 focus:outline-none"
+                    className="px-3 py-2"
                     type="text"
                     placeholder="Buscar tareas..."
                     onChange={e => setSelectedOption({task_title: e.target.value})}
@@ -40,85 +40,31 @@ export default function DesktopSearchbar() {
                     selectedOption={{ task_title: selectedOption.task_title }}
                 />
 
-                <div className="relative flex-[0.6] border-r border-gray-100 px-2 py-2">
-                    <button
-                        className="flex items-center justify-between w-full cursor-pointer text-sm font-medium text-gray-700 hover:text-amber-500 transition-colors"
-                        onClick={() => filterOption(1)}
-                        id="1"
-                    >
-                        <span>{selectedOption.priority || 'Prioridad'}</span>
-                        {!selectedOption.priority ? 
-                            <IoMdArrowDropdown
-                                className={`transition-transform duration-200 ${optionId === 1 ? "rotate-180" : ""}`}
-                            /> :
-                            <MdOutlineCancel 
-                                onClick={() => handleFilterClick('priority', null, '')}
-                                className="text-gray-400"
-                            /> 
-                        }
-                    </button>
+                <FilterDropdown 
+                    label="Prioridad"
+                    selectedValue={selectedOption.priority || ''}
+                    options={priorities.map(p => ({id: p.id_priority, name: p.priority}))}
+                    id={1}
+                    optionId={optionId}
+                    setOptionId={() => filterOption(1)}
+                    onSelect={handleFilterClick}
+                    onClear={(field) => handleFilterClick(field, null, '')}
+                    field="priority"
+                    ref={filters}
+                />
 
-                    {(optionId === 1 && !selectedOption.priority) && (
-                        <div 
-                            className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
-                            ref={filters}
-                        >
-                            <ul className="flex flex-col text-sm text-gray-700">
-                                {priorities.map(priority => (
-                                    <li 
-                                        key={priority.id_priority} 
-                                        id={priority.id_priority} 
-                                        value={priority.id_priority} 
-                                        onClick={() => handleFilterClick('priority', priority.id_priority, priority.priority)}
-                                        className="px-3 py-2 hover:bg-amber-50 hover:text-amber-600 hover:rounded-t-lg cursor-pointer hover:rounded-b-lg"
-                                    >
-                                        {priority.priority}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-
-                <div className="relative flex-[0.6] border-r border-gray-100 px-2 py-2">
-                    <button
-                        className="flex items-center justify-between w-full cursor-pointer text-sm font-medium text-gray-700 hover:text-amber-500 transition-colors"
-                        onClick={() => filterOption(2)}
-                        id="2"
-                    >
-                        <span>{selectedOption.state || 'Estado'}</span>
-                        {!selectedOption.state ? 
-                            <IoMdArrowDropdown
-                                className={`transition-transform duration-200 ${optionId === 1 ? "rotate-180" : ""}`}
-                            /> :
-                            <MdOutlineCancel 
-                                onClick={() => handleFilterClick('state', null, '')}
-                                className="text-gray-400"
-                            /> 
-                        }
-                    </button>
-
-                    {(optionId === 2 && !selectedOption.state)&& (
-                        <div 
-                            className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-auto min-w-full"
-                            ref={filters}
-                        >
-                            <ul className="flex flex-col text-sm text-gray-700">
-                                {states.map(state => (
-                                    <li 
-                                        key={state.id_state} 
-                                        id={state.id_state} 
-                                        value={state.id_state} 
-                                        className="px-3 py-2 hover:bg-amber-50 hover:text-amber-600 hover:rounded-t-lg cursor-pointer hover:rounded-b-lg"
-                                        onClick={() => handleFilterClick('state', state.id_state, state.state)}
-                                    >
-                                        {state.state}
-                                    </li>
-                                ))}
-                            </ul>   
-                        </div>
-                    )}
-                </div>
+                <FilterDropdown 
+                    label="Estado"
+                    selectedValue={selectedOption.state || ''}
+                    options={states.map(s => ({id: s.id_state, name: s.state}))}
+                    id={2}
+                    optionId={optionId}
+                    setOptionId={() => filterOption(2)}
+                    onSelect={(handleFilterClick)}
+                    onClear={(field) => handleFilterClick(field, null, '')}
+                    field="state"
+                    ref={filters}
+                />
 
                 <div className="relative flex-[1.2] px-2 py-2">
                     <button
