@@ -3,6 +3,7 @@ import { useTaskStore, ValidationError } from "../../Store/useTaskStore"
 import React, { useEffect, useRef } from "react"
 import {toast} from 'react-hot-toast'
 import { useInputError } from "../Layout/useInputError"
+import debounce from 'debounce'
 
 export function useTask(){
     const { user } = useAuth()
@@ -107,23 +108,29 @@ export function useTask(){
             }
         }
     }
-    
-    const handleSearch = async () => {
-            
+
+    const debouncedSearch = debounce(async (selectedOption) => {
+
         const start_date = formatDateForAPI(rangeDates[0]);
-        const end_date = formatDateForAPI(rangeDates[1]);        
-    
-        if(user?.data.id_user == null) return
+        const end_date = formatDateForAPI(rangeDates[1]);       
+
+        if(user?.data.id_user === null) return
+
         await searchTasks({
             id_user: user?.data.id_user,
-            task_title: selectedOption.task_title || undefined,
-            id_priority: selectedOption.id_priority || undefined,
-            id_state: selectedOption.id_state || undefined,
+            task_title: selectedOption.task_title,
+            id_priority: selectedOption.id_priority,
+            id_state: selectedOption.id_state,
             range: {
                 start_date,
                 end_date
             }
         })
+    }, 500)
+    
+    const handleSearch = async () => {
+        const value = selectedOption
+        debouncedSearch(value)
     }
 
     const handleFilterClick = (type: string, value: any, label: string = '') => {
@@ -185,7 +192,7 @@ export function useTask(){
     
             setSelectedOption({
                 ...selectedOption,
-                range: { start_date: start, end_date: undefined }
+                range: { start_date: start, end_date: null }
             })
     
             handleSearch()
@@ -202,7 +209,7 @@ export function useTask(){
         setRangeDates([start, null])
         setSelectedOption({
             ...selectedOption,
-            range: { start_date: formattedStart, end_date: undefined }
+            range: { start_date: formattedStart, end_date: null }
         })
     
         setTimeout(() => {
@@ -215,7 +222,7 @@ export function useTask(){
         setRangeDates([null, null])
         setSelectedOption({
             ...selectedOption,
-            range: { start_date: undefined, end_date: undefined }
+            range: { start_date: null, end_date: null }
         })
         setTimeout(() => {
             if (user?.data.id_user) handleSearch()
@@ -274,8 +281,6 @@ export function useTask(){
         selectedOption.range?.end_date
     ])
     
-    
-
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if((optionsList.current && !optionsList.current.contains(e.target as Node)) || (filters.current && !filters.current.contains(e.target as Node))){
