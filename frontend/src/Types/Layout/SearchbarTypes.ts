@@ -11,7 +11,18 @@ export type InputProps = {
 }
 
 
-export type SelectProps = {
-    type: string, 
-    
+export type FilterDropdownProps = {
+    label: string
+    selectedValue: string
+    options: {
+        id: number 
+        name: string 
+    }[]
+    optionId: number | null
+    id: number
+    setOptionId: (id: number | null) => void
+    onSelect: (field: string, id: number | string, value: string) => void
+    onClear: (field: string) => void
+    field: string
+    ref: React.RefObject<HTMLDivElement | null> 
 }
