@@ -42,7 +42,7 @@ export default function TasksMobileView() {
             key={task.id_task}
             leadingActions={leadingActions(task.id_task, task.id_user)}
             trailingActions={trailingActions(task.id_task)}
-            className="mb-3"
+            className="mb-3 last-of-type:mb-15"
         >
                 <div className="pt-4 px-4 pb-2 border border-gray-100 relative overflow-hidden w-full">
                     <div
@@ -55,6 +55,10 @@ export default function TasksMobileView() {
                     </div>
                     <div className="mt-5">
                         <h3 className="font-bold">{task.task_title}</h3>
+                        <p className="text-sm">
+                            Fecha creado:{" "}
+                            <span className="font-semibold">{formatDate(task.create_date)}</span>
+                        </p>
                         <p className="text-sm">
                             Fecha límite:{" "}
                             <span className="font-semibold">{formatDate(task.due_date)}</span>
