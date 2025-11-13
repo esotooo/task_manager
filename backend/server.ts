@@ -8,7 +8,7 @@ import tasksCrud from './API/tasks/tasksCRUD';
 import taskUtils from './API/tasks/taskUtils';
 import tasksSearch from './API/tasks/tasksSearch';
 import cookieParser from 'cookie-parser';
-
+import calendarQueries from './API/calendar/calendarRender'
 
 const PORT = 4000;
 const app = express();
@@ -32,6 +32,8 @@ app.use('/api/users', validateEmail);
 app.use('/api/tasks', tasksCrud);
 app.use('/api/tasks', taskUtils);
 app.use('/api/tasks', tasksSearch);
+
+app.use('/api/calendar', calendarQueries);
 
 
 
